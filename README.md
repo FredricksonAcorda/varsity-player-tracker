@@ -26,10 +26,10 @@ Because this app uses `localStorage` and plain web technologies, running it is i
 2. Open the `index.html` file in any modern web browser.
 3. *Alternatively*, deploy it instantly using services like **Vercel**, **Netlify**, or **GitHub Pages**.
 
-## 🔑 Default Credentials
+## 🔑 Admin Access
 
-- **Admin Password:** `admin123`
-  - *To access the admin panel, click the "Admin" tab and enter this password.*
+- The Admin Panel is password-protected to ensure only organizers and coaches can manage tournaments, update records, and adjust player rankings.
+- *Default access credentials are provided separately to authorized organizers.*
 
 ## 🏷️ Sports and Categories
 
