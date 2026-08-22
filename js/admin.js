@@ -779,10 +779,25 @@ const Admin = (() => {
     }
 
     container.innerHTML = events.map(event => {
+      const matchCount = event.matches ? event.matches.length : 0;
+
+      const sportsSummary = (event.sports || []).map(s => {
+        const catPills = (s.categories || []).map(c => `<span class="event-cat-pill">${escapeHtml(c)}</span>`).join('');
+        return `
+          <div class="event-sport-row" style="margin-bottom:0.4rem;">
+            <strong style="font-size:0.825rem; color:var(--accent-primary); min-width:80px;">${escapeHtml(s.sport)}:</strong>
+            <div class="event-cat-pills">${catPills || '<span style="color:var(--text-muted); font-size:0.75rem;">Open</span>'}</div>
+          </div>
+        `;
+      }).join('');
+
       return `
         <div class="event-card" style="margin-bottom:1rem;">
           <div class="event-card-header">
-            <div class="event-name">${escapeHtml(event.name)}</div>
+            <div>
+              <div class="event-name">${escapeHtml(event.name)}</div>
+              <div class="event-date-meta">Date: ${event.date} • ${matchCount} Matches</div>
+            </div>
             <div style="display:flex; gap:0.5rem; align-items:center;">
               <select onchange="Admin.updateEventStatus('${event.id}', this.value)" 
                       style="padding:0.2rem 0.5rem; background:var(--bg-glass); border:1px solid var(--border-glass); border-radius:4px; color:var(--text-primary); font-size:0.75rem;">
@@ -793,12 +808,11 @@ const Admin = (() => {
               <button class="btn btn-danger btn-sm" onclick="Admin.confirmDeleteEvent('${event.id}')">Delete</button>
             </div>
           </div>
-          <div class="event-meta">
-            <span>${escapeHtml(event.sport)}</span>
-            <span>Category: ${escapeHtml(event.category)}</span>
-            <span>Date: ${event.date}</span>
-            <span>${event.matches ? event.matches.length : 0} Matches</span>
+
+          <div class="event-sports-container" style="margin:0.75rem 0;">
+            ${sportsSummary || '<p style="color:var(--text-muted); font-size:0.8rem;">All Sports</p>'}
           </div>
+
           <div style="margin-top:0.75rem;">
             <button class="btn btn-secondary btn-sm" onclick="Admin.showAddMatchToEvent('${event.id}')">+ Add Match Result</button>
           </div>
@@ -811,23 +825,39 @@ const Admin = (() => {
     if (!checkAdminAuth()) return;
 
     const sportsConfig = Storage.getSportsConfig();
-    const sportOptions = sportsConfig.map(s => `<option value="${s.sport}">${s.sport}</option>`).join('');
+
+    const sportsHTML = sportsConfig.map((s, idx) => {
+      const catCheckboxes = s.categories.map(cat => `
+        <label class="checkbox-item" style="font-size:0.75rem; padding:0.25rem 0.5rem;">
+          <input type="checkbox" class="ae-cat-cb" data-sport-index="${idx}" data-sport="${escapeAttr(s.sport)}" value="${escapeAttr(cat)}">
+          ${escapeHtml(cat)}
+        </label>
+      `).join('');
+
+      return `
+        <div class="ae-sport-card" id="ae-sport-card-${idx}" style="margin-bottom:0.75rem; padding:0.75rem; background:var(--bg-glass); border:1px solid var(--border-glass); border-radius:var(--border-radius-sm);">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label class="checkbox-item" style="font-weight:700; font-size:0.875rem;">
+              <input type="checkbox" class="ae-sport-master-cb" data-sport-index="${idx}" value="${escapeAttr(s.sport)}">
+              ${escapeHtml(s.sport)}
+            </label>
+            <div class="ae-cat-actions" id="ae-cat-actions-${idx}" style="display:none; gap:0.35rem;">
+              <button type="button" class="btn btn-ghost btn-sm" style="font-size:0.7rem; padding:0.15rem 0.4rem;" onclick="Admin.toggleAllEventCats(${idx}, true)">Select All</button>
+              <button type="button" class="btn btn-ghost btn-sm" style="font-size:0.7rem; padding:0.15rem 0.4rem;" onclick="Admin.toggleAllEventCats(${idx}, false)">Clear</button>
+            </div>
+          </div>
+          <div class="ae-cats-container" id="ae-cats-container-${idx}" style="display:none; margin-top:0.6rem; padding-left:1.5rem; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:0.4rem;">
+            ${catCheckboxes}
+          </div>
+        </div>
+      `;
+    }).join('');
 
     const content = `
       <form id="addEventForm">
         <div class="form-group">
           <label>Event Name *</label>
-          <input type="text" id="aeName" placeholder="e.g. Intramurals 2026 - Badminton" required>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Sport *</label>
-            <select id="aeSport" required><option value="">Select...</option>${sportOptions}</select>
-          </div>
-          <div class="form-group">
-            <label>Category *</label>
-            <select id="aeCategory" required><option value="">Select sport first...</option></select>
-          </div>
+          <input type="text" id="aeName" placeholder="e.g. Intramurals 2026" required>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -843,37 +873,113 @@ const Admin = (() => {
             </select>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-full">Create Event</button>
+
+        <div class="form-group" style="margin-top:0.75rem;">
+          <label style="font-weight:700; margin-bottom:0.4rem;">Included Sports & Categories *</label>
+          <p style="color:var(--text-muted); font-size:0.75rem; margin-bottom:0.75rem;">Select which sports and specific categories are part of this event/tournament.</p>
+          <div class="ae-sports-list" style="max-height:280px; overflow-y:auto; padding-right:0.3rem;">
+            ${sportsHTML}
+          </div>
+        </div>
+
+        <div class="form-error" id="aeError"></div>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:1rem;">Create Event</button>
       </form>
     `;
 
-    App.openModal('Create Event', content);
+    App.openModal('Create Event / Tournament', content);
 
-    document.getElementById('aeSport').addEventListener('change', function () {
-      populateSelectCategories(this.value, document.getElementById('aeCategory'));
+    // Setup master sport toggle listeners
+    document.querySelectorAll('.ae-sport-master-cb').forEach(masterCb => {
+      masterCb.addEventListener('change', function () {
+        const idx = this.dataset.sportIndex;
+        const catsContainer = document.getElementById(`ae-cats-container-${idx}`);
+        const actionsContainer = document.getElementById(`ae-cat-actions-${idx}`);
+
+        if (this.checked) {
+          catsContainer.style.display = 'grid';
+          actionsContainer.style.display = 'flex';
+          // Check all categories by default when sport is checked
+          document.querySelectorAll(`.ae-cat-cb[data-sport-index="${idx}"]`).forEach(cb => {
+            cb.checked = true;
+            cb.closest('.checkbox-item')?.classList.add('checked');
+          });
+        } else {
+          catsContainer.style.display = 'none';
+          actionsContainer.style.display = 'none';
+          document.querySelectorAll(`.ae-cat-cb[data-sport-index="${idx}"]`).forEach(cb => {
+            cb.checked = false;
+            cb.closest('.checkbox-item')?.classList.remove('checked');
+          });
+        }
+      });
+    });
+
+    // Setup individual category checkbox styling
+    document.querySelectorAll('.ae-cat-cb').forEach(cb => {
+      cb.addEventListener('change', function () {
+        this.closest('.checkbox-item')?.classList.toggle('checked', this.checked);
+        const idx = this.dataset.sportIndex;
+        const masterCb = document.querySelector(`.ae-sport-master-cb[data-sport-index="${idx}"]`);
+        const anyChecked = document.querySelectorAll(`.ae-cat-cb[data-sport-index="${idx}"]:checked`).length > 0;
+        if (masterCb) {
+          masterCb.checked = anyChecked;
+        }
+      });
     });
 
     document.getElementById('addEventForm').addEventListener('submit', (e) => {
       e.preventDefault();
       if (!checkAdminAuth()) return;
 
+      const errorEl = document.getElementById('aeError');
       const name = document.getElementById('aeName').value.trim();
-      const sport = document.getElementById('aeSport').value;
-      const category = document.getElementById('aeCategory').value;
       const date = document.getElementById('aeDate').value;
       const status = document.getElementById('aeStatus').value;
 
-      if (!name || !sport || !category || !date) {
-        App.showToast('Please fill in all fields.', 'error');
+      if (!name || !date) {
+        errorEl.textContent = 'Please fill in event name and date.';
         return;
       }
 
-      Storage.addEvent({ name, sport, category, date, status });
+      // Collect selected sports & categories
+      const sportsConfig = Storage.getSportsConfig();
+      const selectedSports = [];
+
+      sportsConfig.forEach((s, idx) => {
+        const checkedCats = [];
+        document.querySelectorAll(`.ae-cat-cb[data-sport-index="${idx}"]:checked`).forEach(cb => {
+          checkedCats.push(cb.value);
+        });
+
+        if (checkedCats.length > 0) {
+          selectedSports.push({
+            sport: s.sport,
+            categories: checkedCats,
+          });
+        }
+      });
+
+      if (selectedSports.length === 0) {
+        errorEl.textContent = 'Please select at least one sport and category for this event.';
+        return;
+      }
+
+      Storage.addEvent({ name, sports: selectedSports, date, status });
       App.closeModal();
-      App.showToast('Event created.', 'success');
+      App.showToast(`Tournament "${name}" created with ${selectedSports.length} sports!`, 'success');
       renderAdminEvents();
       Events.render();
     });
+  }
+
+  function toggleAllEventCats(sportIndex, selectAll) {
+    document.querySelectorAll(`.ae-cat-cb[data-sport-index="${sportIndex}"]`).forEach(cb => {
+      cb.checked = selectAll;
+      cb.closest('.checkbox-item')?.classList.toggle('checked', selectAll);
+    });
+    const masterCb = document.querySelector(`.ae-sport-master-cb[data-sport-index="${sportIndex}"]`);
+    if (masterCb) masterCb.checked = selectAll;
   }
 
   function showAddMatchToEvent(eventId) {
@@ -882,63 +988,162 @@ const Admin = (() => {
     const event = Storage.getEventById(eventId);
     if (!event) return;
 
-    // Get players in this sport + category
-    const players = Storage.getPlayers().filter(p =>
-      (p.sports || []).some(s => s.sport === event.sport && (s.categories || []).some(c => (c.category || c) === event.category))
-    );
+    const sportsList = event.sports && event.sports.length > 0 ? event.sports : [];
+    if (sportsList.length === 0) {
+      App.showToast('This event has no configured sports.', 'error');
+      return;
+    }
 
-    const playerOptions = players.map(p => `<option value="${p.id}">${p.username} (${p.id})</option>`).join('');
+    const sportOptions = sportsList.map(s => `<option value="${escapeAttr(s.sport)}">${escapeHtml(s.sport)}</option>`).join('');
 
     const content = `
       <form id="eventMatchForm">
-        <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1rem;">${event.sport} — ${event.category}</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Sport *</label>
+            <select id="emSport" required>
+              <option value="">Select sport...</option>
+              ${sportOptions}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="emCategory" required>
+              <option value="">Select sport first...</option>
+            </select>
+          </div>
+        </div>
+
         <div class="form-row">
           <div class="form-group">
             <label>Player 1 *</label>
-            <select id="emPlayer1" required><option value="">Select...</option>${playerOptions}</select>
+            <select id="emPlayer1" required><option value="">Select category first...</option></select>
           </div>
           <div class="form-group">
             <label>Player 2</label>
-            <select id="emPlayer2"><option value="">Select...</option>${playerOptions}</select>
+            <select id="emPlayer2"><option value="">Select category first...</option></select>
           </div>
         </div>
+
         <div class="form-group">
           <label>Winner *</label>
-          <select id="emWinner" required><option value="">Select...</option>${playerOptions}</select>
+          <select id="emWinner" required><option value="">Select players first...</option></select>
         </div>
-        <button type="submit" class="btn btn-primary btn-full">Record Match</button>
+
+        <div class="form-error" id="emError"></div>
+        <button type="submit" class="btn btn-primary btn-full">Record Match Result</button>
       </form>
     `;
 
     App.openModal(`Add Match — ${event.name}`, content);
 
+    const sportSelect = document.getElementById('emSport');
+    const catSelect = document.getElementById('emCategory');
+    const p1Select = document.getElementById('emPlayer1');
+    const p2Select = document.getElementById('emPlayer2');
+    const winnerSelect = document.getElementById('emWinner');
+
+    function updateWinnerOptions() {
+      const p1Val = p1Select.value;
+      const p2Val = p2Select.value;
+      winnerSelect.innerHTML = '<option value="">Select Winner...</option>';
+
+      if (p1Val) {
+        const p1 = Storage.getPlayerById(p1Val);
+        const opt = document.createElement('option');
+        opt.value = p1Val;
+        opt.textContent = `Player 1: ${p1 ? p1.username : p1Val}`;
+        winnerSelect.appendChild(opt);
+      }
+      if (p2Val) {
+        const p2 = Storage.getPlayerById(p2Val);
+        const opt = document.createElement('option');
+        opt.value = p2Val;
+        opt.textContent = `Player 2: ${p2 ? p2.username : p2Val}`;
+        winnerSelect.appendChild(opt);
+      }
+    }
+
+    sportSelect.addEventListener('change', () => {
+      const selectedSportName = sportSelect.value;
+      catSelect.innerHTML = '<option value="">Select category...</option>';
+      p1Select.innerHTML = '<option value="">Select category first...</option>';
+      p2Select.innerHTML = '<option value="">Select category first...</option>';
+      winnerSelect.innerHTML = '<option value="">Select players first...</option>';
+
+      if (!selectedSportName) return;
+
+      const sportObj = sportsList.find(s => s.sport === selectedSportName);
+      if (sportObj && sportObj.categories) {
+        sportObj.categories.forEach(cat => {
+          const opt = document.createElement('option');
+          opt.value = cat;
+          opt.textContent = cat;
+          catSelect.appendChild(opt);
+        });
+      }
+    });
+
+    catSelect.addEventListener('change', () => {
+      const sport = sportSelect.value;
+      const category = catSelect.value;
+
+      p1Select.innerHTML = '<option value="">Select Player 1...</option>';
+      p2Select.innerHTML = '<option value="">Select Player 2 (Optional)...</option>';
+      winnerSelect.innerHTML = '<option value="">Select players first...</option>';
+
+      if (!sport || !category) return;
+
+      const players = Storage.getPlayers().filter(p =>
+        (p.sports || []).some(s => s.sport === sport && (s.categories || []).some(c => (c.category || c) === category))
+      );
+
+      players.forEach(p => {
+        const opt1 = document.createElement('option');
+        opt1.value = p.id;
+        opt1.textContent = `${p.username} (${p.id})`;
+        p1Select.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = p.id;
+        opt2.textContent = `${p.username} (${p.id})`;
+        p2Select.appendChild(opt2);
+      });
+    });
+
+    p1Select.addEventListener('change', updateWinnerOptions);
+    p2Select.addEventListener('change', updateWinnerOptions);
+
     document.getElementById('eventMatchForm').addEventListener('submit', (e) => {
       e.preventDefault();
       if (!checkAdminAuth()) return;
 
-      const player1 = document.getElementById('emPlayer1').value;
-      const player2 = document.getElementById('emPlayer2').value;
-      const winner = document.getElementById('emWinner').value;
+      const sport = sportSelect.value;
+      const category = catSelect.value;
+      const player1 = p1Select.value;
+      const player2 = p2Select.value;
+      const winner = winnerSelect.value;
+      const errorEl = document.getElementById('emError');
 
-      if (!player1 || !winner) {
-        App.showToast('Please select Player 1 and Winner.', 'error');
+      if (!sport || !category || !player1 || !winner) {
+        errorEl.textContent = 'Please select Sport, Category, Player 1, and Winner.';
         return;
       }
 
-      // Record the match in the event
-      Storage.addMatchToEvent(eventId, { player1, player2, winner });
+      // Record match in event
+      Storage.addMatchToEvent(eventId, { sport, category, player1, player2, winner });
 
-      // Update player stats
+      // Update player win/loss records
       const loser = winner === player1 ? player2 : player1;
-      Storage.recordMatch(winner, event.sport, event.category, 'W',
+      Storage.recordMatch(winner, sport, category, 'W',
         Storage.getPlayerById(loser)?.username || '', event.name);
       if (loser) {
-        Storage.recordMatch(loser, event.sport, event.category, 'L',
+        Storage.recordMatch(loser, sport, category, 'L',
           Storage.getPlayerById(winner)?.username || '', event.name);
       }
 
       App.closeModal();
-      App.showToast('Match recorded and player stats updated.', 'success');
+      App.showToast('Match recorded and athlete statistics updated!', 'success');
       renderAdminEvents();
       Events.render();
       Leaderboard.render();
@@ -1278,6 +1483,7 @@ const Admin = (() => {
     confirmDeleteSport,
     deleteSport,
     showAddMatchToEvent,
+    toggleAllEventCats,
     clearAllData,
   };
 })();

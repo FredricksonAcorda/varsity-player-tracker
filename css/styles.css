@@ -1771,6 +1771,64 @@ a {
   gap: 0.3rem;
 }
 
+.event-date-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.event-sports-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--border-radius-sm);
+}
+
+.event-sport-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.event-sport-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.825rem;
+  color: var(--accent-primary);
+  min-width: 90px;
+}
+
+.event-cat-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.event-cat-pill {
+  padding: 0.15rem 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
+  border-radius: 999px;
+  font-size: 0.725rem;
+  color: var(--text-secondary);
+}
+
+.event-match-sport-tag {
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
 .event-matches {
   margin-top: 1rem;
   padding-top: 1rem;

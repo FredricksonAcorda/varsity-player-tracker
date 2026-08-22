@@ -1,6 +1,6 @@
 /**
  * events.js — Events & Tournaments Module
- * Renders event cards and match results.
+ * Renders multi-sport event cards and match results.
  */
 
 const Events = (() => {
@@ -32,31 +32,49 @@ const Events = (() => {
     listEl.innerHTML = sorted.map(event => {
       const matchCount = event.matches ? event.matches.length : 0;
 
+      const sportsHTML = (event.sports || []).map(s => {
+        const catPills = (s.categories || []).map(c => `<span class="event-cat-pill">${escapeHtml(c)}</span>`).join('');
+        return `
+          <div class="event-sport-row">
+            <span class="event-sport-title">${escapeHtml(s.sport)}</span>
+            <div class="event-cat-pills">${catPills || '<span style="color:var(--text-muted); font-size:0.75rem;">Open</span>'}</div>
+          </div>
+        `;
+      }).join('');
+
       let matchesHTML = '';
       if (event.matches && event.matches.length > 0) {
         matchesHTML = `
           <div class="event-matches">
             <h4>Match Results (${matchCount})</h4>
             <div class="match-history-list">
-              ${event.matches.slice().reverse().slice(0, 5).map(m => {
+              ${event.matches.slice().reverse().slice(0, 8).map(m => {
                 const p1 = Storage.getPlayerById(m.player1);
                 const p2 = Storage.getPlayerById(m.player2);
                 const winner = Storage.getPlayerById(m.winner);
                 const p1Name = p1 ? p1.username : m.player1;
                 const p2Name = p2 ? p2.username : (m.player2 || 'Unknown');
                 const winnerName = winner ? winner.username : 'Unknown';
+                const sportCatTag = m.sport ? `${m.sport}${m.category ? ' • ' + m.category : ''}` : '';
 
                 return `
                   <div class="match-history-item">
-                    <span>${escapeHtml(p1Name)}</span>
-                    <span style="color:var(--text-muted)">vs</span>
-                    <span>${escapeHtml(p2Name)}</span>
-                    <span class="match-result-badge win">Winner: ${escapeHtml(winnerName)}</span>
-                    <span class="match-date">${m.date || ''}</span>
+                    <div style="display:flex; flex-direction:column; gap:0.25rem;">
+                      <div>
+                        <strong>${escapeHtml(p1Name)}</strong>
+                        <span style="color:var(--text-muted); margin:0 0.35rem;">vs</span>
+                        <strong>${escapeHtml(p2Name)}</strong>
+                      </div>
+                      ${sportCatTag ? `<span class="event-match-sport-tag">${escapeHtml(sportCatTag)}</span>` : ''}
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                      <span class="match-result-badge win">Winner: ${escapeHtml(winnerName)}</span>
+                      <span class="match-date">${m.date || ''}</span>
+                    </div>
                   </div>
                 `;
               }).join('')}
-              ${matchCount > 5 ? `<p style="color:var(--text-muted); font-size:0.8rem; margin-top:0.5rem;">+ ${matchCount - 5} more matches</p>` : ''}
+              ${matchCount > 8 ? `<p style="color:var(--text-muted); font-size:0.8rem; margin-top:0.5rem;">+ ${matchCount - 8} more matches</p>` : ''}
             </div>
           </div>
         `;
@@ -65,15 +83,17 @@ const Events = (() => {
       return `
         <div class="event-card">
           <div class="event-card-header">
-            <div class="event-name">${escapeHtml(event.name)}</div>
+            <div>
+              <div class="event-name">${escapeHtml(event.name)}</div>
+              <div class="event-date-meta">Date: ${event.date} • ${matchCount} Matches</div>
+            </div>
             <span class="event-status ${event.status}">${event.status}</span>
           </div>
-          <div class="event-meta">
-            <span>${escapeHtml(event.sport)}</span>
-            <span>${escapeHtml(event.category)}</span>
-            <span>Date: ${event.date}</span>
-            <span>${matchCount} Matches</span>
+
+          <div class="event-sports-container">
+            ${sportsHTML || '<p style="color:var(--text-muted); font-size:0.8rem;">All Sports</p>'}
           </div>
+
           ${matchesHTML}
         </div>
       `;

@@ -350,7 +350,19 @@ const Storage = (() => {
 
   // ─── Events CRUD ───
   function getEvents() {
-    return get(KEYS.EVENTS) || [];
+    const events = get(KEYS.EVENTS) || [];
+    return events.map(e => {
+      if (!e.sports || e.sports.length === 0) {
+        if (e.sport && e.category) {
+          e.sports = [{ sport: e.sport, categories: [e.category] }];
+        } else if (e.sport) {
+          e.sports = [{ sport: e.sport, categories: [] }];
+        } else {
+          e.sports = [];
+        }
+      }
+      return e;
+    });
   }
 
   function getEventById(id) {
@@ -363,8 +375,7 @@ const Storage = (() => {
     const newEvent = {
       id: generateEventId(),
       name: eventData.name,
-      sport: eventData.sport,
-      category: eventData.category,
+      sports: eventData.sports || [], // [{ sport: "Badminton", categories: [...] }]
       date: eventData.date,
       status: eventData.status || 'upcoming',
       matches: [],
@@ -395,6 +406,7 @@ const Storage = (() => {
     const events = getEvents();
     const event = events.find(e => e.id === eventId);
     if (!event) return false;
+    if (!event.matches) event.matches = [];
     event.matches.push({
       ...matchData,
       date: new Date().toISOString().split('T')[0],
