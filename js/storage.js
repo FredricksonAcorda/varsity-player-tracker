@@ -164,8 +164,9 @@ const Storage = (() => {
       username: playerData.username,
       passwordHash: simpleHash(playerData.password),
       gradeLevel: playerData.gradeLevel,
-      section: playerData.section,
+      section: playerData.section || '',
       gender: playerData.gender,
+      photo: playerData.photo || '',
       sports: playerData.sports || [], // [{ sport, categories: [{ category, wins, losses, rank, matchHistory }] }]
       createdAt: new Date().toISOString(),
     };
@@ -311,6 +312,7 @@ const Storage = (() => {
           const row = {
             id: player.id,
             username: player.username,
+            photo: player.photo || '',
             gradeLevel: player.gradeLevel,
             section: player.section,
             gender: player.gender,

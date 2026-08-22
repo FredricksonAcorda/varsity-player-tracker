@@ -39,13 +39,17 @@ const Cards = (() => {
         ribbonHTML = `<div class="card-rank-ribbon ${ribbonClass}">${ribbonText}</div>`;
       }
 
+      const cardAvatarHTML = row.photo
+        ? `<img src="${row.photo}" class="card-avatar-img" alt="${escapeHtml(row.username)}">`
+        : `<span class="card-avatar-initial">${initial}</span>`;
+
       return `
         <div class="player-card ${rankTier}" 
              style="animation-delay: ${idx * 0.08}s"
              onclick="Cards.showDetail('${row.id}', '${escapeAttr(row.sport)}', '${escapeAttr(row.category)}')">
           ${ribbonHTML}
           <div class="card-header">
-            <div class="card-avatar">${initial}</div>
+            <div class="card-avatar">${cardAvatarHTML}</div>
             <div class="card-rank-display">
               <div class="card-rank-label">Rank</div>
               <div class="card-rank-number ${rankColorClass}">${row.rank > 0 ? '#' + row.rank : '—'}</div>
@@ -92,14 +96,14 @@ const Cards = (() => {
     const player = Storage.getPlayerById(playerId);
     if (!player) return;
 
-    const sportData = player.sports.find(s => s.sport === sport);
+    const sportData = player.sports ? player.sports.find(s => s.sport === sport) : null;
     if (!sportData) return;
 
-    const catData = sportData.categories.find(c => c.category === category);
+    const catData = sportData.categories ? sportData.categories.find(c => (c.category || c) === category) : null;
     if (!catData) return;
 
     const emoji = Storage.getSportEmoji(sport);
-    const wr = Storage.getWinrate(catData.wins, catData.losses);
+    const wr = Storage.getWinrate(catData.wins || 0, catData.losses || 0);
     const wrClass = wr >= 60 ? 'high' : wr >= 40 ? 'mid' : 'low';
 
     let historyHTML = '';
@@ -114,7 +118,7 @@ const Cards = (() => {
               </span>
               <span class="match-opponent">${m.opponent ? 'vs ' + escapeHtml(m.opponent) : ''}</span>
               ${m.event ? `<span class="match-event-name">${escapeHtml(m.event)}</span>` : ''}
-              <span class="match-date">${m.date}</span>
+              <span class="match-date">${m.date || ''}</span>
             </div>
           `).join('')}
         </div>
@@ -123,10 +127,14 @@ const Cards = (() => {
       historyHTML = '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:1rem;">No match history yet.</p>';
     }
 
+    const modalAvatarHTML = player.photo
+      ? `<img src="${player.photo}" class="profile-avatar-img" alt="${escapeHtml(player.username)}">`
+      : `<span style="font-size:1.75rem; font-weight:800; color:#fff;">${player.username ? player.username.charAt(0).toUpperCase() : 'P'}</span>`;
+
     const content = `
       <div style="text-align:center; margin-bottom:1.5rem;">
-        <div class="card-avatar" style="width:64px; height:64px; font-size:1.75rem; margin:0 auto 0.75rem;">
-          ${player.username.charAt(0).toUpperCase()}
+        <div class="card-avatar" style="width:72px; height:72px; margin:0 auto 0.75rem; overflow:hidden;">
+          ${modalAvatarHTML}
         </div>
         <div style="font-size:1.25rem; font-weight:700; font-family:var(--font-heading);">${escapeHtml(player.username)}</div>
         <div style="color:var(--accent-primary); font-size:0.8rem; letter-spacing:0.5px;">${player.id}</div>
@@ -134,17 +142,17 @@ const Cards = (() => {
           <span class="card-meta-tag">${emoji} ${escapeHtml(sport)}</span>
           <span class="card-meta-tag">${escapeHtml(category)}</span>
           <span class="card-meta-tag">${escapeHtml(player.gradeLevel)}</span>
-          <span class="card-meta-tag">${player.gender}</span>
+          <span class="card-meta-tag">${escapeHtml(player.gender)}</span>
           ${player.section ? `<span class="card-meta-tag">${escapeHtml(player.section)}</span>` : ''}
         </div>
       </div>
       <div class="card-stats" style="max-width:300px; margin:0 auto 1rem;">
         <div class="card-stat">
-          <div class="card-stat-value win-text">${catData.wins}</div>
+          <div class="card-stat-value win-text">${catData.wins || 0}</div>
           <div class="card-stat-label">Wins</div>
         </div>
         <div class="card-stat">
-          <div class="card-stat-value loss-text">${catData.losses}</div>
+          <div class="card-stat-value loss-text">${catData.losses || 0}</div>
           <div class="card-stat-label">Losses</div>
         </div>
         <div class="card-stat">
@@ -175,85 +183,186 @@ const Cards = (() => {
   function downloadCard(playerId, sport, category) {
     const player = Storage.getPlayerById(playerId);
     if (!player) return;
-    const sportData = player.sports.find(s => s.sport === sport);
+    const sportData = player.sports ? player.sports.find(s => s.sport === sport) : null;
     if (!sportData) return;
-    const catData = sportData.categories.find(c => c.category === category);
+    const catData = sportData.categories ? sportData.categories.find(c => (c.category || c) === category) : null;
     if (!catData) return;
 
     const emoji = Storage.getSportEmoji(sport);
-    const wr = Storage.getWinrate(catData.wins, catData.losses);
-    const total = catData.wins + catData.losses;
+    const wins = catData.wins || 0;
+    const losses = catData.losses || 0;
+    const wr = Storage.getWinrate(wins, losses);
+    const total = wins + losses;
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = 800;
     canvas.height = 1100;
 
-    // Background gradient
-    const bgGrad = ctx.createLinearGradient(0, 0, 800, 1100);
-    bgGrad.addColorStop(0, '#0a0e1a');
-    bgGrad.addColorStop(0.5, '#131b2e');
-    bgGrad.addColorStop(1, '#080c16');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, 800, 1100);
+    // Helper to finish and trigger download
+    const finishDownload = (photoImg) => {
+      // Background gradient
+      const bgGrad = ctx.createLinearGradient(0, 0, 800, 1100);
+      bgGrad.addColorStop(0, '#0a0e1a');
+      bgGrad.addColorStop(0.5, '#131b2e');
+      bgGrad.addColorStop(1, '#080c16');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 800, 1100);
 
-    // Decorative outer border with rank styling
-    const borderGrad = ctx.createLinearGradient(0, 0, 800, 1100);
-    let accentColor = '#6366f1';
-    if (catData.rank === 1) {
-      borderGrad.addColorStop(0, '#fbbf24');
-      borderGrad.addColorStop(1, '#d97706');
-      accentColor = '#fbbf24';
-    } else if (catData.rank === 2) {
-      borderGrad.addColorStop(0, '#e2e8f0');
-      borderGrad.addColorStop(1, '#94a3b8');
-      accentColor = '#cbd5e1';
-    } else if (catData.rank === 3) {
-      borderGrad.addColorStop(0, '#f59e0b');
-      borderGrad.addColorStop(1, '#92400e');
-      accentColor = '#d97706';
+      // Decorative outer border with rank styling
+      const borderGrad = ctx.createLinearGradient(0, 0, 800, 1100);
+      let accentColor = '#6366f1';
+      if (catData.rank === 1) {
+        borderGrad.addColorStop(0, '#fbbf24');
+        borderGrad.addColorStop(1, '#d97706');
+        accentColor = '#fbbf24';
+      } else if (catData.rank === 2) {
+        borderGrad.addColorStop(0, '#e2e8f0');
+        borderGrad.addColorStop(1, '#94a3b8');
+        accentColor = '#cbd5e1';
+      } else if (catData.rank === 3) {
+        borderGrad.addColorStop(0, '#f59e0b');
+        borderGrad.addColorStop(1, '#92400e');
+        accentColor = '#d97706';
+      } else {
+        borderGrad.addColorStop(0, '#6366f1');
+        borderGrad.addColorStop(1, '#8b5cf6');
+      }
+
+      // Outer frame
+      ctx.strokeStyle = borderGrad;
+      ctx.lineWidth = 12;
+      ctx.strokeRect(24, 24, 752, 1052);
+
+      // Inner subtle border
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(36, 36, 728, 1028);
+
+      // Header title
+      ctx.fillStyle = accentColor;
+      ctx.font = 'bold 24px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('★ OFFICIAL ATHLETE SET CARD ★', 400, 85);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '16px Inter, sans-serif';
+      ctx.fillText('VARSITY SPORTS PERFORMANCE TRACKER', 400, 115);
+
+      // Avatar circle
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(400, 240, 90, 0, Math.PI * 2);
+      ctx.clip();
+
+      if (photoImg) {
+        ctx.drawImage(photoImg, 310, 150, 180, 180);
+      } else {
+        ctx.fillStyle = borderGrad;
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 90px Outfit, Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(player.username ? player.username.charAt(0).toUpperCase() : 'P', 400, 240);
+      }
+      ctx.restore();
+
+      // Avatar ring border
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(400, 240, 90, 0, Math.PI * 2);
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = accentColor;
+      ctx.stroke();
+      ctx.restore();
+
+      // Rank Badge
+      ctx.save();
+      ctx.fillStyle = accentColor;
+      ctx.font = 'bold 36px Outfit, Inter, sans-serif';
+      ctx.textAlign = 'center';
+      const rankText = catData.rank > 0 ? `RANK #${catData.rank}` : 'UNRANKED';
+      ctx.fillText(rankText, 400, 380);
+      ctx.restore();
+
+      // Player Name
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 44px Outfit, Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText((player.username || '').toUpperCase(), 400, 440);
+
+      // Player ID
+      ctx.fillStyle = accentColor;
+      ctx.font = 'bold 24px monospace';
+      ctx.fillText(`ID: ${player.id}`, 400, 480);
+
+      // Meta tags box
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.fillRect(80, 520, 640, 75);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(80, 520, 640, 75);
+
+      ctx.fillStyle = '#f1f5f9';
+      ctx.font = 'bold 22px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${emoji} ${sport} — ${category}`, 400, 552);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '18px Inter, sans-serif';
+      const secText = player.section ? ` • ${player.section}` : '';
+      ctx.fillText(`${player.gradeLevel || ''}${secText} • ${player.gender || ''}`, 400, 580);
+
+      // Stats Grid
+      const statBoxY = 630;
+      const statW = 190;
+      const statH = 140;
+
+      drawStatBox(ctx, 80, statBoxY, statW, statH, String(wins), 'WINS', '#10b981');
+      drawStatBox(ctx, 305, statBoxY, statW, statH, String(losses), 'LOSSES', '#f43f5e');
+      drawStatBox(ctx, 530, statBoxY, statW, statH, `${wr}%`, 'WINRATE', accentColor);
+
+      // Winrate Progress Bar
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.fillRect(80, 800, 640, 20);
+      ctx.fillStyle = wr >= 60 ? '#10b981' : (wr >= 40 ? '#fbbf24' : '#f43f5e');
+      ctx.fillRect(80, 800, Math.round(640 * (wr / 100)), 20);
+
+      // Total Matches
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '18px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Total Matches Played: ${total}`, 400, 850);
+
+      // Security Watermark & Timestamp
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.font = 'bold 80px Outfit, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('VERIFIED', 400, 960);
+
+      ctx.fillStyle = '#64748b';
+      ctx.font = '14px monospace';
+      ctx.fillText(`GENERATED: ${new Date().toLocaleDateString()} • VARSITY TRACKER`, 400, 1020);
+
+      // Trigger Download
+      const link = document.createElement('a');
+      link.download = `${(player.username || 'athlete').replace(/\s+/g, '_')}_${sport}_SetCard.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      App.showToast('Digital Player Card downloaded! 🪪', 'success');
+    };
+
+    if (player.photo) {
+      const img = new Image();
+      img.onload = () => finishDownload(img);
+      img.onerror = () => finishDownload(null);
+      img.src = player.photo;
     } else {
-      borderGrad.addColorStop(0, '#6366f1');
-      borderGrad.addColorStop(1, '#8b5cf6');
+      finishDownload(null);
     }
-
-    // Outer frame
-    ctx.strokeStyle = borderGrad;
-    ctx.lineWidth = 12;
-    ctx.strokeRect(24, 24, 752, 1052);
-
-    // Inner subtle border
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(36, 36, 728, 1028);
-
-    // Header title
-    ctx.fillStyle = accentColor;
-    ctx.font = 'bold 24px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('★ OFFICIAL ATHLETE SET CARD ★', 400, 85);
-
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '16px Inter, sans-serif';
-    ctx.fillText('VARSITY SPORTS PERFORMANCE TRACKER', 400, 115);
-
-    // Large Avatar circle
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(400, 240, 90, 0, Math.PI * 2);
-    ctx.fillStyle = borderGrad;
-    ctx.fill();
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = '#ffffff';
-    ctx.stroke();
-
-    // Initial
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 90px Outfit, Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(player.username.charAt(0).toUpperCase(), 400, 240);
-    ctx.restore();
+  }
 
     // Rank Badge
     ctx.save();

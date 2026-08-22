@@ -218,6 +218,7 @@ const App = (() => {
     const session = Storage.getSession();
     const userInfo = document.getElementById('userInfo');
     const headerUsername = document.getElementById('headerUsername');
+    const headerAvatar = document.querySelector('.user-avatar');
     const logoutBtn = document.getElementById('logoutBtn');
 
     if (session) {
@@ -225,6 +226,13 @@ const App = (() => {
       if (player) {
         userInfo.style.display = 'flex';
         headerUsername.textContent = player.username;
+        if (headerAvatar) {
+          if (player.photo) {
+            headerAvatar.innerHTML = `<img src="${player.photo}" class="header-avatar-img" alt="${player.username}">`;
+          } else {
+            headerAvatar.innerHTML = '👤';
+          }
+        }
         logoutBtn.onclick = () => {
           Auth.logout();
         };

@@ -31,6 +31,10 @@ const Leaderboard = (() => {
       const emoji = Storage.getSportEmoji(row.sport);
       const medal = getMedal(row.rank);
 
+      const avatarHTML = row.photo
+        ? `<img src="${row.photo}" class="table-avatar-img" alt="${escapeHtml(row.username)}">`
+        : `<div class="table-avatar-initial">${row.username ? row.username.charAt(0).toUpperCase() : 'P'}</div>`;
+
       return `
         <tr class="count-up" style="animation-delay: ${idx * 0.05}s">
           <td>
@@ -38,6 +42,7 @@ const Leaderboard = (() => {
           </td>
           <td>
             <div class="player-table-info">
+              ${avatarHTML}
               <div>
                 <div class="player-table-name">${escapeHtml(row.username)}</div>
                 <div class="player-table-id">${row.id}</div>
