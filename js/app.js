@@ -72,6 +72,32 @@ const App = (() => {
     const sportSelect = document.getElementById('filterSport');
     const categorySelect = document.getElementById('filterCategory');
     const gradeSelect = document.getElementById('filterGrade');
+    const toggleBtn = document.getElementById('filterToggleBtn');
+    const dropdowns = document.getElementById('filterDropdowns');
+    const resetBtn = document.getElementById('resetFilterBtn');
+
+    // Mobile filter toggle
+    if (toggleBtn && dropdowns) {
+      toggleBtn.addEventListener('click', () => {
+        const isShown = dropdowns.classList.toggle('show');
+        toggleBtn.classList.toggle('active', isShown);
+        toggleBtn.setAttribute('aria-expanded', isShown ? 'true' : 'false');
+      });
+    }
+
+    // Reset filters button
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        document.getElementById('filterSearch').value = '';
+        sportSelect.value = 'All';
+        updateCategoryFilter();
+        categorySelect.value = 'All';
+        gradeSelect.value = 'All';
+        document.getElementById('filterGender').value = 'All';
+        applyFilters();
+        showToast('Filters reset', 'info');
+      });
+    }
 
     // Populate sports dropdown
     populateSportFilter();
@@ -152,7 +178,27 @@ const App = (() => {
     };
   }
 
+  function updateFilterBadge() {
+    const filters = getFilters();
+    let count = 0;
+    if (filters.sport && filters.sport !== 'All') count++;
+    if (filters.category && filters.category !== 'All') count++;
+    if (filters.gradeLevel && filters.gradeLevel !== 'All') count++;
+    if (filters.gender && filters.gender !== 'All') count++;
+
+    const badge = document.getElementById('filterActiveBadge');
+    if (badge) {
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  }
+
   function applyFilters() {
+    updateFilterBadge();
     if (currentTab === 'leaderboard') Leaderboard.render();
     if (currentTab === 'cards') Cards.render();
   }

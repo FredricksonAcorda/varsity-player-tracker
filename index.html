@@ -57,11 +57,18 @@
   <!-- ═══════ FILTER BAR ═══════ -->
   <div class="filter-bar" id="filterBar">
     <div class="filter-bar-inner">
-      <div class="filter-group">
-        <div class="filter-item">
-          <label for="filterSearch">🔍</label>
-          <input type="text" id="filterSearch" placeholder="Search name or ID..." class="filter-input">
+      <div class="filter-search-wrapper">
+        <div class="search-input-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="filterSearch" placeholder="Search name or Player ID..." class="filter-input">
         </div>
+        <button class="filter-toggle-btn" id="filterToggleBtn" type="button" aria-expanded="false">
+          <span class="toggle-icon">⚙️</span>
+          <span>Filters</span>
+          <span class="filter-badge" id="filterActiveBadge" style="display:none;">0</span>
+        </button>
+      </div>
+      <div class="filter-dropdowns" id="filterDropdowns">
         <div class="filter-item">
           <label for="filterSport">Sport</label>
           <select id="filterSport" class="filter-select">
@@ -88,6 +95,7 @@
             <option value="Women">Women</option>
           </select>
         </div>
+        <button class="btn btn-ghost btn-sm reset-filter-btn" id="resetFilterBtn" type="button" title="Reset all filters">Reset</button>
       </div>
     </div>
   </div>
