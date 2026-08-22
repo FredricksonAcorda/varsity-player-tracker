@@ -65,6 +65,7 @@ const App = (() => {
     if (tab === 'cards') Cards.render();
     if (tab === 'profile') Profile.render();
     if (tab === 'events') Events.render();
+    if (tab === 'admin') Admin.render();
   }
 
   // ─── Filter Bar ───

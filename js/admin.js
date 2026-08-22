@@ -18,32 +18,55 @@ const Admin = (() => {
     setupPlayerManagement();
   }
 
+  function render() {
+    const gate = document.getElementById('adminGate');
+    const panel = document.getElementById('adminPanel');
+    if (!gate || !panel) return;
+
+    if (isUnlocked) {
+      gate.style.display = 'none';
+      panel.style.display = 'block';
+      renderPlayersTable();
+    } else {
+      gate.style.display = 'block';
+      panel.style.display = 'none';
+    }
+  }
+
   // ─── Admin Login Gate ───
   function setupAdminLogin() {
-    document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const password = document.getElementById('adminPasswordInput').value;
-      const errorEl = document.getElementById('adminLoginError');
+    const form = document.getElementById('adminLoginForm');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const passwordInput = document.getElementById('adminPasswordInput');
+        const password = passwordInput ? passwordInput.value : '';
+        const errorEl = document.getElementById('adminLoginError');
 
-      if (Storage.verifyAdminPassword(password)) {
-        isUnlocked = true;
-        document.getElementById('adminGate').style.display = 'none';
-        document.getElementById('adminPanel').style.display = '';
-        errorEl.textContent = '';
-        document.getElementById('adminPasswordInput').value = '';
-        App.showToast('Admin panel unlocked!', 'success');
-        renderPlayersTable();
-      } else {
-        errorEl.textContent = 'Incorrect password.';
-      }
-    });
+        if (Storage.verifyAdminPassword(password)) {
+          isUnlocked = true;
+          document.getElementById('adminGate').style.display = 'none';
+          document.getElementById('adminPanel').style.display = 'block';
+          if (errorEl) errorEl.textContent = '';
+          if (passwordInput) passwordInput.value = '';
+          App.showToast('Admin panel unlocked! ⚙️', 'success');
+          renderPlayersTable();
+        } else {
+          if (errorEl) errorEl.textContent = 'Incorrect password.';
+        }
+      });
+    }
 
-    document.getElementById('adminLockBtn').addEventListener('click', () => {
-      isUnlocked = false;
-      document.getElementById('adminGate').style.display = '';
-      document.getElementById('adminPanel').style.display = 'none';
-      App.showToast('Admin panel locked.', 'info');
-    });
+    const lockBtn = document.getElementById('adminLockBtn');
+    if (lockBtn) {
+      lockBtn.addEventListener('click', () => {
+        isUnlocked = false;
+        document.getElementById('adminGate').style.display = 'block';
+        document.getElementById('adminPanel').style.display = 'none';
+        App.showToast('Admin panel locked.', 'info');
+      });
+    }
   }
 
   // ─── Admin Sub-Tabs ───
@@ -95,18 +118,19 @@ const Admin = (() => {
     }
 
     tbody.innerHTML = players.map(p => {
-      const sportsList = p.sports.map(s => {
+      const sportsList = (p.sports || []).map(s => {
         const emoji = Storage.getSportEmoji(s.sport);
-        return `<span class="sport-tag">${emoji} ${s.sport} (${s.categories.length})</span>`;
+        const catCount = (s.categories || []).length;
+        return `<span class="sport-tag">${emoji} ${escapeHtml(s.sport)} (${catCount})</span>`;
       }).join(' ');
 
       return `
         <tr>
           <td><span style="font-family:var(--font-heading); color:var(--accent-primary); font-size:0.8rem;">${p.id}</span></td>
           <td><strong>${escapeHtml(p.username)}</strong></td>
-          <td>${escapeHtml(p.gradeLevel)}</td>
+          <td>${escapeHtml(p.gradeLevel || '—')}</td>
           <td>${escapeHtml(p.section || '—')}</td>
-          <td>${p.gender}</td>
+          <td>${escapeHtml(p.gender || '—')}</td>
           <td>${sportsList || '—'}</td>
           <td>
             <div class="action-btns">
@@ -1015,19 +1039,23 @@ const Admin = (() => {
 
   // ─── Helpers ───
   function escapeHtml(str) {
-    if (!str) return '';
+    if (str === undefined || str === null) return '';
     const div = document.createElement('div');
-    div.textContent = str;
+    div.textContent = String(str);
     return div.innerHTML;
   }
 
   function escapeAttr(str) {
-    return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
   }
 
   // ─── Public API ───
   return {
     init,
+    render,
+    showAddPlayerModal,
+    renderPlayersTable,
     editPlayer,
     removePlayerCategory,
     confirmDeletePlayer,
