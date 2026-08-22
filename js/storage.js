@@ -283,6 +283,23 @@ const Storage = (() => {
     return true;
   }
 
+  function removeCategoryFromPlayer(playerId, sport, category) {
+    const players = getPlayers();
+    const player = players.find(p => p.id === playerId);
+    if (!player) return false;
+
+    const sportData = player.sports.find(s => s.sport === sport);
+    if (!sportData) return false;
+
+    sportData.categories = sportData.categories.filter(c => c.category !== category);
+    if (sportData.categories.length === 0) {
+      player.sports = player.sports.filter(s => s.sport !== sport);
+    }
+
+    set(KEYS.PLAYERS, players);
+    return true;
+  }
+
   // ─── Flatten players for leaderboard (one row per sport-category) ───
   function getFlatPlayerStats(filters = {}) {
     const players = getPlayers();
@@ -482,6 +499,7 @@ const Storage = (() => {
     updatePlayer,
     deletePlayer,
     addSportToPlayer,
+    removeCategoryFromPlayer,
     // Stats
     recordMatch,
     setPlayerRank,

@@ -29,7 +29,6 @@ const Leaderboard = (() => {
       const rankDisplay = row.rank > 0 ? row.rank : '-';
       const rankClass = getRankClass(row.rank);
       const emoji = Storage.getSportEmoji(row.sport);
-      const wrClass = row.winrate >= 60 ? 'high' : row.winrate >= 40 ? 'mid' : 'low';
       const medal = getMedal(row.rank);
 
       return `
@@ -48,16 +47,7 @@ const Leaderboard = (() => {
           <td><span class="sport-tag">${emoji} ${escapeHtml(row.sport)}</span></td>
           <td><span class="sport-tag">${escapeHtml(row.category)}</span></td>
           <td><span style="color: var(--text-secondary); font-size: 0.8rem;">${escapeHtml(row.gradeLevel)}</span></td>
-          <td><span class="win-text">${row.wins}</span></td>
-          <td><span class="loss-text">${row.losses}</span></td>
-          <td>
-            <div class="winrate-bar-inline">
-              <div class="winrate-bar-track">
-                <div class="winrate-bar-fill ${wrClass}" style="width: ${row.winrate}%"></div>
-              </div>
-              <span class="winrate-text">${row.winrate}%</span>
-            </div>
-          </td>
+          <td><span style="color: var(--text-secondary); font-size: 0.8rem;">${escapeHtml(row.section || '—')}</span></td>
         </tr>
       `;
     }).join('');

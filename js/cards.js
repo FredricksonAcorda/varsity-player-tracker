@@ -161,10 +161,192 @@ const Cards = (() => {
           ${catData.rank > 0 ? '#' + catData.rank : 'Unranked'}
         </span>
       </div>
+      <div style="text-align:center; margin-top:1.25rem;">
+        <button class="btn btn-primary btn-sm" onclick="Cards.downloadCard('${player.id}', '${escapeAttr(sport)}', '${escapeAttr(category)}')">
+          📥 Download Set Card (PNG)
+        </button>
+      </div>
       ${historyHTML}
     `;
 
     App.openModal(`${emoji} ${player.username} — ${category}`, content);
+  }
+
+  function downloadCard(playerId, sport, category) {
+    const player = Storage.getPlayerById(playerId);
+    if (!player) return;
+    const sportData = player.sports.find(s => s.sport === sport);
+    if (!sportData) return;
+    const catData = sportData.categories.find(c => c.category === category);
+    if (!catData) return;
+
+    const emoji = Storage.getSportEmoji(sport);
+    const wr = Storage.getWinrate(catData.wins, catData.losses);
+    const total = catData.wins + catData.losses;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 1100;
+
+    // Background gradient
+    const bgGrad = ctx.createLinearGradient(0, 0, 800, 1100);
+    bgGrad.addColorStop(0, '#0a0e1a');
+    bgGrad.addColorStop(0.5, '#131b2e');
+    bgGrad.addColorStop(1, '#080c16');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, 800, 1100);
+
+    // Decorative outer border with rank styling
+    const borderGrad = ctx.createLinearGradient(0, 0, 800, 1100);
+    let accentColor = '#6366f1';
+    if (catData.rank === 1) {
+      borderGrad.addColorStop(0, '#fbbf24');
+      borderGrad.addColorStop(1, '#d97706');
+      accentColor = '#fbbf24';
+    } else if (catData.rank === 2) {
+      borderGrad.addColorStop(0, '#e2e8f0');
+      borderGrad.addColorStop(1, '#94a3b8');
+      accentColor = '#cbd5e1';
+    } else if (catData.rank === 3) {
+      borderGrad.addColorStop(0, '#f59e0b');
+      borderGrad.addColorStop(1, '#92400e');
+      accentColor = '#d97706';
+    } else {
+      borderGrad.addColorStop(0, '#6366f1');
+      borderGrad.addColorStop(1, '#8b5cf6');
+    }
+
+    // Outer frame
+    ctx.strokeStyle = borderGrad;
+    ctx.lineWidth = 12;
+    ctx.strokeRect(24, 24, 752, 1052);
+
+    // Inner subtle border
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(36, 36, 728, 1028);
+
+    // Header title
+    ctx.fillStyle = accentColor;
+    ctx.font = 'bold 24px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('★ OFFICIAL ATHLETE SET CARD ★', 400, 85);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '16px Inter, sans-serif';
+    ctx.fillText('VARSITY SPORTS PERFORMANCE TRACKER', 400, 115);
+
+    // Large Avatar circle
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(400, 240, 90, 0, Math.PI * 2);
+    ctx.fillStyle = borderGrad;
+    ctx.fill();
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#ffffff';
+    ctx.stroke();
+
+    // Initial
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 90px Outfit, Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(player.username.charAt(0).toUpperCase(), 400, 240);
+    ctx.restore();
+
+    // Rank Badge
+    ctx.save();
+    ctx.fillStyle = accentColor;
+    ctx.font = 'bold 36px Outfit, Inter, sans-serif';
+    ctx.textAlign = 'center';
+    const rankText = catData.rank > 0 ? `RANK #${catData.rank}` : 'UNRANKED';
+    ctx.fillText(rankText, 400, 380);
+    ctx.restore();
+
+    // Player Name
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 44px Outfit, Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(player.username.toUpperCase(), 400, 440);
+
+    // Player ID
+    ctx.fillStyle = accentColor;
+    ctx.font = 'bold 24px monospace';
+    ctx.fillText(`ID: ${player.id}`, 400, 480);
+
+    // Meta tags box
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.fillRect(80, 520, 640, 75);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(80, 520, 640, 75);
+
+    ctx.fillStyle = '#f1f5f9';
+    ctx.font = 'bold 22px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${emoji} ${sport} — ${category}`, 400, 552);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '18px Inter, sans-serif';
+    const secText = player.section ? ` • ${player.section}` : '';
+    ctx.fillText(`${player.gradeLevel}${secText} • ${player.gender}`, 400, 580);
+
+    // Stats Grid
+    const statBoxY = 630;
+    const statW = 190;
+    const statH = 140;
+
+    drawStatBox(ctx, 80, statBoxY, statW, statH, String(catData.wins), 'WINS', '#10b981');
+    drawStatBox(ctx, 305, statBoxY, statW, statH, String(catData.losses), 'LOSSES', '#f43f5e');
+    drawStatBox(ctx, 530, statBoxY, statW, statH, `${wr}%`, 'WINRATE', accentColor);
+
+    // Winrate Progress Bar
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.fillRect(80, 800, 640, 20);
+    ctx.fillStyle = wr >= 60 ? '#10b981' : (wr >= 40 ? '#fbbf24' : '#f43f5e');
+    ctx.fillRect(80, 800, Math.round(640 * (wr / 100)), 20);
+
+    // Total Matches
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '18px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Total Matches Played: ${total}`, 400, 850);
+
+    // Security Watermark & Timestamp
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+    ctx.font = 'bold 80px Outfit, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('VERIFIED', 400, 960);
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '14px monospace';
+    ctx.fillText(`GENERATED: ${new Date().toLocaleDateString()} • VARSITY TRACKER`, 400, 1020);
+
+    // Trigger Download
+    const link = document.createElement('a');
+    link.download = `${player.username.replace(/\s+/g, '_')}_${sport}_SetCard.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    App.showToast('Digital Player Card downloaded! 🪪', 'success');
+  }
+
+  function drawStatBox(ctx, x, y, w, h, value, label, color) {
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, w, h);
+
+    ctx.fillStyle = color;
+    ctx.font = 'bold 44px Outfit, Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(value, x + w / 2, y + 65);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'bold 15px Inter, sans-serif';
+    ctx.fillText(label, x + w / 2, y + 105);
   }
 
   function escapeHtml(str) {
@@ -182,5 +364,6 @@ const Cards = (() => {
     init,
     render,
     showDetail,
+    downloadCard,
   };
 })();

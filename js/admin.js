@@ -234,6 +234,21 @@ const Admin = (() => {
       `<option value="${g}" ${g === player.gradeLevel ? 'selected' : ''}>${g}</option>`
     ).join('');
 
+    const sportsConfig = Storage.getSportsConfig();
+    const sportOptions = sportsConfig.map(s => `<option value="${s.sport}">${s.emoji} ${s.sport}</option>`).join('');
+
+    // List of currently enrolled sports and categories
+    const enrolledHTML = player.sports.map(s => {
+      const emoji = Storage.getSportEmoji(s.sport);
+      const catTags = s.categories.map(c => `
+        <span class="category-tag">
+          ${escapeHtml(c.category)}
+          <span class="remove-cat" onclick="Admin.removePlayerCategory('${player.id}', '${escapeAttr(s.sport)}', '${escapeAttr(c.category)}')" title="Remove">&times;</span>
+        </span>
+      `).join(' ');
+      return `<div style="margin-bottom:0.5rem;"><strong style="font-size:0.85rem;">${emoji} ${s.sport}:</strong> ${catTags}</div>`;
+    }).join('') || '<p style="color:var(--text-muted); font-size:0.8rem;">No sports enrolled yet.</p>';
+
     const content = `
       <form id="editPlayerForm">
         <div class="form-group">
@@ -257,12 +272,79 @@ const Admin = (() => {
             <option value="Women" ${player.gender === 'Women' ? 'selected' : ''}>Women</option>
           </select>
         </div>
-        <div class="form-error" id="epError"></div>
-        <button type="submit" class="btn btn-primary btn-full">Save Changes</button>
+
+        <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border-glass);">
+          <h4 style="font-size:0.9rem; margin-bottom:0.5rem; color:var(--text-secondary);">Enrolled Sports & Categories</h4>
+          <div id="enrolledSportsContainer">${enrolledHTML}</div>
+        </div>
+
+        <div style="margin-top:1rem; padding:0.75rem; background:var(--bg-glass); border:1px dashed var(--border-glass); border-radius:var(--border-radius-sm);">
+          <h4 style="font-size:0.85rem; margin-bottom:0.5rem;">+ Enroll into Sport</h4>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0.5rem;">
+              <select id="epNewSport"><option value="">Select sport...</option>${sportOptions}</select>
+            </div>
+          </div>
+          <div class="form-group" id="epNewCatGroup" style="display:none; margin-bottom:0.5rem;">
+            <div class="checkbox-group" id="epNewCategories"></div>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="epAddSportBtn" style="display:none;">Enroll in Categories</button>
+        </div>
+
+        <div class="form-error" id="epError" style="margin-top:0.75rem;"></div>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:1rem;">Save Profile Changes</button>
       </form>
     `;
 
     App.openModal(`Edit Player — ${player.id}`, content);
+
+    // Setup add sport handler in modal
+    const epSportSelect = document.getElementById('epNewSport');
+    const epCatGroup = document.getElementById('epNewCatGroup');
+    const epCatContainer = document.getElementById('epNewCategories');
+    const epAddSportBtn = document.getElementById('epAddSportBtn');
+
+    epSportSelect.addEventListener('change', () => {
+      const sport = epSportSelect.value;
+      if (!sport) {
+        epCatGroup.style.display = 'none';
+        epAddSportBtn.style.display = 'none';
+        return;
+      }
+      epCatGroup.style.display = 'block';
+      epAddSportBtn.style.display = 'inline-flex';
+      epCatContainer.innerHTML = '';
+
+      const playerSport = player.sports.find(s => s.sport === sport);
+      const existingCats = playerSport ? playerSport.categories.map(c => c.category) : [];
+
+      Storage.getCategoriesForSport(sport).forEach(cat => {
+        const isExisting = existingCats.includes(cat);
+        const label = document.createElement('label');
+        label.className = `checkbox-item ${isExisting ? 'checked' : ''}`;
+        label.innerHTML = `<input type="checkbox" value="${cat}" ${isExisting ? 'checked disabled' : ''}> ${cat} ${isExisting ? '(already enrolled)' : ''}`;
+        if (!isExisting) {
+          const cb = label.querySelector('input');
+          cb.addEventListener('change', () => label.classList.toggle('checked', cb.checked));
+        }
+        epCatContainer.appendChild(label);
+      });
+    });
+
+    epAddSportBtn.addEventListener('click', () => {
+      const sport = epSportSelect.value;
+      if (!sport) return;
+      const selectedCats = [];
+      document.querySelectorAll('#epNewCategories input:checked:not(:disabled)').forEach(cb => selectedCats.push(cb.value));
+      if (selectedCats.length === 0) {
+        App.showToast('Please select at least one new category.', 'error');
+        return;
+      }
+      Storage.addSportToPlayer(player.id, sport, selectedCats);
+      App.showToast(`Enrolled in ${sport}!`, 'success');
+      editPlayer(player.id); // Re-open modal with updated list
+      renderPlayersTable();
+    });
 
     document.getElementById('editPlayerForm').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -274,7 +356,6 @@ const Admin = (() => {
 
       if (!username) { errorEl.textContent = 'Username is required.'; return; }
 
-      // Check if username is taken by another player
       const existing = Storage.getPlayerByUsername(username);
       if (existing && existing.id !== playerId) {
         errorEl.textContent = 'Username already taken.';
@@ -287,6 +368,15 @@ const Admin = (() => {
       renderPlayersTable();
       App.updateSessionUI();
     });
+  }
+
+  function removePlayerCategory(playerId, sport, category) {
+    if (confirm(`Remove ${sport} - ${category} from this player?`)) {
+      Storage.removeCategoryFromPlayer(playerId, sport, category);
+      App.showToast('Category removed from player roster.', 'info');
+      editPlayer(playerId);
+      renderPlayersTable();
+    }
   }
 
   function confirmDeletePlayer(playerId) {
@@ -939,6 +1029,7 @@ const Admin = (() => {
   return {
     init,
     editPlayer,
+    removePlayerCategory,
     confirmDeletePlayer,
     deletePlayer,
     saveRank,

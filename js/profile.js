@@ -64,8 +64,10 @@ const Profile = (() => {
       <div class="profile-meta-row">
         ${sportTags}
       </div>
-      <div style="margin-top:1rem;">
-        <button class="btn btn-secondary btn-sm" onclick="Profile.showAddSportModal()">+ Add Sport</button>
+      <div style="margin-top:1.25rem;">
+        <button class="btn btn-primary btn-sm" onclick="Profile.downloadCurrentCard()">
+          📥 Download Set Card (PNG)
+        </button>
       </div>
     `;
   }
@@ -197,85 +199,13 @@ const Profile = (() => {
     const content = `
       <form id="addSportForm">
         <div class="form-group">
-          <label for="addSportSelect">Sport</label>
-          <select id="addSportSelect" required>
-            <option value="">Select sport...</option>
-            ${sportOptions}
-          </select>
-        </div>
-        <div class="form-group" id="addSportCategoriesGroup" style="display:none;">
-          <label>Categories</label>
-          <div class="checkbox-group" id="addSportCategories"></div>
-        </div>
-        <div class="form-error" id="addSportError"></div>
-        <button type="submit" class="btn btn-primary btn-full">Add Sport</button>
-      </form>
-    `;
-
-    App.openModal('Add Sport / Category', content);
-
-    // Setup sport change handler
-    const select = document.getElementById('addSportSelect');
-    select.addEventListener('change', () => {
-      const sport = select.value;
-      const catGroup = document.getElementById('addSportCategoriesGroup');
-      const catContainer = document.getElementById('addSportCategories');
-
-      if (!sport) {
-        catGroup.style.display = 'none';
-        return;
-      }
-
-      catGroup.style.display = 'block';
-      catContainer.innerHTML = '';
-
-      const categories = Storage.getCategoriesForSport(sport);
-
-      // Find already registered categories
-      const playerSport = player.sports.find(s => s.sport === sport);
-      const existingCats = playerSport ? playerSport.categories.map(c => c.category) : [];
-
-      categories.forEach(cat => {
-        const isExisting = existingCats.includes(cat);
-        const label = document.createElement('label');
-        label.className = `checkbox-item ${isExisting ? 'checked' : ''}`;
-        label.innerHTML = `<input type="checkbox" value="${cat}" ${isExisting ? 'checked disabled' : ''}> ${cat} ${isExisting ? '(joined)' : ''}`;
-
-        if (!isExisting) {
-          const cb = label.querySelector('input');
-          cb.addEventListener('change', () => label.classList.toggle('checked', cb.checked));
-        }
-
-        catContainer.appendChild(label);
-      });
-    });
-
-    // Form submit
-    document.getElementById('addSportForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const sport = document.getElementById('addSportSelect').value;
-      const errorEl = document.getElementById('addSportError');
-
-      if (!sport) {
-        errorEl.textContent = 'Please select a sport.';
-        return;
-      }
-
-      const newCats = [];
-      document.querySelectorAll('#addSportCategories input:checked:not(:disabled)').forEach(cb => {
-        newCats.push(cb.value);
-      });
-
-      if (newCats.length === 0) {
-        errorEl.textContent = 'Please select at least one new category.';
-        return;
-      }
-
-      Storage.addSportToPlayer(player.id, sport, newCats);
-      App.closeModal();
-      App.showToast(`Added ${sport} categories!`, 'success');
-      render();
-    });
+  function downloadCurrentCard() {
+    const player = Storage.getCurrentPlayer();
+    if (!player || !selectedSport || !selectedCategory) {
+      App.showToast('Please select a sport category first.', 'error');
+      return;
+    }
+    Cards.downloadCard(player.id, selectedSport, selectedCategory);
   }
 
   function escapeHtml(str) {
@@ -293,6 +223,6 @@ const Profile = (() => {
     init,
     render,
     selectCategory,
-    showAddSportModal,
+    downloadCurrentCard,
   };
 })();
