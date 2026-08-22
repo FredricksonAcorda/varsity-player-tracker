@@ -1777,20 +1777,36 @@ a {
   }
 
   .tab-nav-inner {
-    gap: 0;
+    gap: 0.25rem;
+    justify-content: space-between;
+    padding: 0 0.5rem;
   }
 
   .tab-btn {
-    padding: 0.5rem 0.625rem;
+    padding: 0.35rem 0.25rem;
     font-size: 0.75rem;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1;
+    text-align: center;
+    min-width: 0;
   }
 
   .tab-label {
-    display: none;
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1;
   }
 
   .tab-icon {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
+  .tab-btn.active::after {
+    bottom: -0.25rem;
+    width: 16px;
   }
 
   .filter-bar-inner {

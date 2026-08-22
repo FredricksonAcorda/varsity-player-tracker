@@ -82,6 +82,16 @@ const App = (() => {
         const isShown = dropdowns.classList.toggle('show');
         toggleBtn.classList.toggle('active', isShown);
         toggleBtn.setAttribute('aria-expanded', isShown ? 'true' : 'false');
+        
+        const toggleText = toggleBtn.querySelector('span:not(.toggle-icon):not(.filter-badge)');
+        const toggleIcon = toggleBtn.querySelector('.toggle-icon');
+        if (isShown) {
+          if (toggleIcon) toggleIcon.textContent = '✕';
+          if (toggleText) toggleText.textContent = 'Close';
+        } else {
+          if (toggleIcon) toggleIcon.textContent = '⚙️';
+          if (toggleText) toggleText.textContent = 'Filters';
+        }
       });
     }
 
