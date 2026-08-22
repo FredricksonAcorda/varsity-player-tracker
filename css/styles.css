@@ -1541,10 +1541,53 @@ a {
   padding: 2.5rem;
 }
 
-.admin-lock-icon {
-  font-size: 3rem;
-  display: block;
+.admin-restricted-box {
+  max-width: 480px;
+  margin: 4rem auto;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  border-radius: var(--border-radius-lg);
+  padding: 2.5rem 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.admin-restricted-box h2 {
+  font-size: 1.35rem;
+  color: var(--color-loss);
+  margin-bottom: 0.75rem;
+}
+
+.admin-restricted-box p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.admin-restricted-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--color-loss-bg);
+  color: var(--color-loss);
+  font-size: 0.725rem;
+  font-weight: 700;
+  border-radius: 100vw;
+  letter-spacing: 0.5px;
   margin-bottom: 1rem;
+}
+
+.admin-mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid var(--accent-primary-glow);
+  border-radius: 100vw;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #a5b4fc;
+  letter-spacing: 0.5px;
 }
 
 .admin-login-box h2 {

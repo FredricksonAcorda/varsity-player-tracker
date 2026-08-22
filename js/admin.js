@@ -8,10 +8,14 @@ const Admin = (() => {
   let isUnlocked = false;
 
   function init() {
-    // Check persisted admin session
-    if (sessionStorage.getItem('varsity_admin_unlocked') === 'true') {
+    // Check persisted admin session (only valid if not logged in as a player)
+    if (sessionStorage.getItem('varsity_admin_unlocked') === 'true' && !Storage.getCurrentPlayer()) {
       isUnlocked = true;
+    } else {
+      isUnlocked = false;
+      sessionStorage.removeItem('varsity_admin_unlocked');
     }
+
     setupAdminLogin();
     setupAdminTabs();
     setupRecordMatch();
@@ -23,14 +27,36 @@ const Admin = (() => {
   }
 
   function render() {
+    const restricted = document.getElementById('adminRestricted');
     const gate = document.getElementById('adminGate');
     const panel = document.getElementById('adminPanel');
     if (!gate || !panel) return;
 
+    const currentPlayer = Storage.getCurrentPlayer();
+
+    // 1. If an athlete is logged in, restrict admin access completely
+    if (currentPlayer) {
+      if (restricted) {
+        restricted.style.display = 'block';
+        const restrictedText = document.getElementById('adminRestrictedText');
+        if (restrictedText) {
+          restrictedText.innerHTML = `You are currently signed in as Athlete <strong>${escapeHtml(currentPlayer.username)}</strong> (${currentPlayer.id}). Administrative tools (roster CRUD, match recording, and rank adjustments) are restricted to authorized coaches and organizers.`;
+        }
+      }
+      gate.style.display = 'none';
+      panel.style.display = 'none';
+      return;
+    }
+
+    // 2. If no athlete is logged in, hide restricted banner
+    if (restricted) restricted.style.display = 'none';
+
+    // Verify session
     if (sessionStorage.getItem('varsity_admin_unlocked') === 'true') {
       isUnlocked = true;
     }
 
+    // 3. Show admin panel if unlocked, else show login gate
     if (isUnlocked) {
       gate.style.display = 'none';
       panel.style.display = 'block';
@@ -58,6 +84,13 @@ const Admin = (() => {
       e.stopPropagation();
     }
 
+    // Safety check: Cannot unlock admin while logged in as an athlete
+    if (Storage.getCurrentPlayer()) {
+      App.showToast('Please log out of your athlete account before accessing Admin.', 'error');
+      render();
+      return;
+    }
+
     const passwordInput = document.getElementById('adminPasswordInput');
     const password = passwordInput ? passwordInput.value : '';
     const errorEl = document.getElementById('adminLoginError');
@@ -66,16 +99,12 @@ const Admin = (() => {
       isUnlocked = true;
       sessionStorage.setItem('varsity_admin_unlocked', 'true');
 
-      const gate = document.getElementById('adminGate');
-      const panel = document.getElementById('adminPanel');
-      if (gate) gate.style.display = 'none';
-      if (panel) panel.style.display = 'block';
       if (errorEl) errorEl.textContent = '';
       if (passwordInput) passwordInput.value = '';
 
       App.showToast('Admin panel unlocked.', 'success');
-      populateAdminFilters();
-      renderPlayersTable();
+      App.updateSessionUI();
+      render();
     } else {
       if (errorEl) errorEl.textContent = 'Incorrect password.';
       App.showToast('Incorrect admin password.', 'error');
@@ -85,11 +114,18 @@ const Admin = (() => {
   function lock() {
     isUnlocked = false;
     sessionStorage.removeItem('varsity_admin_unlocked');
-    const gate = document.getElementById('adminGate');
-    const panel = document.getElementById('adminPanel');
-    if (gate) gate.style.display = 'block';
-    if (panel) panel.style.display = 'none';
+    App.updateSessionUI();
+    render();
     App.showToast('Admin panel locked.', 'info');
+  }
+
+  function checkAdminAuth() {
+    if (!isUnlocked || Storage.getCurrentPlayer()) {
+      App.showToast('Unauthorized: Please unlock Admin Mode first.', 'error');
+      render();
+      return false;
+    }
+    return true;
   }
 
   // ─── Admin Sub-Tabs ───
@@ -233,6 +269,8 @@ const Admin = (() => {
   }
 
   function showAddPlayerModal() {
+    if (!checkAdminAuth()) return;
+
     const sportsConfig = Storage.getSportsConfig();
     const gradeOptions = Storage.getGradeLevels().map(g => `<option value="${g}">${g}</option>`).join('');
     const sportOptions = sportsConfig.map(s => `<option value="${s.sport}">${s.sport}</option>`).join('');
@@ -306,6 +344,8 @@ const Admin = (() => {
     // Submit
     document.getElementById('adminAddPlayerForm').addEventListener('submit', (e) => {
       e.preventDefault();
+      if (!checkAdminAuth()) return;
+
       const errorEl = document.getElementById('aapError');
       const username = document.getElementById('aapUsername').value.trim();
       const password = document.getElementById('aapPassword').value;
@@ -342,6 +382,8 @@ const Admin = (() => {
   }
 
   function editPlayer(playerId) {
+    if (!checkAdminAuth()) return;
+
     const player = Storage.getPlayerById(playerId);
     if (!player) return;
 
@@ -463,6 +505,7 @@ const Admin = (() => {
     });
 
     epAddSportBtn.addEventListener('click', () => {
+      if (!checkAdminAuth()) return;
       const sport = epSportSelect.value;
       if (!sport) return;
       const selectedCats = [];
@@ -481,6 +524,8 @@ const Admin = (() => {
 
     document.getElementById('editPlayerForm').addEventListener('submit', (e) => {
       e.preventDefault();
+      if (!checkAdminAuth()) return;
+
       const username = document.getElementById('epUsername').value.trim();
       const gradeLevel = document.getElementById('epGrade').value;
       const section = document.getElementById('epSection').value.trim();
@@ -506,6 +551,8 @@ const Admin = (() => {
   }
 
   function removePlayerCategory(playerId, sport, category) {
+    if (!checkAdminAuth()) return;
+
     if (confirm(`Remove ${sport} - ${category} from this player?`)) {
       Storage.removeCategoryFromPlayer(playerId, sport, category);
       App.showToast('Category removed from athlete roster.', 'info');
@@ -517,6 +564,8 @@ const Admin = (() => {
   }
 
   function confirmDeletePlayer(playerId) {
+    if (!checkAdminAuth()) return;
+
     const player = Storage.getPlayerById(playerId);
     if (!player) return;
 
@@ -532,6 +581,8 @@ const Admin = (() => {
   }
 
   function deletePlayer(playerId) {
+    if (!checkAdminAuth()) return;
+
     Storage.deletePlayer(playerId);
     App.closeModal();
     App.showToast('Athlete deleted.', 'info');
@@ -558,6 +609,8 @@ const Admin = (() => {
 
     document.getElementById('recordMatchForm').addEventListener('submit', (e) => {
       e.preventDefault();
+      if (!checkAdminAuth()) return;
+
       const sport = sportSelect.value;
       const category = catSelect.value;
       const playerId = playerSelect.value;
@@ -713,6 +766,8 @@ const Admin = (() => {
   }
 
   function saveRank(playerId) {
+    if (!checkAdminAuth()) return;
+
     const sport = document.getElementById('rankSport').value;
     const category = document.getElementById('rankCategory').value;
     const input = document.getElementById(`rank-input-${playerId}`);
@@ -772,6 +827,8 @@ const Admin = (() => {
   }
 
   function showAddEventModal() {
+    if (!checkAdminAuth()) return;
+
     const sportsConfig = Storage.getSportsConfig();
     const sportOptions = sportsConfig.map(s => `<option value="${s.sport}">${s.sport}</option>`).join('');
 
@@ -817,6 +874,8 @@ const Admin = (() => {
 
     document.getElementById('addEventForm').addEventListener('submit', (e) => {
       e.preventDefault();
+      if (!checkAdminAuth()) return;
+
       const name = document.getElementById('aeName').value.trim();
       const sport = document.getElementById('aeSport').value;
       const category = document.getElementById('aeCategory').value;
@@ -837,6 +896,8 @@ const Admin = (() => {
   }
 
   function showAddMatchToEvent(eventId) {
+    if (!checkAdminAuth()) return;
+
     const event = Storage.getEventById(eventId);
     if (!event) return;
 
@@ -872,6 +933,8 @@ const Admin = (() => {
 
     document.getElementById('eventMatchForm').addEventListener('submit', (e) => {
       e.preventDefault();
+      if (!checkAdminAuth()) return;
+
       const player1 = document.getElementById('emPlayer1').value;
       const player2 = document.getElementById('emPlayer2').value;
       const winner = document.getElementById('emWinner').value;
@@ -903,12 +966,16 @@ const Admin = (() => {
   }
 
   function updateEventStatus(eventId, status) {
+    if (!checkAdminAuth()) return;
+
     Storage.updateEvent(eventId, { status });
     App.showToast(`Event status updated to ${status}.`, 'info');
     Events.render();
   }
 
   function confirmDeleteEvent(eventId) {
+    if (!checkAdminAuth()) return;
+
     const event = Storage.getEventById(eventId);
     if (!event) return;
 
@@ -923,6 +990,8 @@ const Admin = (() => {
   }
 
   function deleteEvent(eventId) {
+    if (!checkAdminAuth()) return;
+
     Storage.deleteEvent(eventId);
     App.closeModal();
     App.showToast('Event deleted.', 'info');
@@ -961,6 +1030,8 @@ const Admin = (() => {
   }
 
   function showAddSportModal() {
+    if (!checkAdminAuth()) return;
+
     const content = `
       <form id="addNewSportForm">
         <div class="form-group">
@@ -979,6 +1050,8 @@ const Admin = (() => {
 
     document.getElementById('addNewSportForm').addEventListener('submit', (e) => {
       e.preventDefault();
+      if (!checkAdminAuth()) return;
+
       const name = document.getElementById('newSportName').value.trim();
       const catsStr = document.getElementById('newSportCats').value.trim();
 
@@ -1004,6 +1077,8 @@ const Admin = (() => {
   }
 
   function showAddCategoryModal(sportIndex) {
+    if (!checkAdminAuth()) return;
+
     const config = Storage.getSportsConfig();
     const sport = config[sportIndex];
 
@@ -1021,6 +1096,8 @@ const Admin = (() => {
 
     document.getElementById('addCatForm').addEventListener('submit', (e) => {
       e.preventDefault();
+      if (!checkAdminAuth()) return;
+
       const catName = document.getElementById('newCatName').value.trim();
       if (!catName) return;
 
@@ -1039,6 +1116,8 @@ const Admin = (() => {
   }
 
   function removeCategory(sportIndex, category) {
+    if (!checkAdminAuth()) return;
+
     const config = Storage.getSportsConfig();
     config[sportIndex].categories = config[sportIndex].categories.filter(c => c !== category);
     Storage.updateSportsConfig(config);
@@ -1047,6 +1126,8 @@ const Admin = (() => {
   }
 
   function confirmDeleteSport(sportIndex) {
+    if (!checkAdminAuth()) return;
+
     const config = Storage.getSportsConfig();
     const sport = config[sportIndex];
 
@@ -1061,6 +1142,8 @@ const Admin = (() => {
   }
 
   function deleteSport(sportIndex) {
+    if (!checkAdminAuth()) return;
+
     const config = Storage.getSportsConfig();
     config.splice(sportIndex, 1);
     Storage.updateSportsConfig(config);
@@ -1077,6 +1160,8 @@ const Admin = (() => {
     // Change password
     document.getElementById('changePasswordForm').addEventListener('submit', (e) => {
       e.preventDefault();
+      if (!checkAdminAuth()) return;
+
       const newPw = document.getElementById('newAdminPassword').value;
       const confirmPw = document.getElementById('confirmAdminPassword').value;
 
@@ -1096,6 +1181,8 @@ const Admin = (() => {
 
     // Export
     document.getElementById('exportDataBtn').addEventListener('click', () => {
+      if (!checkAdminAuth()) return;
+
       const data = Storage.exportData();
       const json = JSON.stringify(data, null, 2);
       const blob = new Blob([json], { type: 'application/json' });
@@ -1112,10 +1199,13 @@ const Admin = (() => {
 
     // Import
     document.getElementById('importDataBtn').addEventListener('click', () => {
+      if (!checkAdminAuth()) return;
       document.getElementById('importDataInput').click();
     });
 
     document.getElementById('importDataInput').addEventListener('change', (e) => {
+      if (!checkAdminAuth()) return;
+
       const file = e.target.files[0];
       if (!file) return;
 
@@ -1140,6 +1230,8 @@ const Admin = (() => {
 
     // Clear all data
     document.getElementById('clearDataBtn').addEventListener('click', () => {
+      if (!checkAdminAuth()) return;
+
       const content = `
         <p style="margin-bottom:1rem; color:var(--color-loss);">This will permanently delete all players, events, and reset all settings to default. This cannot be undone.</p>
         <div style="display:flex; gap:0.75rem;">
@@ -1152,6 +1244,8 @@ const Admin = (() => {
   }
 
   function clearAllData() {
+    if (!checkAdminAuth()) return;
+
     localStorage.clear();
     Storage.init();
     App.closeModal();
@@ -1176,12 +1270,17 @@ const Admin = (() => {
     return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
   }
 
+  function isUnlockedState() {
+    return isUnlocked && !Storage.getCurrentPlayer();
+  }
+
   // ─── Public API ───
   return {
     init,
     render,
     unlock,
     lock,
+    isUnlocked: isUnlockedState,
     populateAdminFilters,
     showAddPlayerModal,
     renderPlayersTable,

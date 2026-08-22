@@ -267,24 +267,42 @@ const App = (() => {
     const headerAvatar = document.querySelector('.user-avatar');
     const logoutBtn = document.getElementById('logoutBtn');
 
+    if (!userInfo) return;
+
     if (session) {
       const player = Storage.getPlayerById(session.playerId);
       if (player) {
         userInfo.style.display = 'flex';
         headerUsername.textContent = player.username;
+        headerUsername.style.display = '';
         if (headerAvatar) {
+          headerAvatar.style.display = 'flex';
           if (player.photo) {
             headerAvatar.innerHTML = `<img src="${player.photo}" class="header-avatar-img" alt="${player.username}">`;
           } else {
             headerAvatar.innerHTML = `<span class="header-avatar-initial">${player.username ? player.username.charAt(0).toUpperCase() : 'P'}</span>`;
           }
         }
-        logoutBtn.onclick = () => {
-          Auth.logout();
-        };
+        if (logoutBtn) {
+          logoutBtn.textContent = 'Logout';
+          logoutBtn.onclick = () => {
+            Auth.logout();
+          };
+        }
       } else {
         Storage.logout();
         userInfo.style.display = 'none';
+      }
+    } else if (typeof Admin !== 'undefined' && Admin.isUnlocked && Admin.isUnlocked()) {
+      userInfo.style.display = 'flex';
+      if (headerAvatar) headerAvatar.style.display = 'none';
+      headerUsername.textContent = 'Admin Mode';
+      headerUsername.style.display = '';
+      if (logoutBtn) {
+        logoutBtn.textContent = 'Lock';
+        logoutBtn.onclick = () => {
+          Admin.lock();
+        };
       }
     } else {
       userInfo.style.display = 'none';

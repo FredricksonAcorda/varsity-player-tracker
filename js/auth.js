@@ -50,9 +50,13 @@ const Auth = (() => {
 
       errorEl.textContent = '';
       Storage.login(player.id);
+      
+      // Locking admin session ensures athlete mode is strictly enforced
+      Admin.lock();
       App.updateSessionUI();
       App.showToast(`Welcome back, ${player.username}!`, 'success');
       Profile.render();
+      Admin.render();
       form.reset();
     });
   }
@@ -143,9 +147,13 @@ const Auth = (() => {
 
       errorEl.textContent = '';
       Storage.login(player.id);
+      
+      // Lock admin session
+      Admin.lock();
       App.updateSessionUI();
       App.showToast(`Account created! Your Player ID is ${player.id}`, 'success');
       Profile.render();
+      Admin.render();
       form.reset();
       document.getElementById('signupCategoriesGroup').style.display = 'none';
 
@@ -187,9 +195,11 @@ const Auth = (() => {
   // ─── Logout ───
   function logout() {
     Storage.logout();
+    Admin.lock();
     App.updateSessionUI();
     App.showToast('Logged out successfully.', 'info');
     Profile.render();
+    Admin.render();
   }
 
   return {

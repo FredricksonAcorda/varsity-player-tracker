@@ -262,6 +262,19 @@
 
     <!-- ── ADMIN VIEW ── -->
     <section class="view" id="view-admin">
+      <!-- Athlete Access Restricted Notice (when logged in as a player) -->
+      <div id="adminRestricted" style="display:none;">
+        <div class="admin-restricted-box">
+          <div class="admin-restricted-badge">ATHLETE ACCESS RESTRICTED</div>
+          <h2>Admin Controls Unavailable</h2>
+          <p id="adminRestrictedText">You are logged in with an Athlete account. Administrative actions, roster editing, and match recording are restricted to authorized coaches and organizers.</p>
+          <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-primary btn-sm" onclick="App.switchTab('profile')">Go to My Profile</button>
+            <button class="btn btn-secondary btn-sm" onclick="Auth.logout(); App.switchTab('admin');">Log Out to Access Admin</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Admin Login Gate -->
       <div id="adminGate">
         <div class="admin-login-box">
