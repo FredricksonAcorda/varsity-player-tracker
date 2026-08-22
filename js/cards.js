@@ -128,13 +128,6 @@ const Cards = (() => {
       const initial = row.username ? row.username.charAt(0).toUpperCase() : 'P';
       const rankColorClass = row.rank === 1 ? 'gold' : row.rank === 2 ? 'silver' : row.rank === 3 ? 'bronze' : 'default';
 
-      let ribbonHTML = '';
-      if (row.rank >= 1 && row.rank <= 3) {
-        const ribbonClass = row.rank === 1 ? 'gold' : row.rank === 2 ? 'silver' : 'bronze';
-        const ribbonText = row.rank === 1 ? '1st' : row.rank === 2 ? '2nd' : '3rd';
-        ribbonHTML = `<div class="card-rank-ribbon ${ribbonClass}">${ribbonText}</div>`;
-      }
-
       const cardAvatarHTML = row.photo
         ? `<img src="${row.photo}" class="card-avatar-img" alt="${escapeHtml(row.username)}">`
         : `<span class="card-avatar-initial">${initial}</span>`;
@@ -143,7 +136,6 @@ const Cards = (() => {
         <div class="player-card ${rankTier}" 
              style="animation-delay: ${idx * 0.05}s"
              onclick="Cards.showDetail('${row.id}', '${escapeAttr(row.sport)}', '${escapeAttr(row.category)}')">
-          ${ribbonHTML}
           <div class="card-header">
             <div class="card-avatar">${cardAvatarHTML}</div>
             <div class="card-rank-display">

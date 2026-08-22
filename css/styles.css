@@ -1066,47 +1066,49 @@ a {
   opacity: 1;
 }
 
+.player-card.rank-gold {
+  border-color: rgba(251, 191, 36, 0.45);
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.12);
+}
+
 .player-card.rank-gold::before {
   background: var(--gradient-gold);
   opacity: 1;
 }
 
+.player-card.rank-gold:hover {
+  border-color: rgba(251, 191, 36, 0.8);
+  box-shadow: 0 8px 30px rgba(251, 191, 36, 0.25), var(--shadow-lg);
+}
+
+.player-card.rank-silver {
+  border-color: rgba(203, 213, 225, 0.45);
+  box-shadow: 0 4px 20px rgba(203, 213, 225, 0.1);
+}
+
 .player-card.rank-silver::before {
   background: var(--gradient-silver);
-  opacity: 0.8;
+  opacity: 0.9;
+}
+
+.player-card.rank-silver:hover {
+  border-color: rgba(203, 213, 225, 0.8);
+  box-shadow: 0 8px 30px rgba(203, 213, 225, 0.2), var(--shadow-lg);
+}
+
+.player-card.rank-bronze {
+  border-color: rgba(217, 119, 6, 0.45);
+  box-shadow: 0 4px 20px rgba(217, 119, 6, 0.12);
 }
 
 .player-card.rank-bronze::before {
   background: var(--gradient-bronze);
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
-.card-rank-ribbon {
-  position: absolute;
-  top: 12px;
-  right: -30px;
-  padding: 0.2rem 2rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transform: rotate(45deg);
-  z-index: 2;
-}
-
-.card-rank-ribbon.gold {
-  background: var(--gradient-gold);
-  color: #000;
-}
-
-.card-rank-ribbon.silver {
-  background: var(--gradient-silver);
-  color: #1e293b;
-}
-
-.card-rank-ribbon.bronze {
-  background: var(--gradient-bronze);
-  color: #fff;
+.player-card.rank-bronze:hover {
+  border-color: rgba(217, 119, 6, 0.8);
+  box-shadow: 0 8px 30px rgba(217, 119, 6, 0.25), var(--shadow-lg);
 }
 
 .card-header {
