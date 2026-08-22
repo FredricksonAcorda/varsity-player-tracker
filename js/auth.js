@@ -136,11 +136,10 @@ const Auth = (() => {
       const password = document.getElementById('signupPassword').value;
       const gradeLevel = document.getElementById('signupGrade').value;
       const section = document.getElementById('signupSection').value.trim();
-      const gender = document.getElementById('signupGender').value;
       const sport = document.getElementById('signupSport').value;
 
       // Validate required fields
-      if (!username || !password || !gradeLevel || !gender || !sport) {
+      if (!username || !password || !gradeLevel || !sport) {
         errorEl.textContent = 'Please fill in all required fields.';
         return;
       }
@@ -175,7 +174,6 @@ const Auth = (() => {
         password,
         gradeLevel,
         section,
-        gender,
         sports: [{ sport, categories: selectedCats }],
       });
 

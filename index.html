@@ -96,14 +96,6 @@
             <option value="All">All Grades</option>
           </select>
         </div>
-        <div class="filter-item">
-          <label for="filterGender">Gender</label>
-          <select id="filterGender" class="filter-select">
-            <option value="All">All</option>
-            <option value="Men">Men</option>
-            <option value="Women">Women</option>
-          </select>
-        </div>
         <button class="btn btn-ghost btn-sm reset-filter-btn" id="resetFilterBtn" type="button" title="Reset all filters">Reset</button>
       </div>
     </div>
@@ -149,12 +141,12 @@
           <div class="cards-sort-wrapper">
             <label for="cardsSortSelect" class="cards-control-label">Sort</label>
             <select id="cardsSortSelect" class="filter-select cards-sort-select">
-              <option value="rank-asc">Rank: Best First (#1 →)</option>
-              <option value="rank-desc">Rank: Lowest First</option>
-              <option value="winrate-desc">Winrate: High to Low</option>
-              <option value="wins-desc">Most Wins</option>
-              <option value="name-asc">Athlete Name (A-Z)</option>
+              <option value="rank">Rank</option>
+              <option value="winrate">Winrate</option>
+              <option value="wins">Wins</option>
+              <option value="name">Name</option>
             </select>
+            <button type="button" class="btn btn-secondary btn-sm cards-order-btn" id="cardsOrderBtn" title="Toggle Sort Order">Asc</button>
           </div>
           <div class="cards-layout-toggle" id="cardsLayoutToggle" role="group" aria-label="Layout view">
             <button type="button" class="layout-btn active" id="layoutGridBtn" title="Grid View">Grid</button>
@@ -222,14 +214,6 @@
                 <label for="signupSection">Section / Team</label>
                 <input type="text" id="signupSection" placeholder="e.g. Section A">
               </div>
-            </div>
-            <div class="form-group">
-              <label for="signupGender">Gender *</label>
-              <select id="signupGender" required>
-                <option value="">Select...</option>
-                <option value="Men">Men</option>
-                <option value="Women">Women</option>
-              </select>
             </div>
             <div class="form-group">
               <label for="signupSport">Sport *</label>
@@ -347,7 +331,6 @@
                   <th>Username</th>
                   <th>Grade</th>
                   <th>Section</th>
-                  <th>Gender</th>
                   <th>Sports</th>
                   <th>Actions</th>
                 </tr>

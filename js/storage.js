@@ -165,7 +165,6 @@ const Storage = (() => {
       passwordHash: simpleHash(playerData.password),
       gradeLevel: playerData.gradeLevel,
       section: playerData.section || '',
-      gender: playerData.gender,
       photo: playerData.photo || '',
       sports: playerData.sports || [], // [{ sport, categories: [{ category, wins, losses, rank, matchHistory }] }]
       createdAt: new Date().toISOString(),
@@ -315,7 +314,6 @@ const Storage = (() => {
             photo: player.photo || '',
             gradeLevel: player.gradeLevel,
             section: player.section,
-            gender: player.gender,
             sport: sportData.sport,
             category: catData.category,
             wins: catData.wins,
@@ -329,7 +327,6 @@ const Storage = (() => {
           if (filters.sport && filters.sport !== 'All' && row.sport !== filters.sport) return;
           if (filters.category && filters.category !== 'All' && row.category !== filters.category) return;
           if (filters.gradeLevel && filters.gradeLevel !== 'All' && row.gradeLevel !== filters.gradeLevel) return;
-          if (filters.gender && filters.gender !== 'All' && row.gender !== filters.gender) return;
           if (filters.search) {
             const searchLower = filters.search.toLowerCase();
             if (!row.username.toLowerCase().includes(searchLower) && !row.id.toLowerCase().includes(searchLower)) return;

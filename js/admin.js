@@ -228,7 +228,7 @@ const Admin = (() => {
     if (!tbody) return;
 
     if (players.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:2.5rem 1rem;">No players found matching your criteria.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2.5rem 1rem;">No players found matching your criteria.</td></tr>`;
       return;
     }
 
@@ -255,7 +255,6 @@ const Admin = (() => {
           </td>
           <td>${escapeHtml(p.gradeLevel || '—')}</td>
           <td>${escapeHtml(p.section || '—')}</td>
-          <td>${escapeHtml(p.gender || '—')}</td>
           <td>${sportsList || '<span style="color:var(--text-muted); font-size:0.8rem;">None</span>'}</td>
           <td>
             <div class="action-btns">
@@ -296,14 +295,6 @@ const Admin = (() => {
             <label>Section / Team</label>
             <input type="text" id="aapSection" placeholder="e.g. Section 1A">
           </div>
-        </div>
-        <div class="form-group">
-          <label>Gender *</label>
-          <select id="aapGender" required>
-            <option value="">Select Gender...</option>
-            <option value="Men">Men</option>
-            <option value="Women">Women</option>
-          </select>
         </div>
         <div class="form-group">
           <label>Initial Sport *</label>
@@ -351,10 +342,9 @@ const Admin = (() => {
       const password = document.getElementById('aapPassword').value;
       const gradeLevel = document.getElementById('aapGrade').value;
       const section = document.getElementById('aapSection').value.trim();
-      const gender = document.getElementById('aapGender').value;
       const sport = document.getElementById('aapSport').value;
 
-      if (!username || !password || !gradeLevel || !gender || !sport) {
+      if (!username || !password || !gradeLevel || !sport) {
         errorEl.textContent = 'Please fill in all required fields.';
         return;
       }
@@ -372,7 +362,7 @@ const Admin = (() => {
         return;
       }
 
-      const player = Storage.addPlayer({ username, password, gradeLevel, section, gender, sports: [{ sport, categories: selectedCats }] });
+      const player = Storage.addPlayer({ username, password, gradeLevel, section, sports: [{ sport, categories: selectedCats }] });
       App.closeModal();
       App.showToast(`Player ${player.username} (${player.id}) created!`, 'success');
       renderPlayersTable();
@@ -438,14 +428,6 @@ const Admin = (() => {
             <input type="text" id="epSection" value="${escapeHtml(player.section || '')}">
           </div>
         </div>
-        <div class="form-group">
-          <label>Gender *</label>
-          <select id="epGender" required>
-            <option value="Men" ${player.gender === 'Men' ? 'selected' : ''}>Men</option>
-            <option value="Women" ${player.gender === 'Women' ? 'selected' : ''}>Women</option>
-          </select>
-        </div>
-
         <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border-glass);">
           <h4 style="font-size:0.9rem; margin-bottom:0.5rem; color:var(--text-secondary);">Enrolled Sports & Categories</h4>
           <div id="enrolledSportsContainer">${enrolledHTML}</div>
@@ -529,7 +511,6 @@ const Admin = (() => {
       const username = document.getElementById('epUsername').value.trim();
       const gradeLevel = document.getElementById('epGrade').value;
       const section = document.getElementById('epSection').value.trim();
-      const gender = document.getElementById('epGender').value;
       const errorEl = document.getElementById('epError');
 
       if (!username) { errorEl.textContent = 'Username is required.'; return; }
@@ -540,7 +521,7 @@ const Admin = (() => {
         return;
       }
 
-      Storage.updatePlayer(playerId, { username, gradeLevel, section, gender });
+      Storage.updatePlayer(playerId, { username, gradeLevel, section });
       App.closeModal();
       App.showToast('Athlete updated successfully.', 'success');
       renderPlayersTable();

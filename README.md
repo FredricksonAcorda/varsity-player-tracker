@@ -6,8 +6,8 @@ This app solves the problem of players not having "set cards" by giving every at
 
 ## Features
 
-- **Leaderboard**: Ranked table of all players sorted by rank and winrate. Includes a full filter system (Sport, Category, Grade, Gender, Search).
-- **Digital Player Cards**: Visual player profiles featuring glassmorphism design and rank-specific ribbons (Gold/Silver/Bronze). Click to view detailed match history and export HD Canvas Set Cards.
+- **Leaderboard**: Ranked table of all players sorted by rank and winrate. Includes a full filter system (Sport, Category, Grade, Search).
+- **Digital Player Cards**: Visual player profiles featuring glassmorphism design and rank-specific ribbons (Gold/Silver/Bronze). Click to view detailed match history and export HD Canvas Set Cards. Includes sorting and Grid/List layout toggle.
 - **Player Profiles**: Registration system generating unique sport-based Player IDs (e.g., `BDMN-00001`). Players can log in to view their stats, upload their photo, and manage their profile.
 - **Events Management**: Track upcoming, ongoing, and completed tournaments, complete with match history and results.
 - **Admin Panel**: Password-protected area to manage rosters, record match results, set player ranks, create events, and configure available sports.

@@ -4,15 +4,27 @@
  */
 
 const Cards = (() => {
-  let currentSort = 'rank-asc';
+  let currentSortKey = 'rank';
+  let currentSortOrder = 'asc';
   let currentLayout = localStorage.getItem('varsity_cards_layout') || 'grid';
 
   function init() {
     const sortSelect = document.getElementById('cardsSortSelect');
+    const orderBtn = document.getElementById('cardsOrderBtn');
+
     if (sortSelect) {
-      sortSelect.value = currentSort;
+      sortSelect.value = currentSortKey;
       sortSelect.addEventListener('change', () => {
-        currentSort = sortSelect.value;
+        currentSortKey = sortSelect.value;
+        render();
+      });
+    }
+
+    if (orderBtn) {
+      orderBtn.textContent = currentSortOrder === 'asc' ? 'Asc' : 'Desc';
+      orderBtn.addEventListener('click', () => {
+        currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
+        orderBtn.textContent = currentSortOrder === 'asc' ? 'Asc' : 'Desc';
         render();
       });
     }
@@ -39,38 +51,41 @@ const Cards = (() => {
     render();
   }
 
-  function sortRows(rows, sortKey) {
+  function sortRows(rows, sortKey, order) {
     const list = [...rows];
-    switch (sortKey) {
-      case 'rank-asc':
-        return list.sort((a, b) => {
-          if (a.rank === 0 && b.rank === 0) return b.winrate - a.winrate;
-          if (a.rank === 0) return 1;
-          if (b.rank === 0) return -1;
-          return a.rank - b.rank;
-        });
-      case 'rank-desc':
-        return list.sort((a, b) => {
-          if (a.rank === 0 && b.rank === 0) return b.winrate - a.winrate;
-          if (a.rank === 0) return 1;
-          if (b.rank === 0) return -1;
-          return b.rank - a.rank;
-        });
-      case 'winrate-desc':
-        return list.sort((a, b) => {
-          if (b.winrate !== a.winrate) return b.winrate - a.winrate;
-          return b.wins - a.wins;
-        });
-      case 'wins-desc':
-        return list.sort((a, b) => {
-          if (b.wins !== a.wins) return b.wins - a.wins;
-          return b.winrate - a.winrate;
-        });
-      case 'name-asc':
-        return list.sort((a, b) => (a.username || '').localeCompare(b.username || ''));
-      default:
-        return list;
+    let comparator;
+
+    if (sortKey === 'rank') {
+      comparator = (a, b) => {
+        if (a.rank === 0 && b.rank === 0) return b.winrate - a.winrate;
+        if (a.rank === 0) return 1;
+        if (b.rank === 0) return -1;
+        return order === 'asc' ? a.rank - b.rank : b.rank - a.rank;
+      };
+    } else if (sortKey === 'winrate') {
+      comparator = (a, b) => {
+        if (b.winrate !== a.winrate) {
+          return order === 'asc' ? a.winrate - b.winrate : b.winrate - a.winrate;
+        }
+        return order === 'asc' ? a.wins - b.wins : b.wins - a.wins;
+      };
+    } else if (sortKey === 'wins') {
+      comparator = (a, b) => {
+        if (b.wins !== a.wins) {
+          return order === 'asc' ? a.wins - b.wins : b.wins - a.wins;
+        }
+        return order === 'asc' ? a.winrate - b.winrate : b.winrate - a.winrate;
+      };
+    } else if (sortKey === 'name') {
+      comparator = (a, b) => {
+        const res = (a.username || '').localeCompare(b.username || '');
+        return order === 'asc' ? res : -res;
+      };
+    } else {
+      comparator = () => 0;
     }
+
+    return list.sort(comparator);
   }
 
   function render() {
@@ -93,8 +108,8 @@ const Cards = (() => {
 
     if (emptyEl) emptyEl.style.display = 'none';
 
-    // Apply active sort
-    rows = sortRows(rows, currentSort);
+    // Apply active sort and direction
+    rows = sortRows(rows, currentSortKey, currentSortOrder);
 
     // Apply layout class
     grid.className = currentLayout === 'list' ? 'cards-grid layout-list' : 'cards-grid';
@@ -272,7 +287,6 @@ const Cards = (() => {
           <span class="card-meta-tag">${escapeHtml(sport)}</span>
           <span class="card-meta-tag">${escapeHtml(category)}</span>
           <span class="card-meta-tag">${escapeHtml(player.gradeLevel)}</span>
-          <span class="card-meta-tag">${escapeHtml(player.gender)}</span>
         </div>
       </div>
       <div class="card-stats" style="max-width:300px; margin:0 auto 1rem;">
@@ -439,7 +453,7 @@ const Cards = (() => {
 
       ctx.fillStyle = '#94a3b8';
       ctx.font = '18px Inter, sans-serif';
-      ctx.fillText(`${player.gradeLevel || ''} • ${player.gender || ''}`, 400, 580);
+      ctx.fillText(player.gradeLevel || '', 400, 580);
 
       // Stats Grid
       const statBoxY = 630;

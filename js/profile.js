@@ -86,7 +86,6 @@ const Profile = (() => {
       
       <div class="profile-meta-row">
         <span class="card-meta-tag">${escapeHtml(player.gradeLevel || 'No Grade')}</span>
-        <span class="card-meta-tag">${escapeHtml(player.gender || '—')}</span>
         ${player.section ? `<span class="card-meta-tag">${escapeHtml(player.section)}</span>` : ''}
       </div>
       
@@ -183,14 +182,6 @@ const Profile = (() => {
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Gender *</label>
-          <select id="peGender" required>
-            <option value="Men" ${player.gender === 'Men' ? 'selected' : ''}>Men</option>
-            <option value="Women" ${player.gender === 'Women' ? 'selected' : ''}>Women</option>
-          </select>
-        </div>
-
         <div class="form-error" id="peError"></div>
         <button type="submit" class="btn btn-primary btn-full">Save Changes</button>
       </form>
@@ -203,7 +194,6 @@ const Profile = (() => {
       const username = document.getElementById('peUsername').value.trim();
       const gradeLevel = document.getElementById('peGrade').value;
       const section = document.getElementById('peSection').value.trim();
-      const gender = document.getElementById('peGender').value;
       const errorEl = document.getElementById('peError');
 
       if (!username) {
@@ -218,7 +208,7 @@ const Profile = (() => {
         return;
       }
 
-      Storage.updatePlayer(player.id, { username, gradeLevel, section, gender });
+      Storage.updatePlayer(player.id, { username, gradeLevel, section });
       App.closeModal();
       App.showToast('Profile updated successfully.', 'success');
       App.updateSessionUI();

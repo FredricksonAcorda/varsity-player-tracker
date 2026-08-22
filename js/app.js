@@ -149,7 +149,6 @@ const App = (() => {
         updateCategoryFilter();
         categorySelect.value = 'All';
         gradeSelect.value = 'All';
-        document.getElementById('filterGender').value = 'All';
         applyFilters();
         showToast('Filters reset', 'info');
       });
@@ -175,7 +174,6 @@ const App = (() => {
     // All filter changes
     categorySelect.addEventListener('change', applyFilters);
     gradeSelect.addEventListener('change', applyFilters);
-    document.getElementById('filterGender').addEventListener('change', applyFilters);
 
     // Search with debounce
     let searchTimeout;
@@ -229,7 +227,6 @@ const App = (() => {
       sport: document.getElementById('filterSport').value,
       category: document.getElementById('filterCategory').value,
       gradeLevel: document.getElementById('filterGrade').value,
-      gender: document.getElementById('filterGender').value,
       search: document.getElementById('filterSearch').value.trim(),
     };
   }
@@ -240,7 +237,6 @@ const App = (() => {
     if (filters.sport && filters.sport !== 'All') count++;
     if (filters.category && filters.category !== 'All') count++;
     if (filters.gradeLevel && filters.gradeLevel !== 'All') count++;
-    if (filters.gender && filters.gender !== 'All') count++;
 
     const badge = document.getElementById('filterActiveBadge');
     if (badge) {
