@@ -34,9 +34,9 @@ const Profile = (() => {
       }
       const sportObj = player.sports.find(s => s.sport === selectedSport);
       if (sportObj && sportObj.categories && sportObj.categories.length > 0) {
-        const hasCurrentCat = sportObj.categories.some(c => c.category === selectedCategory);
+        const hasCurrentCat = sportObj.categories.some(c => (c.category || c) === selectedCategory);
         if (!selectedCategory || !hasCurrentCat) {
-          selectedCategory = sportObj.categories[0].category;
+          selectedCategory = sportObj.categories[0].category || sportObj.categories[0];
         }
       } else {
         selectedCategory = null;
@@ -66,9 +66,8 @@ const Profile = (() => {
     // Collect all sports tags
     const sportTags = (player.sports && player.sports.length > 0)
       ? player.sports.map(s => {
-          const emoji = Storage.getSportEmoji(s.sport);
-          return s.categories.map(c => 
-            `<span class="card-meta-tag">${emoji} ${escapeHtml(c.category || c)}</span>`
+          return (s.categories || []).map(c => 
+            `<span class="card-meta-tag">${escapeHtml(s.sport)} • ${escapeHtml(c.category || c)}</span>`
           ).join(' ');
         }).join(' ')
       : '<span style="color:var(--text-muted); font-size:0.8rem;">No sports assigned yet. Contact coach/admin.</span>';
@@ -78,7 +77,7 @@ const Profile = (() => {
         <div class="profile-avatar-large">
           ${avatarHTML}
         </div>
-        <div class="avatar-edit-badge">📷</div>
+        <div class="avatar-edit-badge" title="Change photo">Edit</div>
       </div>
       <input type="file" id="playerPhotoUpload" accept="image/*" style="display:none;" onchange="Profile.handlePhotoFile(this)">
       
@@ -97,10 +96,10 @@ const Profile = (() => {
 
       <div class="profile-actions-row" style="margin-top:1.5rem; display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
         <button class="btn btn-secondary btn-sm" onclick="Profile.showEditProfileModal()">
-          ✏️ Edit Profile
+          Edit Profile
         </button>
         <button class="btn btn-primary btn-sm" onclick="Profile.downloadCurrentCard()">
-          📥 Download Set Card (PNG)
+          Download Card (PNG)
         </button>
       </div>
     `;
@@ -137,7 +136,7 @@ const Profile = (() => {
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
 
         Storage.updatePlayer(player.id, { photo: dataUrl });
-        App.showToast('Profile photo updated! 📸', 'success');
+        App.showToast('Profile photo updated.', 'success');
         App.updateSessionUI();
         render();
         // Also refresh leaderboard & cards if rendered
@@ -164,7 +163,7 @@ const Profile = (() => {
           <div class="profile-avatar-large" style="margin:0 auto 0.75rem; width:72px; height:72px;">
             ${player.photo ? `<img src="${player.photo}" class="profile-avatar-img">` : `<span style="font-size:1.75rem;">${player.username.charAt(0).toUpperCase()}</span>`}
           </div>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="Profile.triggerPhotoUpload()">📷 Change Picture</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="Profile.triggerPhotoUpload()">Upload Photo</button>
           ${player.photo ? `<button type="button" class="btn btn-ghost btn-sm" onclick="Profile.removePhoto()" style="color:var(--color-loss);">Remove Picture</button>` : ''}
         </div>
 
@@ -197,7 +196,7 @@ const Profile = (() => {
       </form>
     `;
 
-    App.openModal('Edit My Profile', content);
+    App.openModal('Edit Athlete Profile', content);
 
     document.getElementById('playerEditProfileForm').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -221,7 +220,7 @@ const Profile = (() => {
 
       Storage.updatePlayer(player.id, { username, gradeLevel, section, gender });
       App.closeModal();
-      App.showToast('Profile updated successfully! ✨', 'success');
+      App.showToast('Profile updated successfully.', 'success');
       App.updateSessionUI();
       render();
       Leaderboard.render();
@@ -248,15 +247,13 @@ const Profile = (() => {
 
     if (player.sports && player.sports.length > 0) {
       player.sports.forEach(s => {
-        const emoji = Storage.getSportEmoji(s.sport);
         if (s.categories && s.categories.length > 0) {
           s.categories.forEach(c => {
             const catName = c.category || c;
             tabs.push({
               sport: s.sport,
               category: catName,
-              emoji,
-              label: `${emoji} ${s.sport} — ${catName}`,
+              label: `${s.sport} — ${catName}`,
             });
           });
         }

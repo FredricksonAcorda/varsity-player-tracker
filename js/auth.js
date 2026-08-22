@@ -179,7 +179,7 @@ const Auth = (() => {
     Storage.getSportsConfig().forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.sport;
-      opt.textContent = `${s.emoji} ${s.sport}`;
+      opt.textContent = s.sport;
       sportSelect.appendChild(opt);
     });
   }

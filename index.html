@@ -15,12 +15,12 @@
   <header class="app-header">
     <div class="header-content">
       <div class="logo">
-        <span class="logo-icon">🏅</span>
+        <span class="logo-badge">V</span>
         <h1>Varsity<span class="logo-accent">Tracker</span></h1>
       </div>
       <div class="header-right">
         <div class="user-info" id="userInfo" style="display:none;">
-          <span class="user-avatar">👤</span>
+          <span class="user-avatar" id="headerAvatar"></span>
           <span class="user-name" id="headerUsername"></span>
           <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>
         </div>
@@ -28,29 +28,40 @@
     </div>
   </header>
 
-  <!-- ═══════ NAVIGATION TABS ═══════ -->
-  <nav class="tab-nav">
-    <div class="tab-nav-inner">
-      <button class="tab-btn active" data-tab="leaderboard">
-        <span class="tab-icon">🏆</span>
-        <span class="tab-label">Leaderboard</span>
+  <!-- ═══════ PILL NAVIGATION (From Component Spec) ═══════ -->
+  <nav class="pill-nav-container" id="pillNavContainer" aria-label="Main Navigation">
+    <div class="pill-nav" id="pillNav">
+      <div class="pill-indicator" id="pillIndicator"></div>
+      <ul class="pill-nav-list" id="pillNavList" role="menubar">
+        <li class="pill-nav-item" role="none">
+          <button class="pill-nav-btn active" data-tab="leaderboard" role="menuitem">Leaderboard</button>
+        </li>
+        <li class="pill-nav-item" role="none">
+          <button class="pill-nav-btn" data-tab="cards" role="menuitem">Player Cards</button>
+        </li>
+        <li class="pill-nav-item" role="none">
+          <button class="pill-nav-btn" data-tab="profile" role="menuitem">My Profile</button>
+        </li>
+        <li class="pill-nav-item" role="none">
+          <button class="pill-nav-btn" data-tab="events" role="menuitem">Events</button>
+        </li>
+        <li class="pill-nav-item" role="none">
+          <button class="pill-nav-btn" data-tab="admin" role="menuitem">Admin</button>
+        </li>
+      </ul>
+      <!-- Minimalist Mobile Hamburger -->
+      <button class="pill-hamburger" id="pillHamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
       </button>
-      <button class="tab-btn" data-tab="cards">
-        <span class="tab-icon">🪪</span>
-        <span class="tab-label">Player Cards</span>
-      </button>
-      <button class="tab-btn" data-tab="profile">
-        <span class="tab-icon">👤</span>
-        <span class="tab-label">My Profile</span>
-      </button>
-      <button class="tab-btn" data-tab="events">
-        <span class="tab-icon">📋</span>
-        <span class="tab-label">Events</span>
-      </button>
-      <button class="tab-btn" data-tab="admin">
-        <span class="tab-icon">⚙️</span>
-        <span class="tab-label">Admin</span>
-      </button>
+    </div>
+    <!-- Mobile Floating Pill Dropdown Menu -->
+    <div class="pill-mobile-menu" id="pillMobileMenu">
+      <button class="pill-mobile-btn active" data-tab="leaderboard">Leaderboard</button>
+      <button class="pill-mobile-btn" data-tab="cards">Player Cards</button>
+      <button class="pill-mobile-btn" data-tab="profile">My Profile</button>
+      <button class="pill-mobile-btn" data-tab="events">Events</button>
+      <button class="pill-mobile-btn" data-tab="admin">Admin</button>
     </div>
   </nav>
 
@@ -59,11 +70,9 @@
     <div class="filter-bar-inner">
       <div class="filter-search-wrapper">
         <div class="search-input-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="filterSearch" placeholder="Search name or Player ID..." class="filter-input">
+          <input type="text" id="filterSearch" placeholder="Search athlete name or ID..." class="filter-input">
         </div>
         <button class="filter-toggle-btn" id="filterToggleBtn" type="button" aria-expanded="false">
-          <span class="toggle-icon">⚙️</span>
           <span>Filters</span>
           <span class="filter-badge" id="filterActiveBadge" style="display:none;">0</span>
         </button>
@@ -106,14 +115,13 @@
     <!-- ── LEADERBOARD VIEW ── -->
     <section class="view active" id="view-leaderboard">
       <div class="view-header">
-        <h2>🏆 Leaderboard</h2>
-        <p class="view-subtitle">Player rankings across all sports and categories</p>
+        <h2>Leaderboard</h2>
+        <p class="view-subtitle">Official player rankings across sports and categories</p>
       </div>
       <div class="leaderboard-container" id="leaderboardContainer">
         <div class="empty-state" id="leaderboardEmpty">
-          <span class="empty-icon">🏆</span>
           <h3>No Players Yet</h3>
-          <p>Players will appear here once they register and get ranked.</p>
+          <p>Players will appear here once they register and receive official rankings.</p>
         </div>
         <table class="leaderboard-table" id="leaderboardTable" style="display:none;">
           <thead>
@@ -134,14 +142,13 @@
     <!-- ── PLAYER CARDS VIEW ── -->
     <section class="view" id="view-cards">
       <div class="view-header">
-        <h2>🪪 Player Cards</h2>
-        <p class="view-subtitle">Browse all varsity player profiles</p>
+        <h2>Player Cards</h2>
+        <p class="view-subtitle">Digital performance cards for all varsity athletes</p>
       </div>
       <div class="cards-grid" id="cardsGrid">
         <div class="empty-state" id="cardsEmpty">
-          <span class="empty-icon">🪪</span>
           <h3>No Player Cards Yet</h3>
-          <p>Player cards will appear here once players register.</p>
+          <p>Player cards will appear here once players are enrolled in sports.</p>
         </div>
       </div>
     </section>
@@ -158,8 +165,8 @@
 
           <!-- Login Form -->
           <form class="auth-form active" id="loginForm">
-            <h2>Welcome Back</h2>
-            <p class="auth-subtitle">Log in to view your player profile</p>
+            <h2>Athlete Login</h2>
+            <p class="auth-subtitle">Sign in to view your profile, statistics, and set card</p>
             <div class="form-group">
               <label for="loginUsername">Username</label>
               <input type="text" id="loginUsername" placeholder="Enter your username" required>
@@ -175,7 +182,7 @@
           <!-- Sign Up Form -->
           <form class="auth-form" id="signupForm">
             <h2>Create Account</h2>
-            <p class="auth-subtitle">Register as a varsity player and get your Player ID</p>
+            <p class="auth-subtitle">Register as a varsity athlete and receive your Player ID</p>
             <div class="form-row">
               <div class="form-group">
                 <label for="signupUsername">Username *</label>
@@ -241,14 +248,13 @@
     <!-- ── EVENTS VIEW ── -->
     <section class="view" id="view-events">
       <div class="view-header">
-        <h2>📋 Events & Tournaments</h2>
-        <p class="view-subtitle">Upcoming, ongoing, and completed events</p>
+        <h2>Events & Tournaments</h2>
+        <p class="view-subtitle">Upcoming, ongoing, and completed competitions</p>
       </div>
       <div class="events-container" id="eventsContainer">
         <div class="empty-state" id="eventsEmpty">
-          <span class="empty-icon">📋</span>
           <h3>No Events Yet</h3>
-          <p>Events and tournaments will appear here once an admin creates them.</p>
+          <p>Events and tournaments will appear here once scheduled by coaches/admins.</p>
         </div>
         <div class="events-list" id="eventsList"></div>
       </div>
@@ -259,15 +265,14 @@
       <!-- Admin Login Gate -->
       <div id="adminGate">
         <div class="admin-login-box">
-          <span class="admin-lock-icon">🔐</span>
           <h2>Admin Panel</h2>
-          <p>Enter the admin password to access the management panel.</p>
+          <p>Enter the admin access password to manage rosters, records, and events.</p>
           <form id="adminLoginForm" onsubmit="Admin.unlock(event); return false;">
             <div class="form-group">
               <input type="password" id="adminPasswordInput" placeholder="Enter admin password" autocomplete="current-password" required>
             </div>
             <div class="form-error" id="adminLoginError"></div>
-            <button type="button" class="btn btn-primary btn-full" id="adminUnlockBtn" onclick="Admin.unlock(event)">Unlock</button>
+            <button type="button" class="btn btn-primary btn-full" id="adminUnlockBtn" onclick="Admin.unlock(event)">Unlock Panel</button>
           </form>
         </div>
       </div>
@@ -275,17 +280,17 @@
       <!-- Admin Panel (after auth) -->
       <div id="adminPanel" style="display:none;">
         <div class="admin-header">
-          <h2>⚙️ Admin Panel</h2>
-          <button class="btn btn-ghost btn-sm" id="adminLockBtn" onclick="Admin.lock()">🔒 Lock</button>
+          <h2>Admin Panel</h2>
+          <button class="btn btn-ghost btn-sm" id="adminLockBtn" onclick="Admin.lock()">Lock</button>
         </div>
 
         <div class="admin-tabs">
-          <button class="admin-tab-btn active" data-admin-tab="players">👥 Players</button>
-          <button class="admin-tab-btn" data-admin-tab="matches">📊 Record Match</button>
-          <button class="admin-tab-btn" data-admin-tab="ranks">🔢 Ranks</button>
-          <button class="admin-tab-btn" data-admin-tab="manage-events">📋 Events</button>
-          <button class="admin-tab-btn" data-admin-tab="sports">🏷️ Sports</button>
-          <button class="admin-tab-btn" data-admin-tab="settings">⚙️ Settings</button>
+          <button class="admin-tab-btn active" data-admin-tab="players">Players</button>
+          <button class="admin-tab-btn" data-admin-tab="matches">Record Match</button>
+          <button class="admin-tab-btn" data-admin-tab="ranks">Ranks</button>
+          <button class="admin-tab-btn" data-admin-tab="manage-events">Events</button>
+          <button class="admin-tab-btn" data-admin-tab="sports">Sports</button>
+          <button class="admin-tab-btn" data-admin-tab="settings">Settings</button>
         </div>
 
         <!-- Admin: Players Management -->
@@ -293,7 +298,7 @@
           <h3>Player Management</h3>
           <div class="admin-toolbar" style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
             <div style="flex:1; min-width:200px;">
-              <input type="text" id="adminPlayerSearch" placeholder="🔍 Search name or ID..." class="filter-input" style="width:100%;">
+              <input type="text" id="adminPlayerSearch" placeholder="Search athlete name or ID..." class="filter-input" style="width:100%;">
             </div>
             <select id="adminPlayerSportFilter" class="filter-select" onchange="Admin.renderPlayersTable()" style="max-width:180px;">
               <option value="All">All Sports</option>
@@ -343,9 +348,9 @@
               <div class="form-group">
                 <label for="matchResult">Result</label>
                 <select id="matchResult" required>
-                  <option value="">Select...</option>
-                  <option value="W">Win ✅</option>
-                  <option value="L">Loss ❌</option>
+                  <option value="">Select result...</option>
+                  <option value="W">Win</option>
+                  <option value="L">Loss</option>
                 </select>
               </div>
             </div>
@@ -400,75 +405,79 @@
           <div id="adminEventsList"></div>
         </div>
 
-        <!-- Admin: Sports Config -->
+        <!-- Admin: Sports Configuration -->
         <div class="admin-section" id="admin-sports">
-          <h3>Manage Sports & Categories</h3>
-          <div id="sportsConfigList"></div>
-          <button class="btn btn-primary btn-sm" id="addSportBtn" style="margin-top:1rem;">+ Add Sport</button>
+          <h3>Sports & Categories Configuration</h3>
+          <button class="btn btn-primary btn-sm" id="addSportBtn" style="margin-bottom:1rem;">+ Add Sport</button>
+          <div class="sports-config-list" id="sportsConfigList"></div>
         </div>
 
-        <!-- Admin: Settings -->
+        <!-- Admin: Settings & Backup -->
         <div class="admin-section" id="admin-settings">
-          <h3>Settings</h3>
+          <h3>System Settings & Data Management</h3>
+          
           <div class="settings-group">
             <div class="setting-card">
-              <h4>🔑 Change Admin Password</h4>
+              <h4>Change Admin Password</h4>
+              <p>Update the password used to access this admin panel.</p>
               <form id="changePasswordForm">
                 <div class="form-group">
-                  <label for="newAdminPassword">New Password</label>
-                  <input type="password" id="newAdminPassword" placeholder="Enter new password" required>
+                  <input type="password" id="newAdminPassword" placeholder="New password" required>
                 </div>
                 <div class="form-group">
-                  <label for="confirmAdminPassword">Confirm Password</label>
                   <input type="password" id="confirmAdminPassword" placeholder="Confirm new password" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-sm">Change Password</button>
+                <button type="submit" class="btn btn-secondary btn-sm">Update Password</button>
               </form>
             </div>
+
             <div class="setting-card">
-              <h4>📤 Export Data</h4>
-              <p>Download all player and event data as a JSON file.</p>
-              <button class="btn btn-secondary btn-sm" id="exportDataBtn">Export Data</button>
+              <h4>Export Data Backup</h4>
+              <p>Download all players, match records, and configurations as JSON.</p>
+              <button class="btn btn-secondary btn-sm" id="exportDataBtn">Export JSON</button>
             </div>
+
             <div class="setting-card">
-              <h4>📥 Import Data</h4>
-              <p>Restore data from a previously exported JSON file.</p>
+              <h4>Import Data</h4>
+              <p>Restore players and event data from a previously exported JSON backup.</p>
               <input type="file" id="importDataInput" accept=".json" style="display:none;">
-              <button class="btn btn-secondary btn-sm" id="importDataBtn">Import Data</button>
+              <button class="btn btn-secondary btn-sm" id="importDataBtn">Import JSON</button>
             </div>
+
             <div class="setting-card danger">
-              <h4>🗑️ Clear All Data</h4>
-              <p>Permanently delete all players, events, and settings. This cannot be undone.</p>
+              <h4>Reset Application</h4>
+              <p>Clear all local player records and reset to initial state.</p>
               <button class="btn btn-danger btn-sm" id="clearDataBtn">Clear All Data</button>
             </div>
           </div>
         </div>
       </div>
     </section>
+
   </main>
 
-  <!-- ═══════ MODALS ═══════ -->
+  <!-- ═══════ MODAL OVERLAY ═══════ -->
   <div class="modal-overlay" id="modalOverlay">
-    <div class="modal" id="modal">
+    <div class="modal">
       <div class="modal-header">
         <h3 id="modalTitle">Modal</h3>
-        <button class="modal-close" id="modalClose">&times;</button>
+        <button class="modal-close" id="modalClose" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="modalBody"></div>
     </div>
   </div>
 
-  <!-- ═══════ TOAST NOTIFICATIONS ═══════ -->
+  <!-- ═══════ TOAST CONTAINER ═══════ -->
   <div class="toast-container" id="toastContainer"></div>
 
   <!-- ═══════ SCRIPTS ═══════ -->
   <script src="js/storage.js"></script>
-  <script src="js/app.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/leaderboard.js"></script>
   <script src="js/cards.js"></script>
   <script src="js/profile.js"></script>
   <script src="js/events.js"></script>
   <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

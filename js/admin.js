@@ -65,7 +65,7 @@ const Admin = (() => {
     if (Storage.verifyAdminPassword(password)) {
       isUnlocked = true;
       sessionStorage.setItem('varsity_admin_unlocked', 'true');
-      
+
       const gate = document.getElementById('adminGate');
       const panel = document.getElementById('adminPanel');
       if (gate) gate.style.display = 'none';
@@ -73,7 +73,7 @@ const Admin = (() => {
       if (errorEl) errorEl.textContent = '';
       if (passwordInput) passwordInput.value = '';
 
-      App.showToast('Admin panel unlocked! ⚙️', 'success');
+      App.showToast('Admin panel unlocked.', 'success');
       populateAdminFilters();
       renderPlayersTable();
     } else {
@@ -138,7 +138,7 @@ const Admin = (() => {
       Storage.getSportsConfig().forEach(s => {
         const opt = document.createElement('option');
         opt.value = s.sport;
-        opt.textContent = `${s.emoji} ${s.sport}`;
+        opt.textContent = s.sport;
         sportSelect.appendChild(opt);
       });
       sportSelect.value = currentSport || 'All';
@@ -198,9 +198,8 @@ const Admin = (() => {
 
     tbody.innerHTML = players.map(p => {
       const sportsList = (p.sports || []).map(s => {
-        const emoji = Storage.getSportEmoji(s.sport);
         const catCount = (s.categories || []).length;
-        return `<span class="sport-tag">${emoji} ${escapeHtml(s.sport)} (${catCount})</span>`;
+        return `<span class="sport-tag">${escapeHtml(s.sport)} (${catCount})</span>`;
       }).join(' ');
 
       const avatarHTML = p.photo
@@ -224,8 +223,8 @@ const Admin = (() => {
           <td>${sportsList || '<span style="color:var(--text-muted); font-size:0.8rem;">None</span>'}</td>
           <td>
             <div class="action-btns">
-              <button class="btn btn-secondary btn-icon" title="Edit athlete" onclick="Admin.editPlayer('${p.id}')">✏️</button>
-              <button class="btn btn-danger btn-icon" title="Delete athlete" onclick="Admin.confirmDeletePlayer('${p.id}')">🗑️</button>
+              <button class="btn btn-secondary btn-sm" onclick="Admin.editPlayer('${p.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="Admin.confirmDeletePlayer('${p.id}')">Delete</button>
             </div>
           </td>
         </tr>
@@ -236,7 +235,7 @@ const Admin = (() => {
   function showAddPlayerModal() {
     const sportsConfig = Storage.getSportsConfig();
     const gradeOptions = Storage.getGradeLevels().map(g => `<option value="${g}">${g}</option>`).join('');
-    const sportOptions = sportsConfig.map(s => `<option value="${s.sport}">${s.emoji} ${s.sport}</option>`).join('');
+    const sportOptions = sportsConfig.map(s => `<option value="${s.sport}">${s.sport}</option>`).join('');
 
     const content = `
       <form id="adminAddPlayerForm">
@@ -351,11 +350,10 @@ const Admin = (() => {
     ).join('');
 
     const sportsConfig = Storage.getSportsConfig();
-    const sportOptions = sportsConfig.map(s => `<option value="${s.sport}">${s.emoji} ${s.sport}</option>`).join('');
+    const sportOptions = sportsConfig.map(s => `<option value="${s.sport}">${s.sport}</option>`).join('');
 
     // List of currently enrolled sports and categories
     const enrolledHTML = (player.sports || []).map(s => {
-      const emoji = Storage.getSportEmoji(s.sport);
       const catTags = (s.categories || []).map(c => {
         const catName = c.category || c;
         return `
@@ -365,7 +363,7 @@ const Admin = (() => {
           </span>
         `;
       }).join(' ');
-      return `<div style="margin-bottom:0.5rem;"><strong style="font-size:0.85rem;">${emoji} ${s.sport}:</strong> ${catTags || '<span style="color:var(--text-muted); font-size:0.75rem;">No categories</span>'}</div>`;
+      return `<div style="margin-bottom:0.5rem;"><strong style="font-size:0.85rem;">${s.sport}:</strong> ${catTags || '<span style="color:var(--text-muted); font-size:0.75rem;">No categories</span>'}</div>`;
     }).join('') || '<p style="color:var(--text-muted); font-size:0.8rem;">No sports enrolled yet.</p>';
 
     const avatarHTML = player.photo
@@ -412,7 +410,7 @@ const Admin = (() => {
         </div>
 
         <div style="margin-top:1rem; padding:0.75rem; background:var(--bg-glass); border:1px dashed var(--border-glass); border-radius:var(--border-radius-sm);">
-          <h4 style="font-size:0.85rem; margin-bottom:0.5rem;">+ Enroll into Sport</h4>
+          <h4 style="font-size:0.85rem; margin-bottom:0.5rem;">Enroll into Sport</h4>
           <div class="form-row">
             <div class="form-group" style="margin-bottom:0.5rem;">
               <select id="epNewSport"><option value="">Select sport...</option>${sportOptions}</select>
@@ -499,7 +497,7 @@ const Admin = (() => {
 
       Storage.updatePlayer(playerId, { username, gradeLevel, section, gender });
       App.closeModal();
-      App.showToast('Athlete updated successfully! ✨', 'success');
+      App.showToast('Athlete updated successfully.', 'success');
       renderPlayersTable();
       Leaderboard.render();
       Cards.render();
@@ -597,7 +595,7 @@ const Admin = (() => {
     Storage.getSportsConfig().forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.sport;
-      opt.textContent = `${s.emoji} ${s.sport}`;
+      opt.textContent = s.sport;
       selectEl.appendChild(opt);
     });
     selectEl.value = current || '';
@@ -745,7 +743,6 @@ const Admin = (() => {
     }
 
     container.innerHTML = events.map(event => {
-      const emoji = Storage.getSportEmoji(event.sport);
       return `
         <div class="event-card" style="margin-bottom:1rem;">
           <div class="event-card-header">
@@ -757,14 +754,14 @@ const Admin = (() => {
                 <option value="ongoing" ${event.status === 'ongoing' ? 'selected' : ''}>Ongoing</option>
                 <option value="completed" ${event.status === 'completed' ? 'selected' : ''}>Completed</option>
               </select>
-              <button class="btn btn-danger btn-icon" onclick="Admin.confirmDeleteEvent('${event.id}')" title="Delete">🗑️</button>
+              <button class="btn btn-danger btn-sm" onclick="Admin.confirmDeleteEvent('${event.id}')">Delete</button>
             </div>
           </div>
           <div class="event-meta">
-            <span>${emoji} ${escapeHtml(event.sport)}</span>
-            <span>📂 ${escapeHtml(event.category)}</span>
-            <span>📅 ${event.date}</span>
-            <span>🏟️ ${event.matches ? event.matches.length : 0} matches</span>
+            <span>${escapeHtml(event.sport)}</span>
+            <span>Category: ${escapeHtml(event.category)}</span>
+            <span>Date: ${event.date}</span>
+            <span>${event.matches ? event.matches.length : 0} Matches</span>
           </div>
           <div style="margin-top:0.75rem;">
             <button class="btn btn-secondary btn-sm" onclick="Admin.showAddMatchToEvent('${event.id}')">+ Add Match Result</button>
@@ -776,7 +773,7 @@ const Admin = (() => {
 
   function showAddEventModal() {
     const sportsConfig = Storage.getSportsConfig();
-    const sportOptions = sportsConfig.map(s => `<option value="${s.sport}">${s.emoji} ${s.sport}</option>`).join('');
+    const sportOptions = sportsConfig.map(s => `<option value="${s.sport}">${s.sport}</option>`).join('');
 
     const content = `
       <form id="addEventForm">
@@ -833,7 +830,7 @@ const Admin = (() => {
 
       Storage.addEvent({ name, sport, category, date, status });
       App.closeModal();
-      App.showToast('Event created!', 'success');
+      App.showToast('Event created.', 'success');
       renderAdminEvents();
       Events.render();
     });
@@ -897,7 +894,7 @@ const Admin = (() => {
       }
 
       App.closeModal();
-      App.showToast('Match recorded and player stats updated!', 'success');
+      App.showToast('Match recorded and player stats updated.', 'success');
       renderAdminEvents();
       Events.render();
       Leaderboard.render();
@@ -916,7 +913,7 @@ const Admin = (() => {
     if (!event) return;
 
     const content = `
-      <p style="margin-bottom:1rem;">Delete event <strong>${escapeHtml(event.name)}</strong>? This won't undo player stats.</p>
+      <p style="margin-bottom:1rem;">Delete event <strong>${escapeHtml(event.name)}</strong>? This will not remove athlete match records.</p>
       <div style="display:flex; gap:0.75rem;">
         <button class="btn btn-danger btn-full" onclick="Admin.deleteEvent('${eventId}')">Delete</button>
         <button class="btn btn-secondary btn-full" onclick="App.closeModal()">Cancel</button>
@@ -945,10 +942,10 @@ const Admin = (() => {
     container.innerHTML = config.map((s, idx) => `
       <div class="sport-config-card">
         <div class="sport-config-header">
-          <span class="sport-config-name">${s.emoji} ${escapeHtml(s.sport)}</span>
+          <span class="sport-config-name">${escapeHtml(s.sport)}</span>
           <div class="action-btns">
             <button class="btn btn-secondary btn-sm" onclick="Admin.showAddCategoryModal(${idx})">+ Category</button>
-            <button class="btn btn-danger btn-icon" onclick="Admin.confirmDeleteSport(${idx})" title="Delete sport">🗑️</button>
+            <button class="btn btn-danger btn-sm" onclick="Admin.confirmDeleteSport(${idx})">Delete</button>
           </div>
         </div>
         <div class="sport-config-categories">
@@ -971,10 +968,6 @@ const Admin = (() => {
           <input type="text" id="newSportName" placeholder="e.g. Swimming" required>
         </div>
         <div class="form-group">
-          <label>Emoji</label>
-          <input type="text" id="newSportEmoji" placeholder="e.g. 🏊" maxlength="4">
-        </div>
-        <div class="form-group">
           <label>Categories (comma-separated) *</label>
           <input type="text" id="newSportCats" placeholder="e.g. Men's, Women's, Mixed" required>
         </div>
@@ -987,7 +980,6 @@ const Admin = (() => {
     document.getElementById('addNewSportForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const name = document.getElementById('newSportName').value.trim();
-      const emoji = document.getElementById('newSportEmoji').value.trim() || '🏅';
       const catsStr = document.getElementById('newSportCats').value.trim();
 
       if (!name || !catsStr) {
@@ -997,11 +989,11 @@ const Admin = (() => {
 
       const categories = catsStr.split(',').map(c => c.trim()).filter(c => c);
       const config = Storage.getSportsConfig();
-      config.push({ sport: name, emoji, categories });
+      config.push({ sport: name, emoji: '', categories });
       Storage.updateSportsConfig(config);
 
       App.closeModal();
-      App.showToast(`Sport "${name}" added!`, 'success');
+      App.showToast(`Sport "${name}" added.`, 'success');
       renderSportsConfig();
 
       // Refresh all sport dropdowns
@@ -1018,7 +1010,7 @@ const Admin = (() => {
     const content = `
       <form id="addCatForm">
         <div class="form-group">
-          <label>New Category for ${sport.emoji} ${escapeHtml(sport.sport)}</label>
+          <label>New Category for ${escapeHtml(sport.sport)}</label>
           <input type="text" id="newCatName" placeholder="e.g. Mixed Doubles" required>
         </div>
         <button type="submit" class="btn btn-primary btn-full">Add Category</button>
@@ -1041,7 +1033,7 @@ const Admin = (() => {
       config[sportIndex].categories.push(catName);
       Storage.updateSportsConfig(config);
       App.closeModal();
-      App.showToast(`Category "${catName}" added!`, 'success');
+      App.showToast(`Category "${catName}" added.`, 'success');
       renderSportsConfig();
     });
   }
@@ -1059,7 +1051,7 @@ const Admin = (() => {
     const sport = config[sportIndex];
 
     const content = `
-      <p style="margin-bottom:1rem;">Delete sport <strong>${sport.emoji} ${escapeHtml(sport.sport)}</strong> and all its categories?</p>
+      <p style="margin-bottom:1rem;">Delete sport <strong>${escapeHtml(sport.sport)}</strong> and all its categories?</p>
       <div style="display:flex; gap:0.75rem;">
         <button class="btn btn-danger btn-full" onclick="Admin.deleteSport(${sportIndex})">Delete</button>
         <button class="btn btn-secondary btn-full" onclick="App.closeModal()">Cancel</button>
@@ -1098,7 +1090,7 @@ const Admin = (() => {
       }
 
       Storage.changeAdminPassword(newPw);
-      App.showToast('Admin password changed!', 'success');
+      App.showToast('Admin password changed.', 'success');
       e.target.reset();
     });
 
@@ -1115,7 +1107,7 @@ const Admin = (() => {
       a.click();
       URL.revokeObjectURL(url);
 
-      App.showToast('Data exported!', 'success');
+      App.showToast('Data exported.', 'success');
     });
 
     // Import
@@ -1132,7 +1124,7 @@ const Admin = (() => {
         try {
           const data = JSON.parse(evt.target.result);
           Storage.importData(data);
-          App.showToast('Data imported successfully!', 'success');
+          App.showToast('Data imported successfully.', 'success');
           App.populateSportFilter();
           populateAdminFilters();
           Auth.refreshSportDropdown();
@@ -1149,13 +1141,13 @@ const Admin = (() => {
     // Clear all data
     document.getElementById('clearDataBtn').addEventListener('click', () => {
       const content = `
-        <p style="margin-bottom:1rem; color:var(--color-loss);">⚠️ This will permanently delete ALL players, events, and reset settings. This cannot be undone!</p>
+        <p style="margin-bottom:1rem; color:var(--color-loss);">This will permanently delete all players, events, and reset all settings to default. This cannot be undone.</p>
         <div style="display:flex; gap:0.75rem;">
-          <button class="btn btn-danger btn-full" onclick="Admin.clearAllData()">Yes, Delete Everything</button>
+          <button class="btn btn-danger btn-full" onclick="Admin.clearAllData()">Delete Everything</button>
           <button class="btn btn-secondary btn-full" onclick="App.closeModal()">Cancel</button>
         </div>
       `;
-      App.openModal('⚠️ Clear All Data', content);
+      App.openModal('Clear All Data', content);
     });
   }
 

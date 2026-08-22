@@ -26,10 +26,9 @@ const Cards = (() => {
     // Group by player + sport to avoid duplicate cards for same player
     // But show separate cards per category
     grid.innerHTML = rows.map((row, idx) => {
-      const emoji = Storage.getSportEmoji(row.sport);
       const rankTier = getRankTier(row.rank);
       const wrClass = row.winrate >= 60 ? 'high' : row.winrate >= 40 ? 'mid' : 'low';
-      const initial = row.username.charAt(0).toUpperCase();
+      const initial = row.username ? row.username.charAt(0).toUpperCase() : 'P';
       const rankColorClass = row.rank === 1 ? 'gold' : row.rank === 2 ? 'silver' : row.rank === 3 ? 'bronze' : 'default';
 
       let ribbonHTML = '';
@@ -58,7 +57,7 @@ const Cards = (() => {
           <div class="card-name">${escapeHtml(row.username)}</div>
           <div class="card-id">${row.id}</div>
           <div class="card-meta">
-            <span class="card-meta-tag">${emoji} ${escapeHtml(row.sport)}</span>
+            <span class="card-meta-tag">${escapeHtml(row.sport)}</span>
             <span class="card-meta-tag">${escapeHtml(row.category)}</span>
             <span class="card-meta-tag">${escapeHtml(row.gradeLevel)}</span>
             ${row.section ? `<span class="card-meta-tag">${escapeHtml(row.section)}</span>` : ''}
@@ -102,7 +101,6 @@ const Cards = (() => {
     const catData = sportData.categories ? sportData.categories.find(c => (c.category || c) === category) : null;
     if (!catData) return;
 
-    const emoji = Storage.getSportEmoji(sport);
     const wr = Storage.getWinrate(catData.wins || 0, catData.losses || 0);
     const wrClass = wr >= 60 ? 'high' : wr >= 40 ? 'mid' : 'low';
 
@@ -139,7 +137,7 @@ const Cards = (() => {
         <div style="font-size:1.25rem; font-weight:700; font-family:var(--font-heading);">${escapeHtml(player.username)}</div>
         <div style="color:var(--accent-primary); font-size:0.8rem; letter-spacing:0.5px;">${player.id}</div>
         <div style="margin-top:0.5rem; display:flex; justify-content:center; gap:0.4rem; flex-wrap:wrap;">
-          <span class="card-meta-tag">${emoji} ${escapeHtml(sport)}</span>
+          <span class="card-meta-tag">${escapeHtml(sport)}</span>
           <span class="card-meta-tag">${escapeHtml(category)}</span>
           <span class="card-meta-tag">${escapeHtml(player.gradeLevel)}</span>
           <span class="card-meta-tag">${escapeHtml(player.gender)}</span>
@@ -171,13 +169,13 @@ const Cards = (() => {
       </div>
       <div style="text-align:center; margin-top:1.25rem;">
         <button class="btn btn-primary btn-sm" onclick="Cards.downloadCard('${player.id}', '${escapeAttr(sport)}', '${escapeAttr(category)}')">
-          📥 Download Set Card (PNG)
+          Download Card (PNG)
         </button>
       </div>
       ${historyHTML}
     `;
 
-    App.openModal(`${emoji} ${player.username} — ${category}`, content);
+    App.openModal(`${player.username} — ${category}`, content);
   }
 
   function downloadCard(playerId, sport, category) {
@@ -188,7 +186,6 @@ const Cards = (() => {
     const catData = sportData.categories ? sportData.categories.find(c => (c.category || c) === category) : null;
     if (!catData) return;
 
-    const emoji = Storage.getSportEmoji(sport);
     const wins = catData.wins || 0;
     const losses = catData.losses || 0;
     const wr = Storage.getWinrate(wins, losses);
@@ -241,12 +238,12 @@ const Cards = (() => {
 
       // Header title
       ctx.fillStyle = accentColor;
-      ctx.font = 'bold 24px Inter, sans-serif';
+      ctx.font = 'bold 22px Inter, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('★ OFFICIAL ATHLETE SET CARD ★', 400, 85);
+      ctx.fillText('OFFICIAL ATHLETE SET CARD', 400, 85);
 
       ctx.fillStyle = '#94a3b8';
-      ctx.font = '16px Inter, sans-serif';
+      ctx.font = '15px Inter, sans-serif';
       ctx.fillText('VARSITY SPORTS PERFORMANCE TRACKER', 400, 115);
 
       // Avatar circle
@@ -307,7 +304,7 @@ const Cards = (() => {
       ctx.fillStyle = '#f1f5f9';
       ctx.font = 'bold 22px Inter, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`${emoji} ${sport} — ${category}`, 400, 552);
+      ctx.fillText(`${sport} — ${category}`, 400, 552);
 
       ctx.fillStyle = '#94a3b8';
       ctx.font = '18px Inter, sans-serif';
@@ -351,7 +348,7 @@ const Cards = (() => {
       link.href = canvas.toDataURL('image/png');
       link.click();
 
-      App.showToast('Digital Player Card downloaded! 🪪', 'success');
+      App.showToast('Digital Player Card downloaded.', 'success');
     };
 
     if (player.photo) {
@@ -364,109 +361,33 @@ const Cards = (() => {
     }
   }
 
-    // Rank Badge
-    ctx.save();
-    ctx.fillStyle = accentColor;
-    ctx.font = 'bold 36px Outfit, Inter, sans-serif';
-    ctx.textAlign = 'center';
-    const rankText = catData.rank > 0 ? `RANK #${catData.rank}` : 'UNRANKED';
-    ctx.fillText(rankText, 400, 380);
-    ctx.restore();
-
-    // Player Name
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 44px Outfit, Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(player.username.toUpperCase(), 400, 440);
-
-    // Player ID
-    ctx.fillStyle = accentColor;
-    ctx.font = 'bold 24px monospace';
-    ctx.fillText(`ID: ${player.id}`, 400, 480);
-
-    // Meta tags box
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.fillRect(80, 520, 640, 75);
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(80, 520, 640, 75);
-
-    ctx.fillStyle = '#f1f5f9';
-    ctx.font = 'bold 22px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(`${emoji} ${sport} — ${category}`, 400, 552);
-
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '18px Inter, sans-serif';
-    const secText = player.section ? ` • ${player.section}` : '';
-    ctx.fillText(`${player.gradeLevel}${secText} • ${player.gender}`, 400, 580);
-
-    // Stats Grid
-    const statBoxY = 630;
-    const statW = 190;
-    const statH = 140;
-
-    drawStatBox(ctx, 80, statBoxY, statW, statH, String(catData.wins), 'WINS', '#10b981');
-    drawStatBox(ctx, 305, statBoxY, statW, statH, String(catData.losses), 'LOSSES', '#f43f5e');
-    drawStatBox(ctx, 530, statBoxY, statW, statH, `${wr}%`, 'WINRATE', accentColor);
-
-    // Winrate Progress Bar
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-    ctx.fillRect(80, 800, 640, 20);
-    ctx.fillStyle = wr >= 60 ? '#10b981' : (wr >= 40 ? '#fbbf24' : '#f43f5e');
-    ctx.fillRect(80, 800, Math.round(640 * (wr / 100)), 20);
-
-    // Total Matches
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '18px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(`Total Matches Played: ${total}`, 400, 850);
-
-    // Security Watermark & Timestamp
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-    ctx.font = 'bold 80px Outfit, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('VERIFIED', 400, 960);
-
-    ctx.fillStyle = '#64748b';
-    ctx.font = '14px monospace';
-    ctx.fillText(`GENERATED: ${new Date().toLocaleDateString()} • VARSITY TRACKER`, 400, 1020);
-
-    // Trigger Download
-    const link = document.createElement('a');
-    link.download = `${player.username.replace(/\s+/g, '_')}_${sport}_SetCard.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-
-    App.showToast('Digital Player Card downloaded! 🪪', 'success');
-  }
-
-  function drawStatBox(ctx, x, y, w, h, value, label, color) {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+  function drawStatBox(ctx, x, y, w, h, value, label, valueColor) {
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.lineWidth = 1;
     ctx.strokeRect(x, y, w, h);
 
-    ctx.fillStyle = color;
+    ctx.fillStyle = valueColor;
     ctx.font = 'bold 44px Outfit, Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(value, x + w / 2, y + 65);
 
     ctx.fillStyle = '#94a3b8';
-    ctx.font = 'bold 15px Inter, sans-serif';
+    ctx.font = 'bold 14px Inter, sans-serif';
     ctx.fillText(label, x + w / 2, y + 105);
   }
 
   function escapeHtml(str) {
-    if (!str) return '';
+    if (str === undefined || str === null) return '';
     const div = document.createElement('div');
-    div.textContent = str;
+    div.textContent = String(str);
     return div.innerHTML;
   }
 
   function escapeAttr(str) {
-    return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
   }
 
   return {

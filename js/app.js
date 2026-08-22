@@ -28,21 +28,76 @@ const App = (() => {
 
   // ─── Navigation ───
   function setupNavigation() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+    const hamburger = document.getElementById('pillHamburger');
+    const mobileMenu = document.getElementById('pillMobileMenu');
+
+    if (hamburger && mobileMenu) {
+      hamburger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = mobileMenu.classList.toggle('open');
+        hamburger.classList.toggle('open', isOpen);
+        hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      // Close mobile menu if clicked outside
+      document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
+          mobileMenu.classList.remove('open');
+          hamburger.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    // Both desktop pill-nav buttons and mobile menu buttons
+    document.querySelectorAll('.pill-nav-btn, .pill-mobile-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.dataset.tab;
         switchTab(tab);
+        if (mobileMenu) {
+          mobileMenu.classList.remove('open');
+          if (hamburger) {
+            hamburger.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+          }
+        }
       });
     });
+
+    window.addEventListener('resize', updatePillIndicator);
+    if (document.fonts) {
+      document.fonts.ready.then(updatePillIndicator);
+    }
+  }
+
+  function updatePillIndicator() {
+    const activeBtn = document.querySelector(`.pill-nav-btn[data-tab="${currentTab}"]`);
+    const indicator = document.getElementById('pillIndicator');
+    const nav = document.getElementById('pillNav');
+    if (!activeBtn || !indicator || !nav) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+
+    if (btnRect.width === 0) return; // Hidden on mobile
+
+    const left = btnRect.left - navRect.left;
+    const width = btnRect.width;
+
+    indicator.style.transform = `translateX(${left}px)`;
+    indicator.style.width = `${width}px`;
+    indicator.style.opacity = '1';
   }
 
   function switchTab(tab) {
     currentTab = tab;
 
-    // Update tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+    // Update pill-nav-btn and pill-mobile-btn
+    document.querySelectorAll('.pill-nav-btn, .pill-mobile-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.tab === tab);
     });
+
+    updatePillIndicator();
 
     // Update views
     document.querySelectorAll('.view').forEach(view => {
@@ -83,16 +138,6 @@ const App = (() => {
         const isShown = dropdowns.classList.toggle('show');
         toggleBtn.classList.toggle('active', isShown);
         toggleBtn.setAttribute('aria-expanded', isShown ? 'true' : 'false');
-        
-        const toggleText = toggleBtn.querySelector('span:not(.toggle-icon):not(.filter-badge)');
-        const toggleIcon = toggleBtn.querySelector('.toggle-icon');
-        if (isShown) {
-          if (toggleIcon) toggleIcon.textContent = '✕';
-          if (toggleText) toggleText.textContent = 'Close';
-        } else {
-          if (toggleIcon) toggleIcon.textContent = '⚙️';
-          if (toggleText) toggleText.textContent = 'Filters';
-        }
       });
     }
 
@@ -150,7 +195,7 @@ const App = (() => {
     Storage.getSportsConfig().forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.sport;
-      opt.textContent = `${s.emoji} ${s.sport}`;
+      opt.textContent = s.sport;
       sportSelect.appendChild(opt);
     });
 
@@ -231,7 +276,7 @@ const App = (() => {
           if (player.photo) {
             headerAvatar.innerHTML = `<img src="${player.photo}" class="header-avatar-img" alt="${player.username}">`;
           } else {
-            headerAvatar.innerHTML = '👤';
+            headerAvatar.innerHTML = `<span class="header-avatar-initial">${player.username ? player.username.charAt(0).toUpperCase() : 'P'}</span>`;
           }
         }
         logoutBtn.onclick = () => {
@@ -279,8 +324,7 @@ const App = (() => {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
 
-    const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-    toast.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
+    toast.innerHTML = `<span class="toast-dot"></span><span>${message}</span>`;
 
     container.appendChild(toast);
 

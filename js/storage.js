@@ -416,9 +416,7 @@ const Storage = (() => {
   }
 
   function getSportEmoji(sportName) {
-    const config = getSportsConfig();
-    const sport = config.find(s => s.sport === sportName);
-    return sport ? sport.emoji : '🏅';
+    return '';
   }
 
   function getCategoriesForSport(sportName) {

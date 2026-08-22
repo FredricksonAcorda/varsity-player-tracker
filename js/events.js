@@ -30,7 +30,6 @@ const Events = (() => {
     });
 
     listEl.innerHTML = sorted.map(event => {
-      const emoji = Storage.getSportEmoji(event.sport);
       const matchCount = event.matches ? event.matches.length : 0;
 
       let matchesHTML = '';
@@ -52,7 +51,7 @@ const Events = (() => {
                     <span>${escapeHtml(p1Name)}</span>
                     <span style="color:var(--text-muted)">vs</span>
                     <span>${escapeHtml(p2Name)}</span>
-                    <span class="match-result-badge win">🏆 ${escapeHtml(winnerName)}</span>
+                    <span class="match-result-badge win">Winner: ${escapeHtml(winnerName)}</span>
                     <span class="match-date">${m.date || ''}</span>
                   </div>
                 `;
@@ -70,10 +69,10 @@ const Events = (() => {
             <span class="event-status ${event.status}">${event.status}</span>
           </div>
           <div class="event-meta">
-            <span>${emoji} ${escapeHtml(event.sport)}</span>
-            <span>📂 ${escapeHtml(event.category)}</span>
-            <span>📅 ${event.date}</span>
-            <span>🏟️ ${matchCount} matches</span>
+            <span>${escapeHtml(event.sport)}</span>
+            <span>${escapeHtml(event.category)}</span>
+            <span>Date: ${event.date}</span>
+            <span>${matchCount} Matches</span>
           </div>
           ${matchesHTML}
         </div>
@@ -82,9 +81,9 @@ const Events = (() => {
   }
 
   function escapeHtml(str) {
-    if (!str) return '';
+    if (str === undefined || str === null) return '';
     const div = document.createElement('div');
-    div.textContent = str;
+    div.textContent = String(str);
     return div.innerHTML;
   }
 

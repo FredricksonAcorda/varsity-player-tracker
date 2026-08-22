@@ -26,10 +26,8 @@ const Leaderboard = (() => {
     emptyEl.style.display = 'none';
 
     bodyEl.innerHTML = rows.map((row, idx) => {
-      const rankDisplay = row.rank > 0 ? row.rank : '-';
+      const rankDisplay = row.rank > 0 ? row.rank : '—';
       const rankClass = getRankClass(row.rank);
-      const emoji = Storage.getSportEmoji(row.sport);
-      const medal = getMedal(row.rank);
 
       const avatarHTML = row.photo
         ? `<img src="${row.photo}" class="table-avatar-img" alt="${escapeHtml(row.username)}">`
@@ -38,7 +36,7 @@ const Leaderboard = (() => {
       return `
         <tr class="count-up" style="animation-delay: ${idx * 0.05}s">
           <td>
-            <span class="rank-badge ${rankClass}">${medal || rankDisplay}</span>
+            <span class="rank-badge ${rankClass}">${rankDisplay}</span>
           </td>
           <td>
             <div class="player-table-info">
@@ -49,7 +47,7 @@ const Leaderboard = (() => {
               </div>
             </div>
           </td>
-          <td><span class="sport-tag">${emoji} ${escapeHtml(row.sport)}</span></td>
+          <td><span class="sport-tag">${escapeHtml(row.sport)}</span></td>
           <td><span class="sport-tag">${escapeHtml(row.category)}</span></td>
           <td><span style="color: var(--text-secondary); font-size: 0.8rem;">${escapeHtml(row.gradeLevel)}</span></td>
           <td><span style="color: var(--text-secondary); font-size: 0.8rem;">${escapeHtml(row.section || '—')}</span></td>
@@ -66,16 +64,10 @@ const Leaderboard = (() => {
     return 'rank-none';
   }
 
-  function getMedal(rank) {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return null;
-  }
-
   function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
     const div = document.createElement('div');
-    div.textContent = str;
+    div.textContent = String(str);
     return div.innerHTML;
   }
 
