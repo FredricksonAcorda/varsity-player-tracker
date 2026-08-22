@@ -1,6 +1,6 @@
 /**
  * auth.js — Authentication Module
- * Handles player sign up, login, logout, and session management.
+ * Handles player sign up, login, logout, password validation, and session management.
  */
 
 const Auth = (() => {
@@ -9,6 +9,16 @@ const Auth = (() => {
     setupLoginForm();
     setupSignupForm();
     populateSignupDropdowns();
+  }
+
+  // ─── Password Strength Validation ───
+  function validatePassword(pw) {
+    const missing = [];
+    if (!pw || pw.length < 6) missing.push('at least 6 characters');
+    if (!/[A-Z]/.test(pw)) missing.push('an uppercase letter (A-Z)');
+    if (!/[a-z]/.test(pw)) missing.push('a lowercase letter (a-z)');
+    if (!/[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pw)) missing.push('a number or special character');
+    return missing;
   }
 
   // ─── Auth Tab Switching ───
@@ -65,6 +75,28 @@ const Auth = (() => {
   function setupSignupForm() {
     const form = document.getElementById('signupForm');
     const sportSelect = document.getElementById('signupSport');
+    const pwInput = document.getElementById('signupPassword');
+    const pwHint = document.getElementById('signupPasswordHint');
+
+    // Real-time password requirement helper
+    if (pwInput && pwHint) {
+      pwInput.addEventListener('input', () => {
+        const val = pwInput.value;
+        if (val.length === 0) {
+          pwHint.textContent = 'Requires min. 6 chars (upper, lower, number/symbol)';
+          pwHint.className = 'field-hint';
+          return;
+        }
+        const missing = validatePassword(val);
+        if (missing.length === 0) {
+          pwHint.textContent = 'Strong password';
+          pwHint.className = 'field-hint valid';
+        } else {
+          pwHint.textContent = 'Add: ' + missing.join(', ');
+          pwHint.className = 'field-hint';
+        }
+      });
+    }
 
     // Sport change → show categories
     sportSelect.addEventListener('change', () => {
@@ -107,14 +139,16 @@ const Auth = (() => {
       const gender = document.getElementById('signupGender').value;
       const sport = document.getElementById('signupSport').value;
 
-      // Validate
+      // Validate required fields
       if (!username || !password || !gradeLevel || !gender || !sport) {
         errorEl.textContent = 'Please fill in all required fields.';
         return;
       }
 
-      if (password.length < 4) {
-        errorEl.textContent = 'Password must be at least 4 characters.';
+      // Validate password strength
+      const passwordIssues = validatePassword(password);
+      if (passwordIssues.length > 0) {
+        errorEl.textContent = 'Password must include: ' + passwordIssues.join(', ') + '.';
         return;
       }
 
@@ -205,6 +239,7 @@ const Auth = (() => {
   return {
     init,
     logout,
+    validatePassword,
     refreshSportDropdown,
   };
 })();

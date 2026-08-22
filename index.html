@@ -131,7 +131,6 @@
               <th>Sport</th>
               <th>Category</th>
               <th>Grade</th>
-              <th>Section</th>
             </tr>
           </thead>
           <tbody id="leaderboardBody"></tbody>
@@ -141,9 +140,27 @@
 
     <!-- ── PLAYER CARDS VIEW ── -->
     <section class="view" id="view-cards">
-      <div class="view-header">
-        <h2>Player Cards</h2>
-        <p class="view-subtitle">Digital performance cards for all varsity athletes</p>
+      <div class="view-header cards-view-header">
+        <div>
+          <h2>Player Cards</h2>
+          <p class="view-subtitle">Digital performance cards for all varsity athletes</p>
+        </div>
+        <div class="cards-controls">
+          <div class="cards-sort-wrapper">
+            <label for="cardsSortSelect" class="cards-control-label">Sort</label>
+            <select id="cardsSortSelect" class="filter-select cards-sort-select">
+              <option value="rank-asc">Rank: Best First (#1 →)</option>
+              <option value="rank-desc">Rank: Lowest First</option>
+              <option value="winrate-desc">Winrate: High to Low</option>
+              <option value="wins-desc">Most Wins</option>
+              <option value="name-asc">Athlete Name (A-Z)</option>
+            </select>
+          </div>
+          <div class="cards-layout-toggle" id="cardsLayoutToggle" role="group" aria-label="Layout view">
+            <button type="button" class="layout-btn active" id="layoutGridBtn" title="Grid View">Grid</button>
+            <button type="button" class="layout-btn" id="layoutListBtn" title="List View">List</button>
+          </div>
+        </div>
       </div>
       <div class="cards-grid" id="cardsGrid">
         <div class="empty-state" id="cardsEmpty">
@@ -191,6 +208,7 @@
               <div class="form-group">
                 <label for="signupPassword">Password *</label>
                 <input type="password" id="signupPassword" placeholder="Enter password" required>
+                <span class="field-hint" id="signupPasswordHint">Requires min. 6 chars (upper, lower, number/symbol)</span>
               </div>
             </div>
             <div class="form-row">

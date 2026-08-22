@@ -50,7 +50,6 @@ const Leaderboard = (() => {
           <td><span class="sport-tag">${escapeHtml(row.sport)}</span></td>
           <td><span class="sport-tag">${escapeHtml(row.category)}</span></td>
           <td><span style="color: var(--text-secondary); font-size: 0.8rem;">${escapeHtml(row.gradeLevel)}</span></td>
-          <td><span style="color: var(--text-secondary); font-size: 0.8rem;">${escapeHtml(row.section || '—')}</span></td>
         </tr>
       `;
     }).join('');

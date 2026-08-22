@@ -1,31 +1,113 @@
 /**
  * cards.js — Player Cards Module
- * Renders the visual player cards grid with glassmorphism design.
+ * Renders visual player cards with Grid / List layout switcher and sorting.
  */
 
 const Cards = (() => {
+  let currentSort = 'rank-asc';
+  let currentLayout = localStorage.getItem('varsity_cards_layout') || 'grid';
+
   function init() {
-    // Renders on tab switch
+    const sortSelect = document.getElementById('cardsSortSelect');
+    if (sortSelect) {
+      sortSelect.value = currentSort;
+      sortSelect.addEventListener('change', () => {
+        currentSort = sortSelect.value;
+        render();
+      });
+    }
+
+    const gridBtn = document.getElementById('layoutGridBtn');
+    const listBtn = document.getElementById('layoutListBtn');
+
+    if (gridBtn && listBtn) {
+      gridBtn.classList.toggle('active', currentLayout === 'grid');
+      listBtn.classList.toggle('active', currentLayout === 'list');
+
+      gridBtn.addEventListener('click', () => setLayout('grid'));
+      listBtn.addEventListener('click', () => setLayout('list'));
+    }
+  }
+
+  function setLayout(layout) {
+    currentLayout = layout;
+    localStorage.setItem('varsity_cards_layout', layout);
+    const gridBtn = document.getElementById('layoutGridBtn');
+    const listBtn = document.getElementById('layoutListBtn');
+    if (gridBtn) gridBtn.classList.toggle('active', layout === 'grid');
+    if (listBtn) listBtn.classList.toggle('active', layout === 'list');
+    render();
+  }
+
+  function sortRows(rows, sortKey) {
+    const list = [...rows];
+    switch (sortKey) {
+      case 'rank-asc':
+        return list.sort((a, b) => {
+          if (a.rank === 0 && b.rank === 0) return b.winrate - a.winrate;
+          if (a.rank === 0) return 1;
+          if (b.rank === 0) return -1;
+          return a.rank - b.rank;
+        });
+      case 'rank-desc':
+        return list.sort((a, b) => {
+          if (a.rank === 0 && b.rank === 0) return b.winrate - a.winrate;
+          if (a.rank === 0) return 1;
+          if (b.rank === 0) return -1;
+          return b.rank - a.rank;
+        });
+      case 'winrate-desc':
+        return list.sort((a, b) => {
+          if (b.winrate !== a.winrate) return b.winrate - a.winrate;
+          return b.wins - a.wins;
+        });
+      case 'wins-desc':
+        return list.sort((a, b) => {
+          if (b.wins !== a.wins) return b.wins - a.wins;
+          return b.winrate - a.winrate;
+        });
+      case 'name-asc':
+        return list.sort((a, b) => (a.username || '').localeCompare(b.username || ''));
+      default:
+        return list;
+    }
   }
 
   function render() {
     const filters = App.getFilters();
-    const rows = Storage.getFlatPlayerStats(filters);
+    let rows = Storage.getFlatPlayerStats(filters);
     const grid = document.getElementById('cardsGrid');
     const emptyEl = document.getElementById('cardsEmpty');
 
+    if (!grid) return;
+
     if (rows.length === 0) {
+      grid.className = 'cards-grid';
       grid.innerHTML = '';
-      grid.appendChild(emptyEl);
-      emptyEl.style.display = '';
+      if (emptyEl) {
+        grid.appendChild(emptyEl);
+        emptyEl.style.display = '';
+      }
       return;
     }
 
-    emptyEl.style.display = 'none';
+    if (emptyEl) emptyEl.style.display = 'none';
 
-    // Group by player + sport to avoid duplicate cards for same player
-    // But show separate cards per category
-    grid.innerHTML = rows.map((row, idx) => {
+    // Apply active sort
+    rows = sortRows(rows, currentSort);
+
+    // Apply layout class
+    grid.className = currentLayout === 'list' ? 'cards-grid layout-list' : 'cards-grid';
+
+    if (currentLayout === 'list') {
+      grid.innerHTML = renderListCards(rows);
+    } else {
+      grid.innerHTML = renderGridCards(rows);
+    }
+  }
+
+  function renderGridCards(rows) {
+    return rows.map((row, idx) => {
       const rankTier = getRankTier(row.rank);
       const wrClass = row.winrate >= 60 ? 'high' : row.winrate >= 40 ? 'mid' : 'low';
       const initial = row.username ? row.username.charAt(0).toUpperCase() : 'P';
@@ -44,7 +126,7 @@ const Cards = (() => {
 
       return `
         <div class="player-card ${rankTier}" 
-             style="animation-delay: ${idx * 0.08}s"
+             style="animation-delay: ${idx * 0.05}s"
              onclick="Cards.showDetail('${row.id}', '${escapeAttr(row.sport)}', '${escapeAttr(row.category)}')">
           ${ribbonHTML}
           <div class="card-header">
@@ -60,7 +142,6 @@ const Cards = (() => {
             <span class="card-meta-tag">${escapeHtml(row.sport)}</span>
             <span class="card-meta-tag">${escapeHtml(row.category)}</span>
             <span class="card-meta-tag">${escapeHtml(row.gradeLevel)}</span>
-            ${row.section ? `<span class="card-meta-tag">${escapeHtml(row.section)}</span>` : ''}
           </div>
           <div class="card-stats">
             <div class="card-stat">
@@ -84,11 +165,62 @@ const Cards = (() => {
     }).join('');
   }
 
+  function renderListCards(rows) {
+    return rows.map((row, idx) => {
+      const rankTier = getRankTier(row.rank);
+      const initial = row.username ? row.username.charAt(0).toUpperCase() : 'P';
+      const rankDisplay = row.rank > 0 ? '#' + row.rank : '—';
+      const rankClass = getRankClass(row.rank);
+
+      const avatarHTML = row.photo
+        ? `<img src="${row.photo}" class="list-avatar-img" alt="${escapeHtml(row.username)}">`
+        : `<div class="list-avatar-initial">${initial}</div>`;
+
+      return `
+        <div class="player-card-list-item ${rankTier}" 
+             style="animation-delay: ${idx * 0.03}s"
+             onclick="Cards.showDetail('${row.id}', '${escapeAttr(row.sport)}', '${escapeAttr(row.category)}')">
+          <div class="list-card-left">
+            <span class="rank-badge ${rankClass}">${rankDisplay}</span>
+            <div class="list-avatar">${avatarHTML}</div>
+            <div class="list-player-info">
+              <div class="list-player-name">${escapeHtml(row.username)}</div>
+              <div class="list-player-id">${row.id}</div>
+            </div>
+          </div>
+
+          <div class="list-card-meta">
+            <span class="card-meta-tag">${escapeHtml(row.sport)}</span>
+            <span class="card-meta-tag">${escapeHtml(row.category)}</span>
+            <span class="card-meta-tag">${escapeHtml(row.gradeLevel)}</span>
+          </div>
+
+          <div class="list-card-stats">
+            <div class="list-stat-pill">
+              <span class="win-text">W: ${row.wins}</span>
+              <span class="loss-text">L: ${row.losses}</span>
+              <span class="list-wr">${row.winrate}% WR</span>
+            </div>
+            <button class="btn btn-secondary btn-sm list-detail-btn" type="button">Card</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
   function getRankTier(rank) {
     if (rank === 1) return 'rank-gold';
     if (rank === 2) return 'rank-silver';
     if (rank === 3) return 'rank-bronze';
     return '';
+  }
+
+  function getRankClass(rank) {
+    if (rank === 1) return 'rank-1';
+    if (rank === 2) return 'rank-2';
+    if (rank === 3) return 'rank-3';
+    if (rank > 0) return 'rank-other';
+    return 'rank-none';
   }
 
   function showDetail(playerId, sport, category) {
@@ -141,7 +273,6 @@ const Cards = (() => {
           <span class="card-meta-tag">${escapeHtml(category)}</span>
           <span class="card-meta-tag">${escapeHtml(player.gradeLevel)}</span>
           <span class="card-meta-tag">${escapeHtml(player.gender)}</span>
-          ${player.section ? `<span class="card-meta-tag">${escapeHtml(player.section)}</span>` : ''}
         </div>
       </div>
       <div class="card-stats" style="max-width:300px; margin:0 auto 1rem;">
@@ -308,8 +439,7 @@ const Cards = (() => {
 
       ctx.fillStyle = '#94a3b8';
       ctx.font = '18px Inter, sans-serif';
-      const secText = player.section ? ` • ${player.section}` : '';
-      ctx.fillText(`${player.gradeLevel || ''}${secText} • ${player.gender || ''}`, 400, 580);
+      ctx.fillText(`${player.gradeLevel || ''} • ${player.gender || ''}`, 400, 580);
 
       // Stats Grid
       const statBoxY = 630;
@@ -393,6 +523,7 @@ const Cards = (() => {
   return {
     init,
     render,
+    setLayout,
     showDetail,
     downloadCard,
   };
