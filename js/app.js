@@ -118,9 +118,14 @@ const App = (() => {
     // Show/hide filter bar (only for leaderboard and cards)
     const filterBar = document.getElementById('filterBar');
     const mainContent = document.querySelector('.main-content');
+    const sortItem = document.getElementById('filterSortItem');
+    const layoutItem = document.getElementById('filterLayoutItem');
+
     if (tab === 'leaderboard' || tab === 'cards') {
       filterBar.classList.remove('hidden');
       mainContent.classList.remove('no-filter');
+      if (sortItem) sortItem.style.display = tab === 'cards' ? '' : 'none';
+      if (layoutItem) layoutItem.style.display = tab === 'cards' ? '' : 'none';
     } else {
       filterBar.classList.add('hidden');
       mainContent.classList.add('no-filter');

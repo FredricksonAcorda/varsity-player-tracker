@@ -100,6 +100,25 @@
             <option value="All">All Grades</option>
           </select>
         </div>
+        <div class="filter-item cards-sort-item" id="filterSortItem">
+          <label for="cardsSortSelect">Sort</label>
+          <div class="filter-sort-group">
+            <select id="cardsSortSelect" class="filter-select cards-sort-select">
+              <option value="rank">Rank</option>
+              <option value="winrate">Winrate</option>
+              <option value="wins">Wins</option>
+              <option value="name">Name</option>
+            </select>
+            <button type="button" class="btn btn-secondary btn-sm cards-order-btn" id="cardsOrderBtn" title="Toggle Sort Order">Asc</button>
+          </div>
+        </div>
+        <div class="filter-item cards-layout-item" id="filterLayoutItem">
+          <label>Layout</label>
+          <div class="cards-layout-toggle" id="cardsLayoutToggle" role="group" aria-label="Layout view">
+            <button type="button" class="layout-btn active" id="layoutGridBtn" title="Grid View">Grid</button>
+            <button type="button" class="layout-btn" id="layoutListBtn" title="List View">List</button>
+          </div>
+        </div>
         <button class="btn btn-ghost btn-sm reset-filter-btn" id="resetFilterBtn" type="button" title="Reset all filters">Reset</button>
       </div>
     </div>
@@ -136,27 +155,9 @@
 
     <!-- ── PLAYER CARDS VIEW ── -->
     <section class="view" id="view-cards">
-      <div class="view-header cards-view-header">
-        <div>
-          <h2>Player Cards</h2>
-          <p class="view-subtitle">Digital performance cards for all varsity athletes</p>
-        </div>
-        <div class="cards-controls">
-          <div class="cards-sort-wrapper">
-            <label for="cardsSortSelect" class="cards-control-label">Sort</label>
-            <select id="cardsSortSelect" class="filter-select cards-sort-select">
-              <option value="rank">Rank</option>
-              <option value="winrate">Winrate</option>
-              <option value="wins">Wins</option>
-              <option value="name">Name</option>
-            </select>
-            <button type="button" class="btn btn-secondary btn-sm cards-order-btn" id="cardsOrderBtn" title="Toggle Sort Order">Asc</button>
-          </div>
-          <div class="cards-layout-toggle" id="cardsLayoutToggle" role="group" aria-label="Layout view">
-            <button type="button" class="layout-btn active" id="layoutGridBtn" title="Grid View">Grid</button>
-            <button type="button" class="layout-btn" id="layoutListBtn" title="List View">List</button>
-          </div>
-        </div>
+      <div class="view-header">
+        <h2>Player Cards</h2>
+        <p class="view-subtitle">Digital performance cards for all varsity athletes</p>
       </div>
       <div class="cards-grid" id="cardsGrid">
         <div class="empty-state" id="cardsEmpty">
