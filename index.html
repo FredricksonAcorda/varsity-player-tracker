@@ -19,49 +19,53 @@
         <h1>Varsity<span class="logo-accent">Tracker</span></h1>
       </div>
       <div class="header-right">
+        <button class="header-profile-btn" id="headerProfileBtn" onclick="App.switchTab('profile')" aria-label="My Profile">
+          <span class="header-profile-avatar" id="headerProfileAvatar">
+            <span class="header-avatar-initial" id="headerAvatarInitial">P</span>
+          </span>
+          <span class="header-profile-name" id="headerProfileName">My Profile</span>
+        </button>
         <div class="user-info" id="userInfo" style="display:none;">
-          <span class="user-avatar" id="headerAvatar"></span>
-          <span class="user-name" id="headerUsername"></span>
+          <span class="admin-mode-pill" id="adminModeHeaderBadge" style="display:none;">Admin</span>
           <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- ═══════ PILL NAVIGATION (From Component Spec) ═══════ -->
+  <!-- ═══════ PILL NAVIGATION (Left-Aligned & Floating) ═══════ -->
   <nav class="pill-nav-container" id="pillNavContainer" aria-label="Main Navigation">
-    <div class="pill-nav" id="pillNav">
-      <div class="pill-indicator" id="pillIndicator"></div>
-      <ul class="pill-nav-list" id="pillNavList" role="menubar">
-        <li class="pill-nav-item" role="none">
-          <button class="pill-nav-btn active" data-tab="leaderboard" role="menuitem">Leaderboard</button>
-        </li>
-        <li class="pill-nav-item" role="none">
-          <button class="pill-nav-btn" data-tab="cards" role="menuitem">Player Cards</button>
-        </li>
-        <li class="pill-nav-item" role="none">
-          <button class="pill-nav-btn" data-tab="profile" role="menuitem">My Profile</button>
-        </li>
-        <li class="pill-nav-item" role="none">
-          <button class="pill-nav-btn" data-tab="events" role="menuitem">Events</button>
-        </li>
-        <li class="pill-nav-item" role="none">
-          <button class="pill-nav-btn" data-tab="admin" role="menuitem">Admin</button>
-        </li>
-      </ul>
-      <!-- Minimalist Mobile Hamburger -->
-      <button class="pill-hamburger" id="pillHamburger" aria-label="Toggle navigation menu" aria-expanded="false">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
-    </div>
-    <!-- Mobile Floating Pill Dropdown Menu -->
-    <div class="pill-mobile-menu" id="pillMobileMenu">
-      <button class="pill-mobile-btn active" data-tab="leaderboard">Leaderboard</button>
-      <button class="pill-mobile-btn" data-tab="cards">Player Cards</button>
-      <button class="pill-mobile-btn" data-tab="profile">My Profile</button>
-      <button class="pill-mobile-btn" data-tab="events">Events</button>
-      <button class="pill-mobile-btn" data-tab="admin">Admin</button>
+    <div class="pill-nav-inner">
+      <div class="pill-nav" id="pillNav">
+        <div class="pill-indicator" id="pillIndicator"></div>
+        <ul class="pill-nav-list" id="pillNavList" role="menubar">
+          <li class="pill-nav-item" role="none">
+            <button class="pill-nav-btn active" data-tab="leaderboard" role="menuitem">Leaderboard</button>
+          </li>
+          <li class="pill-nav-item" role="none">
+            <button class="pill-nav-btn" data-tab="cards" role="menuitem">Player Cards</button>
+          </li>
+          <li class="pill-nav-item" role="none">
+            <button class="pill-nav-btn" data-tab="events" role="menuitem">Events</button>
+          </li>
+          <li class="pill-nav-item" role="none">
+            <button class="pill-nav-btn" data-tab="admin" role="menuitem">Admin</button>
+          </li>
+        </ul>
+        <!-- Minimalist Mobile Hamburger -->
+        <button class="pill-hamburger" id="pillHamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+      <!-- Mobile Floating Pill Dropdown Menu -->
+      <div class="pill-mobile-menu" id="pillMobileMenu">
+        <button class="pill-mobile-btn active" data-tab="leaderboard">Leaderboard</button>
+        <button class="pill-mobile-btn" data-tab="cards">Player Cards</button>
+        <button class="pill-mobile-btn" data-tab="events">Events</button>
+        <button class="pill-mobile-btn" data-tab="admin">Admin</button>
+        <button class="pill-mobile-btn" data-tab="profile">My Profile</button>
+      </div>
     </div>
   </nav>
 

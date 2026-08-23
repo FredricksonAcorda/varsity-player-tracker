@@ -74,7 +74,12 @@ const App = (() => {
     const activeBtn = document.querySelector(`.pill-nav-btn[data-tab="${currentTab}"]`);
     const indicator = document.getElementById('pillIndicator');
     const nav = document.getElementById('pillNav');
-    if (!activeBtn || !indicator || !nav) return;
+    if (!indicator || !nav) return;
+
+    if (!activeBtn) {
+      indicator.style.opacity = '0';
+      return;
+    }
 
     const navRect = nav.getBoundingClientRect();
     const btnRect = activeBtn.getBoundingClientRect();
@@ -96,6 +101,12 @@ const App = (() => {
     document.querySelectorAll('.pill-nav-btn, .pill-mobile-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.tab === tab);
     });
+
+    // Update header My Profile button active highlight
+    const headerProfileBtn = document.getElementById('headerProfileBtn');
+    if (headerProfileBtn) {
+      headerProfileBtn.classList.toggle('active', tab === 'profile');
+    }
 
     updatePillIndicator();
 
@@ -259,26 +270,24 @@ const App = (() => {
   function updateSessionUI() {
     const session = Storage.getSession();
     const userInfo = document.getElementById('userInfo');
-    const headerUsername = document.getElementById('headerUsername');
-    const headerAvatar = document.querySelector('.user-avatar');
+    const headerProfileAvatar = document.getElementById('headerProfileAvatar');
+    const headerProfileName = document.getElementById('headerProfileName');
+    const adminModeBadge = document.getElementById('adminModeHeaderBadge');
     const logoutBtn = document.getElementById('logoutBtn');
-
-    if (!userInfo) return;
 
     if (session) {
       const player = Storage.getPlayerById(session.playerId);
       if (player) {
-        userInfo.style.display = 'flex';
-        headerUsername.textContent = player.username;
-        headerUsername.style.display = '';
-        if (headerAvatar) {
-          headerAvatar.style.display = 'flex';
+        if (headerProfileName) headerProfileName.textContent = player.username;
+        if (headerProfileAvatar) {
           if (player.photo) {
-            headerAvatar.innerHTML = `<img src="${player.photo}" class="header-avatar-img" alt="${player.username}">`;
+            headerProfileAvatar.innerHTML = `<img src="${player.photo}" alt="${escapeHtml(player.username)}">`;
           } else {
-            headerAvatar.innerHTML = `<span class="header-avatar-initial">${player.username ? player.username.charAt(0).toUpperCase() : 'P'}</span>`;
+            headerProfileAvatar.innerHTML = `<span class="header-avatar-initial">${player.username ? player.username.charAt(0).toUpperCase() : 'P'}</span>`;
           }
         }
+        if (adminModeBadge) adminModeBadge.style.display = 'none';
+        if (userInfo) userInfo.style.display = 'flex';
         if (logoutBtn) {
           logoutBtn.textContent = 'Logout';
           logoutBtn.onclick = () => {
@@ -287,13 +296,15 @@ const App = (() => {
         }
       } else {
         Storage.logout();
-        userInfo.style.display = 'none';
+        if (headerProfileName) headerProfileName.textContent = 'My Profile';
+        if (headerProfileAvatar) headerProfileAvatar.innerHTML = `<span class="header-avatar-initial">P</span>`;
+        if (userInfo) userInfo.style.display = 'none';
       }
     } else if (typeof Admin !== 'undefined' && Admin.isUnlocked && Admin.isUnlocked()) {
-      userInfo.style.display = 'flex';
-      if (headerAvatar) headerAvatar.style.display = 'none';
-      headerUsername.textContent = 'Admin Mode';
-      headerUsername.style.display = '';
+      if (headerProfileName) headerProfileName.textContent = 'My Profile';
+      if (headerProfileAvatar) headerProfileAvatar.innerHTML = `<span class="header-avatar-initial">P</span>`;
+      if (adminModeBadge) adminModeBadge.style.display = '';
+      if (userInfo) userInfo.style.display = 'flex';
       if (logoutBtn) {
         logoutBtn.textContent = 'Lock';
         logoutBtn.onclick = () => {
@@ -301,7 +312,10 @@ const App = (() => {
         };
       }
     } else {
-      userInfo.style.display = 'none';
+      if (headerProfileName) headerProfileName.textContent = 'My Profile';
+      if (headerProfileAvatar) headerProfileAvatar.innerHTML = `<span class="header-avatar-initial">P</span>`;
+      if (adminModeBadge) adminModeBadge.style.display = 'none';
+      if (userInfo) userInfo.style.display = 'none';
     }
   }
 
