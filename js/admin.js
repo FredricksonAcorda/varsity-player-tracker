@@ -40,7 +40,7 @@ const Admin = (() => {
         restricted.style.display = 'block';
         const restrictedText = document.getElementById('adminRestrictedText');
         if (restrictedText) {
-          restrictedText.innerHTML = `You are currently signed in as Athlete <strong>${escapeHtml(currentPlayer.username)}</strong> (${currentPlayer.id}). Administrative tools (roster CRUD, match recording, and rank adjustments) are restricted to authorized coaches and organizers.`;
+          restrictedText.innerHTML = `You are currently signed in as Player <strong>${escapeHtml(currentPlayer.username)}</strong> (${currentPlayer.id}). Your are restricted from accessing the admin panel.`;
         }
       }
       gate.style.display = 'none';

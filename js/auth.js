@@ -64,9 +64,10 @@ const Auth = (() => {
       // Locking admin session ensures athlete mode is strictly enforced
       Admin.lock();
       App.updateSessionUI();
-      App.showToast(`Welcome back, ${player.username}!`, 'success');
+      App.switchTab('profile');
       Profile.render();
       Admin.render();
+      App.showToast(`Welcome back, ${player.username}!`, 'success');
       form.reset();
     });
   }
@@ -183,9 +184,10 @@ const Auth = (() => {
       // Lock admin session
       Admin.lock();
       App.updateSessionUI();
-      App.showToast(`Account created! Your Player ID is ${player.id}`, 'success');
+      App.switchTab('profile');
       Profile.render();
       Admin.render();
+      App.showToast(`Account created! Your Player ID is ${player.id}`, 'success');
       form.reset();
       document.getElementById('signupCategoriesGroup').style.display = 'none';
 

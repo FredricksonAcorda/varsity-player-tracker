@@ -82,6 +82,61 @@ const Storage = (() => {
     }
   }
 
+  // ─── Default Demo Players ───
+  const DEFAULT_PLAYERS = [
+    {
+      id: 'BDMN-00001',
+      username: 'Alex Rivera',
+      passwordHash: simpleHash('Password123!'),
+      gradeLevel: 'Grade 11',
+      section: 'Section 1A',
+      photo: '',
+      sports: [
+        {
+          sport: 'Badminton',
+          categories: [
+            {
+              category: "Men's Singles",
+              wins: 8,
+              losses: 2,
+              rank: 1,
+              matchHistory: [
+                { date: '2026-08-15', result: 'W', opponent: 'Sam Cruz', event: 'Varsity Tryouts' },
+                { date: '2026-08-18', result: 'W', opponent: 'Chris Tan', event: 'District Prelims' }
+              ]
+            }
+          ]
+        }
+      ],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'BDMN-00002',
+      username: 'Sam Cruz',
+      passwordHash: simpleHash('Password123!'),
+      gradeLevel: 'Grade 12',
+      section: 'Section 2B',
+      photo: '',
+      sports: [
+        {
+          sport: 'Badminton',
+          categories: [
+            {
+              category: "Men's Singles",
+              wins: 6,
+              losses: 3,
+              rank: 2,
+              matchHistory: [
+                { date: '2026-08-15', result: 'L', opponent: 'Alex Rivera', event: 'Varsity Tryouts' }
+              ]
+            }
+          ]
+        }
+      ],
+      createdAt: new Date().toISOString()
+    }
+  ];
+
   // ─── Initialization ───
   function init() {
     if (!get(KEYS.SPORTS_CONFIG)) {
@@ -90,8 +145,10 @@ const Storage = (() => {
     if (!get(KEYS.ADMIN_PASSWORD)) {
       set(KEYS.ADMIN_PASSWORD, simpleHash(DEFAULT_ADMIN_PASSWORD));
     }
-    if (!get(KEYS.PLAYERS)) {
-      set(KEYS.PLAYERS, []);
+    const existingPlayers = get(KEYS.PLAYERS);
+    if (!existingPlayers || existingPlayers.length === 0) {
+      set(KEYS.PLAYERS, DEFAULT_PLAYERS);
+      set('varsity_id_counter_BDMN', 2);
     }
     if (!get(KEYS.EVENTS)) {
       set(KEYS.EVENTS, []);
@@ -465,10 +522,16 @@ const Storage = (() => {
 
   // ─── Auth ───
   function authenticate(username, password) {
-    const player = getPlayerByUsername(username);
+    if (!username || !password) return null;
+    const player = getPlayerByUsername(username.trim());
     if (!player) return null;
-    if (player.passwordHash !== simpleHash(password)) return null;
-    return player;
+    const cleanPw = String(password).trim();
+    const hash1 = simpleHash(password);
+    const hash2 = simpleHash(cleanPw);
+    if (player.passwordHash === hash1 || player.passwordHash === hash2 || player.password === password || player.password === cleanPw) {
+      return player;
+    }
+    return null;
   }
 
   // ─── Export / Import ───
