@@ -260,13 +260,31 @@ const Auth = (() => {
   }
 
   function showSignupTab() {
-    const signupBtn = document.querySelector('.auth-tab-btn[data-auth-tab="signup"]');
-    if (signupBtn) signupBtn.click();
+    document.querySelectorAll('.auth-tab-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.authTab === 'signup');
+    });
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    if (loginForm) loginForm.classList.remove('active');
+    if (signupForm) signupForm.classList.add('active');
+    const authSection = document.getElementById('authSection');
+    const profileSection = document.getElementById('profileSection');
+    if (authSection) authSection.style.display = 'block';
+    if (profileSection) profileSection.style.display = 'none';
   }
 
   function showLoginTab() {
-    const loginBtn = document.querySelector('.auth-tab-btn[data-auth-tab="login"]');
-    if (loginBtn) loginBtn.click();
+    document.querySelectorAll('.auth-tab-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.authTab === 'login');
+    });
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    if (loginForm) loginForm.classList.add('active');
+    if (signupForm) signupForm.classList.remove('active');
+    const authSection = document.getElementById('authSection');
+    const profileSection = document.getElementById('profileSection');
+    if (authSection) authSection.style.display = 'block';
+    if (profileSection) profileSection.style.display = 'none';
   }
 
   return {

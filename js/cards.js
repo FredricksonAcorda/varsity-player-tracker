@@ -111,21 +111,13 @@ const Cards = (() => {
     // Apply active sort and direction
     rows = sortRows(rows, currentSortKey, currentSortOrder);
 
-    // Pin "My Player Card" to the very top if logged in
+    // Tag logged-in athlete's card naturally in the list without forcing it to pin at index 0
     const session = Storage.getSession();
     if (session && session.playerId) {
-      const myRows = [];
-      const otherRows = [];
-
-      rows.forEach(r => {
-        if (r.id === session.playerId) {
-          myRows.push({ ...r, isMyCard: true });
-        } else {
-          otherRows.push(r);
-        }
-      });
-
-      rows = [...myRows, ...otherRows];
+      rows = rows.map(r => ({
+        ...r,
+        isMyCard: r.id === session.playerId
+      }));
     }
 
     // Apply layout class
@@ -150,22 +142,20 @@ const Cards = (() => {
         ? `<img src="${row.photo}" class="card-avatar-img" alt="${escapeHtml(row.username)}">`
         : `<span class="card-avatar-initial">${initial}</span>`;
 
-      const myCardBadgeHTML = row.isMyCard
-        ? `<div class="my-card-pinned-badge">My Player Card</div>`
-        : '';
-
       const rankDisplayHTML = isRanked ? `#${row.rank}` : '—';
 
       return `
         <div class="player-card ${rankTier} ${row.isMyCard ? 'is-my-card' : ''}" 
              style="animation-delay: ${idx * 0.04}s"
              onclick="Cards.showDetail('${row.id}', '${escapeAttr(row.sport)}', '${escapeAttr(row.category)}')">
-          ${myCardBadgeHTML}
           <div class="card-header">
             <div class="card-avatar">${cardAvatarHTML}</div>
-            <div class="card-rank-display">
-              <div class="card-rank-label">Rank</div>
-              <div class="card-rank-number ${rankColorClass}">${rankDisplayHTML}</div>
+            <div class="card-header-meta">
+              ${row.isMyCard ? '<span class="card-my-tag">My Card</span>' : ''}
+              <div class="card-rank-display">
+                <div class="card-rank-label">Rank</div>
+                <div class="card-rank-number ${rankColorClass}">${rankDisplayHTML}</div>
+              </div>
             </div>
           </div>
           <div class="card-name">${escapeHtml(row.username)}</div>
@@ -217,9 +207,9 @@ const Cards = (() => {
             <span class="rank-badge ${rankClass}">${rankDisplay}</span>
             <div class="list-avatar">${avatarHTML}</div>
             <div class="list-player-info">
-              <div class="list-player-name">
-                ${escapeHtml(row.username)}
-                ${row.isMyCard ? '<span class="list-my-card-tag">My Card</span>' : ''}
+              <div class="list-player-name-row">
+                <span class="list-player-name">${escapeHtml(row.username)}</span>
+                ${row.isMyCard ? '<span class="card-my-tag">My Card</span>' : ''}
               </div>
               <div class="list-player-id">${row.id}</div>
             </div>
