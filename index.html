@@ -19,21 +19,27 @@
         <h1>Varsity<span class="logo-accent">Tracker</span></h1>
       </div>
       <div class="header-right">
-        <button class="header-profile-btn" id="headerProfileBtn" onclick="App.switchTab('profile')" aria-label="My Profile">
-          <span class="header-profile-avatar" id="headerProfileAvatar">
-            <span class="header-avatar-initial" id="headerAvatarInitial">P</span>
-          </span>
-          <span class="header-profile-name" id="headerProfileName">My Profile</span>
-        </button>
+        <div class="header-action-group">
+          <button class="header-nav-btn" id="headerProfileBtn" onclick="App.switchTab('profile')" aria-label="My Profile" title="My Profile">
+            <span class="header-profile-avatar" id="headerProfileAvatar">
+              <span class="header-avatar-initial" id="headerAvatarInitial">P</span>
+            </span>
+            <span class="header-profile-name" id="headerProfileName">My Profile</span>
+          </button>
+          <button class="header-nav-btn header-admin-btn" id="headerAdminBtn" onclick="App.switchTab('admin')" aria-label="Admin Dashboard" title="Admin Dashboard">
+            <span class="header-admin-icon">⚙</span>
+            <span id="headerAdminText">Admin</span>
+          </button>
+        </div>
         <div class="user-info" id="userInfo" style="display:none;">
-          <span class="admin-mode-pill" id="adminModeHeaderBadge" style="display:none;">Admin</span>
-          <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>
+          <span class="admin-mode-pill" id="adminModeHeaderBadge" style="display:none;">Unlocked</span>
+          <button class="btn btn-ghost btn-sm header-logout-btn" id="logoutBtn" title="Logout or Lock">Logout</button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- ═══════ PILL NAVIGATION (Left-Aligned & Floating) ═══════ -->
+  <!-- ═══════ PILL NAVIGATION (Leaderboard, Player Cards, Events) ═══════ -->
   <nav class="pill-nav-container" id="pillNavContainer" aria-label="Main Navigation">
     <div class="pill-nav-inner">
       <div class="pill-nav" id="pillNav">
@@ -48,9 +54,6 @@
           <li class="pill-nav-item" role="none">
             <button class="pill-nav-btn" data-tab="events" role="menuitem">Events</button>
           </li>
-          <li class="pill-nav-item" role="none">
-            <button class="pill-nav-btn" data-tab="admin" role="menuitem">Admin</button>
-          </li>
         </ul>
         <!-- Minimalist Mobile Hamburger -->
         <button class="pill-hamburger" id="pillHamburger" aria-label="Toggle navigation menu" aria-expanded="false">
@@ -63,8 +66,8 @@
         <button class="pill-mobile-btn active" data-tab="leaderboard">Leaderboard</button>
         <button class="pill-mobile-btn" data-tab="cards">Player Cards</button>
         <button class="pill-mobile-btn" data-tab="events">Events</button>
-        <button class="pill-mobile-btn" data-tab="admin">Admin</button>
         <button class="pill-mobile-btn" data-tab="profile">My Profile</button>
+        <button class="pill-mobile-btn" data-tab="admin">Admin</button>
       </div>
     </div>
   </nav>

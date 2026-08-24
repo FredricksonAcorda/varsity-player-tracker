@@ -100,6 +100,9 @@ const Profile = (() => {
         <button class="btn btn-primary btn-sm" onclick="Profile.downloadCurrentCard()">
           Download Card (PNG)
         </button>
+        <button class="btn btn-danger btn-sm" onclick="Auth.logout()" title="Log out of athlete account">
+          Logout
+        </button>
       </div>
     `;
   }

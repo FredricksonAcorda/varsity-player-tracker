@@ -102,10 +102,14 @@ const App = (() => {
       btn.classList.toggle('active', btn.dataset.tab === tab);
     });
 
-    // Update header My Profile button active highlight
+    // Update header My Profile and Admin buttons active highlight
     const headerProfileBtn = document.getElementById('headerProfileBtn');
     if (headerProfileBtn) {
       headerProfileBtn.classList.toggle('active', tab === 'profile');
+    }
+    const headerAdminBtn = document.getElementById('headerAdminBtn');
+    if (headerAdminBtn) {
+      headerAdminBtn.classList.toggle('active', tab === 'admin');
     }
 
     updatePillIndicator();
@@ -280,6 +284,8 @@ const App = (() => {
     const adminModeBadge = document.getElementById('adminModeHeaderBadge');
     const logoutBtn = document.getElementById('logoutBtn');
 
+    const headerAdminText = document.getElementById('headerAdminText');
+
     if (session) {
       const player = Storage.getPlayerById(session.playerId);
       if (player) {
@@ -291,6 +297,7 @@ const App = (() => {
             headerProfileAvatar.innerHTML = `<span class="header-avatar-initial">${player.username ? player.username.charAt(0).toUpperCase() : 'P'}</span>`;
           }
         }
+        if (headerAdminText) headerAdminText.textContent = 'Admin';
         if (adminModeBadge) adminModeBadge.style.display = 'none';
         if (userInfo) userInfo.style.display = 'flex';
         if (logoutBtn) {
@@ -303,11 +310,13 @@ const App = (() => {
         Storage.logout();
         if (headerProfileName) headerProfileName.textContent = 'My Profile';
         if (headerProfileAvatar) headerProfileAvatar.innerHTML = `<span class="header-avatar-initial">P</span>`;
+        if (headerAdminText) headerAdminText.textContent = 'Admin';
         if (userInfo) userInfo.style.display = 'none';
       }
     } else if (typeof Admin !== 'undefined' && Admin.isUnlocked && Admin.isUnlocked()) {
       if (headerProfileName) headerProfileName.textContent = 'My Profile';
       if (headerProfileAvatar) headerProfileAvatar.innerHTML = `<span class="header-avatar-initial">P</span>`;
+      if (headerAdminText) headerAdminText.textContent = 'Admin (Unlocked)';
       if (adminModeBadge) adminModeBadge.style.display = '';
       if (userInfo) userInfo.style.display = 'flex';
       if (logoutBtn) {
@@ -319,6 +328,7 @@ const App = (() => {
     } else {
       if (headerProfileName) headerProfileName.textContent = 'My Profile';
       if (headerProfileAvatar) headerProfileAvatar.innerHTML = `<span class="header-avatar-initial">P</span>`;
+      if (headerAdminText) headerAdminText.textContent = 'Admin';
       if (adminModeBadge) adminModeBadge.style.display = 'none';
       if (userInfo) userInfo.style.display = 'none';
     }
