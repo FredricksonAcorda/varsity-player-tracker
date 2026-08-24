@@ -2223,6 +2223,86 @@ a {
   color: var(--text-muted);
 }
 
+/* Password Input Wrapper & Eye Toggle */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  padding-right: 2.75rem !important;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.password-toggle-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.password-toggle-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 1px;
+}
+
+.eye-icon {
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+/* Auth Submit Row & Resized Button */
+.auth-submit-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.btn-auth-submit {
+  min-height: 44px;
+  min-width: 170px;
+  padding: 0.65rem 2rem;
+  font-family: var(--font-heading);
+  font-size: 0.925rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: var(--border-radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 16px var(--accent-primary-glow);
+}
+
+.btn-auth-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px var(--accent-primary-glow);
+}
+
+.admin-login-box .auth-submit-row {
+  margin-top: 1rem;
+}
+
 .form-group select {
   cursor: pointer;
   appearance: none;

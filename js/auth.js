@@ -1,6 +1,6 @@
 /**
  * auth.js — Authentication Module
- * Handles player sign up, login, logout, password validation, and session management.
+ * Handles player sign up, login, logout, password validation, password visibility toggles, and session management.
  */
 
 const Auth = (() => {
@@ -21,19 +21,34 @@ const Auth = (() => {
     return missing;
   }
 
+  // ─── Toggle Password Visibility (Eye Icon) ───
+  function togglePasswordVisibility(inputId, btnEl) {
+    const input = document.getElementById(inputId);
+    if (!input || !btnEl) return;
+
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+
+    const eyeOpen = btnEl.querySelector('.eye-open');
+    const eyeClosed = btnEl.querySelector('.eye-closed');
+
+    if (eyeOpen && eyeClosed) {
+      eyeOpen.style.display = isPassword ? 'none' : 'block';
+      eyeClosed.style.display = isPassword ? 'block' : 'none';
+    }
+  }
+
   // ─── Auth Tab Switching ───
   function setupAuthTabs() {
     document.querySelectorAll('.auth-tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         const tab = btn.dataset.authTab;
-
-        // Update buttons
-        document.querySelectorAll('.auth-tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        // Update forms
-        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-        document.getElementById(tab === 'login' ? 'loginForm' : 'signupForm').classList.add('active');
+        if (tab === 'login') {
+          showLoginTab();
+        } else {
+          showSignupTab();
+        }
       });
     });
   }
@@ -41,6 +56,8 @@ const Auth = (() => {
   // ─── Login ───
   function setupLoginForm() {
     const form = document.getElementById('loginForm');
+    if (!form) return;
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const username = document.getElementById('loginUsername').value.trim();
@@ -48,17 +65,17 @@ const Auth = (() => {
       const errorEl = document.getElementById('loginError');
 
       if (!username || !password) {
-        errorEl.textContent = 'Please fill in all fields.';
+        if (errorEl) errorEl.textContent = 'Please fill in all fields.';
         return;
       }
 
       const player = Storage.authenticate(username, password);
       if (!player) {
-        errorEl.textContent = 'Invalid username or password.';
+        if (errorEl) errorEl.textContent = 'Invalid username or password.';
         return;
       }
 
-      errorEl.textContent = '';
+      if (errorEl) errorEl.textContent = '';
       Storage.login(player.id);
       
       // Locking admin session ensures athlete mode is strictly enforced
@@ -78,6 +95,8 @@ const Auth = (() => {
     const sportSelect = document.getElementById('signupSport');
     const pwInput = document.getElementById('signupPassword');
     const pwHint = document.getElementById('signupPasswordHint');
+
+    if (!form) return;
 
     // Real-time password requirement helper
     if (pwInput && pwHint) {
@@ -100,61 +119,68 @@ const Auth = (() => {
     }
 
     // Sport change → show categories
-    sportSelect.addEventListener('change', () => {
-      const sport = sportSelect.value;
-      const catGroup = document.getElementById('signupCategoriesGroup');
-      const catContainer = document.getElementById('signupCategories');
+    if (sportSelect) {
+      sportSelect.addEventListener('change', () => {
+        const sport = sportSelect.value;
+        const catGroup = document.getElementById('signupCategoriesGroup');
+        const catContainer = document.getElementById('signupCategories');
 
-      if (!sport) {
-        catGroup.style.display = 'none';
-        return;
-      }
+        if (!sport || !catGroup || !catContainer) {
+          if (catGroup) catGroup.style.display = 'none';
+          return;
+        }
 
-      catGroup.style.display = 'block';
-      catContainer.innerHTML = '';
+        catGroup.style.display = 'block';
+        catContainer.innerHTML = '';
 
-      const categories = Storage.getCategoriesForSport(sport);
-      categories.forEach(cat => {
-        const label = document.createElement('label');
-        label.className = 'checkbox-item';
-        label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
+        const categories = Storage.getCategoriesForSport(sport);
+        categories.forEach(cat => {
+          const label = document.createElement('label');
+          label.className = 'checkbox-item';
+          label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
 
-        const checkbox = label.querySelector('input');
-        checkbox.addEventListener('change', () => {
-          label.classList.toggle('checked', checkbox.checked);
+          const checkbox = label.querySelector('input');
+          checkbox.addEventListener('change', () => {
+            label.classList.toggle('checked', checkbox.checked);
+          });
+
+          catContainer.appendChild(label);
         });
-
-        catContainer.appendChild(label);
       });
-    });
+    }
 
     // Form submit
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const errorEl = document.getElementById('signupError');
 
-      const username = document.getElementById('signupUsername').value.trim();
-      const password = document.getElementById('signupPassword').value;
-      const gradeLevel = document.getElementById('signupGrade').value;
-      const section = document.getElementById('signupSection').value.trim();
-      const sport = document.getElementById('signupSport').value;
+      const usernameInput = document.getElementById('signupUsername');
+      const passwordInput = document.getElementById('signupPassword');
+      const gradeInput = document.getElementById('signupGrade');
+      const sectionInput = document.getElementById('signupSection');
+
+      const username = usernameInput ? usernameInput.value.trim() : '';
+      const password = passwordInput ? passwordInput.value : '';
+      const gradeLevel = gradeInput ? gradeInput.value : '';
+      const section = sectionInput ? sectionInput.value.trim() : '';
+      const sport = sportSelect ? sportSelect.value : '';
 
       // Validate required fields
       if (!username || !password || !gradeLevel || !sport) {
-        errorEl.textContent = 'Please fill in all required fields.';
+        if (errorEl) errorEl.textContent = 'Please fill in all required fields.';
         return;
       }
 
       // Validate password strength
       const passwordIssues = validatePassword(password);
       if (passwordIssues.length > 0) {
-        errorEl.textContent = 'Password must include: ' + passwordIssues.join(', ') + '.';
+        if (errorEl) errorEl.textContent = 'Password must include: ' + passwordIssues.join(', ') + '.';
         return;
       }
 
       // Check username taken
       if (Storage.getPlayerByUsername(username)) {
-        errorEl.textContent = 'Username is already taken.';
+        if (errorEl) errorEl.textContent = 'Username is already taken.';
         return;
       }
 
@@ -165,11 +191,11 @@ const Auth = (() => {
       });
 
       if (selectedCats.length === 0) {
-        errorEl.textContent = 'Please select at least one category.';
+        if (errorEl) errorEl.textContent = 'Please select at least one category.';
         return;
       }
 
-      // Create player
+      // Create player in storage
       const player = Storage.addPlayer({
         username,
         password,
@@ -178,34 +204,45 @@ const Auth = (() => {
         sports: [{ sport, categories: selectedCats }],
       });
 
-      errorEl.textContent = '';
+      // Clear any errors & reset form fields
+      if (errorEl) errorEl.textContent = '';
       form.reset();
-      document.getElementById('signupCategoriesGroup').style.display = 'none';
 
-      // Reset checkbox UI
+      // RESET PASSWORD HINT COMPLETELY so it doesn't persist
+      if (pwHint) {
+        pwHint.textContent = 'Requires min. 6 chars (upper, lower, number/symbol)';
+        pwHint.className = 'field-hint';
+      }
+
+      const catGroup = document.getElementById('signupCategoriesGroup');
+      if (catGroup) catGroup.style.display = 'none';
+
+      // Reset checkbox items UI
       document.querySelectorAll('#signupCategories .checkbox-item').forEach(el => {
         el.classList.remove('checked');
       });
 
-      // Synchronize views so the new player card immediately appears in Cards and Leaderboard!
+      // Synchronize all views in background
       Leaderboard.render();
       Cards.render();
       if (typeof Home !== 'undefined' && Home.render) Home.render();
       Admin.render();
 
-      // Switch to Login tab and prompt athlete to enter credentials
+      // Directly activate Login tab
       showLoginTab();
+
+      // Pre-fill username and focus password
       const loginUsernameInput = document.getElementById('loginUsername');
       const loginPasswordInput = document.getElementById('loginPassword');
       if (loginUsernameInput) loginUsernameInput.value = username;
       if (loginPasswordInput) {
         loginPasswordInput.value = '';
-        loginPasswordInput.focus();
+        setTimeout(() => {
+          loginPasswordInput.focus();
+        }, 100);
       }
 
-      App.switchTab('profile');
-      Profile.render();
-      App.showToast(`Account created! Player ID: ${player.id}. Please sign in to verify credentials.`, 'success');
+      App.showToast(`Account created for ${player.username}! Player ID: ${player.id}. Please sign in to verify credentials.`, 'success');
     });
   }
 
@@ -213,12 +250,14 @@ const Auth = (() => {
   function populateSignupDropdowns() {
     // Grade levels
     const gradeSelect = document.getElementById('signupGrade');
-    Storage.getGradeLevels().forEach(grade => {
-      const opt = document.createElement('option');
-      opt.value = grade;
-      opt.textContent = grade;
-      gradeSelect.appendChild(opt);
-    });
+    if (gradeSelect) {
+      Storage.getGradeLevels().forEach(grade => {
+        const opt = document.createElement('option');
+        opt.value = grade;
+        opt.textContent = grade;
+        gradeSelect.appendChild(opt);
+      });
+    }
 
     // Sports
     refreshSportDropdown();
@@ -226,6 +265,7 @@ const Auth = (() => {
 
   function refreshSportDropdown() {
     const sportSelect = document.getElementById('signupSport');
+    if (!sportSelect) return;
     // Clear except placeholder
     while (sportSelect.options.length > 1) sportSelect.remove(1);
 
@@ -291,6 +331,7 @@ const Auth = (() => {
     init,
     logout,
     validatePassword,
+    togglePasswordVisibility,
     refreshSportDropdown,
     showSignupTab,
     showLoginTab,
