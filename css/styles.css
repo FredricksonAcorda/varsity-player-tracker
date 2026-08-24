@@ -2115,29 +2115,29 @@ a {
   box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35), 0 6px 20px rgba(99, 102, 241, 0.2) !important;
 }
 
-/* Card Header: Avatar + Identity + Rank Badge */
+/* Card Header & Avatar */
 .card-header {
   display: flex;
-  align-items: center;
-  gap: 0.85rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .card-avatar {
-  width: 50px;
-  height: 50px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: var(--gradient-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #fff;
   font-family: var(--font-heading);
   flex-shrink: 0;
-  border: 2px solid rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .card-avatar-img {
@@ -2146,117 +2146,126 @@ a {
   object-fit: cover;
 }
 
-.card-identity {
-  flex: 1;
-  min-width: 0;
+.card-header-meta {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
 }
 
-.card-name {
-  font-family: var(--font-heading);
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.25;
+.card-rank-display {
+  text-align: right;
 }
 
-.card-id {
-  font-family: monospace;
-  font-size: 0.72rem;
-  color: var(--accent-primary);
-  letter-spacing: 0.5px;
-  margin-top: 0.15rem;
-}
-
-/* Rank Badge Box */
-.card-rank-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 46px;
-  padding: 0.3rem 0.5rem;
-  border-radius: var(--border-radius-sm);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-glass);
-  flex-shrink: 0;
-}
-
-.card-rank-badge .rank-badge-label {
-  font-size: 0.55rem;
-  font-weight: 800;
-  letter-spacing: 0.8px;
+.card-rank-label {
+  font-size: 0.65rem;
   text-transform: uppercase;
+  letter-spacing: 1px;
   color: var(--text-muted);
+}
+
+.card-rank-number {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 900;
   line-height: 1;
 }
 
-.card-rank-badge .rank-badge-num {
-  font-family: var(--font-heading);
-  font-size: 1.15rem;
-  font-weight: 900;
-  line-height: 1.1;
-  margin-top: 2px;
-}
-
-.card-rank-badge.gold {
-  border-color: rgba(251, 191, 36, 0.5);
-  background: rgba(251, 191, 36, 0.08);
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.15);
-}
-.card-rank-badge.gold .rank-badge-num {
+.card-rank-number.gold {
   color: var(--accent-gold);
 }
 
-.card-rank-badge.silver {
-  border-color: rgba(203, 213, 225, 0.4);
-  background: rgba(203, 213, 225, 0.06);
-}
-.card-rank-badge.silver .rank-badge-num {
+.card-rank-number.silver {
   color: var(--accent-silver);
 }
 
-.card-rank-badge.bronze {
-  border-color: rgba(217, 119, 6, 0.4);
-  background: rgba(217, 119, 6, 0.06);
-}
-.card-rank-badge.bronze .rank-badge-num {
+.card-rank-number.bronze {
   color: var(--accent-bronze);
 }
 
-.card-rank-badge.default .rank-badge-num {
+.card-rank-number.default {
   color: var(--text-muted);
 }
 
-/* Card Tags Row */
-.card-tags-row {
+.card-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+  color: var(--text-primary);
+}
+
+.card-id {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: var(--accent-primary);
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.card-meta {
   display: flex;
-  align-items: center;
-  gap: 0.35rem;
   flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
 }
 
 .card-meta-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.2rem 0.55rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.15rem 0.5rem;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
   border-radius: 999px;
   font-size: 0.7rem;
-  font-weight: 600;
   color: var(--text-secondary);
-  white-space: nowrap;
 }
 
-.card-meta-tag.sport {
-  color: #a5b4fc;
-  border-color: rgba(99, 102, 241, 0.25);
-  background: rgba(99, 102, 241, 0.08);
+.card-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.card-stat {
+  text-align: center;
+}
+
+.card-stat-value {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.card-stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.card-winrate-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.card-winrate-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width var(--transition-slow);
+}
+
+.card-winrate-fill.high {
+  background: var(--gradient-win);
+}
+
+.card-winrate-fill.mid {
+  background: var(--gradient-gold);
+}
+
+.card-winrate-fill.low {
+  background: var(--gradient-loss);
 }
 
 /* Card Stats Grid */
