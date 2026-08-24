@@ -15,31 +15,26 @@ const Storage = (() => {
     EVENT_COUNTER: 'varsity_event_counter',
   };
 
-  // ─── Default Sports Config ───
+  // ─── Default Sports Config (Clean Typographic) ───
   const DEFAULT_SPORTS = [
     {
       sport: 'Badminton',
-      emoji: '🏸',
       categories: ["Men's Singles", "Women's Singles", "Men's Doubles", "Women's Doubles", "Mixed Doubles"],
     },
     {
       sport: 'Basketball',
-      emoji: '🏀',
       categories: ["Men's 3x3", "Women's 3x3", "Men's 5v5", "Women's 5v5"],
     },
     {
       sport: 'Volleyball',
-      emoji: '🏐',
       categories: ["Men's", "Women's", "Mixed"],
     },
     {
       sport: 'Table Tennis',
-      emoji: '🏓',
       categories: ["Men's Singles", "Women's Singles", "Men's Doubles", "Women's Doubles", "Mixed Doubles"],
     },
     {
       sport: 'Football',
-      emoji: '⚽',
       categories: ["Men's", "Women's", "Mixed"],
     },
   ];
@@ -338,7 +333,7 @@ const Storage = (() => {
   // ─── Automatic Ranking Recalculation Engine ───
   function recalculateRanksForCategory(sport, category) {
     const players = getPlayers();
-    const eligible = [];
+    const activePlayers = [];
 
     players.forEach(p => {
       const sportData = (p.sports || []).find(s => s.sport === sport);
@@ -348,25 +343,30 @@ const Storage = (() => {
 
       const wins = catData.wins || 0;
       const losses = catData.losses || 0;
+      const totalMatches = wins + losses;
       const winrate = getWinrate(wins, losses);
-      eligible.push({ player: p, catData, wins, losses, winrate });
+
+      if (totalMatches > 0) {
+        activePlayers.push({ player: p, catData, wins, losses, winrate, totalMatches });
+      } else {
+        // Player has no matches played yet: STRICTLY UNRANKED (rank = 0)
+        catData.rank = 0;
+      }
     });
 
-    if (eligible.length === 0) return;
-
-    // Rank algorithm:
-    // 1. Highest wins
-    // 2. Highest winrate
+    // Rank algorithm for active players with at least 1 recorded match:
+    // 1. Highest total wins
+    // 2. Highest winrate percentage
     // 3. Lowest losses
     // 4. Alphabetical tie-breaker
-    eligible.sort((a, b) => {
+    activePlayers.sort((a, b) => {
       if (b.wins !== a.wins) return b.wins - a.wins;
       if (b.winrate !== a.winrate) return b.winrate - a.winrate;
       if (a.losses !== b.losses) return a.losses - b.losses;
       return (a.player.username || '').localeCompare(b.player.username || '');
     });
 
-    eligible.forEach((item, index) => {
+    activePlayers.forEach((item, index) => {
       item.catData.rank = index + 1;
     });
 
@@ -526,27 +526,36 @@ const Storage = (() => {
     const rows = [];
 
     players.forEach(player => {
-      player.sports.forEach(sportData => {
-        sportData.categories.forEach(catData => {
+      (player.sports || []).forEach(sportData => {
+        (sportData.categories || []).forEach(catItem => {
+          const categoryName = typeof catItem === 'string' ? catItem : catItem.category;
+          const wins = (typeof catItem === 'object' && catItem.wins) ? catItem.wins : 0;
+          const losses = (typeof catItem === 'object' && catItem.losses) ? catItem.losses : 0;
+          const rank = (typeof catItem === 'object' && catItem.rank) ? catItem.rank : 0;
+          const matchHistory = (typeof catItem === 'object' && catItem.matchHistory) ? catItem.matchHistory : [];
+
           const row = {
             id: player.id,
             username: player.username,
             photo: player.photo || '',
-            gradeLevel: player.gradeLevel,
-            section: player.section,
+            gradeLevel: player.gradeLevel || '',
+            section: player.section || '',
             sport: sportData.sport,
-            category: catData.category,
-            wins: catData.wins,
-            losses: catData.losses,
-            winrate: getWinrate(catData.wins, catData.losses),
-            rank: catData.rank,
-            matchHistory: catData.matchHistory,
+            category: categoryName,
+            wins,
+            losses,
+            winrate: getWinrate(wins, losses),
+            rank,
+            matchHistory,
           };
 
           // Apply filters
           if (filters.sport && filters.sport !== 'All' && row.sport !== filters.sport) return;
           if (filters.category && filters.category !== 'All' && row.category !== filters.category) return;
-          if (filters.gradeLevel && filters.gradeLevel !== 'All' && row.gradeLevel !== filters.gradeLevel) return;
+          
+          const gradeFilter = filters.grade || filters.gradeLevel;
+          if (gradeFilter && gradeFilter !== 'All' && row.gradeLevel !== gradeFilter) return;
+
           if (filters.search) {
             const searchLower = filters.search.toLowerCase();
             if (!row.username.toLowerCase().includes(searchLower) && !row.id.toLowerCase().includes(searchLower)) return;
@@ -557,12 +566,19 @@ const Storage = (() => {
       });
     });
 
-    // Sort by rank (ranked first, then unranked)
+    // Sort: Ranked active players first (#1, #2, #3...), then Unranked (rank = 0) at the bottom
     rows.sort((a, b) => {
-      if (a.rank === 0 && b.rank === 0) return b.winrate - a.winrate;
-      if (a.rank === 0) return 1;
-      if (b.rank === 0) return -1;
-      return a.rank - b.rank;
+      const aRanked = a.rank > 0 && (a.wins + a.losses > 0);
+      const bRanked = b.rank > 0 && (b.wins + b.losses > 0);
+
+      if (aRanked && bRanked) return a.rank - b.rank;
+      if (aRanked && !bRanked) return -1;
+      if (!aRanked && bRanked) return 1;
+
+      // Both unranked: sort by wins -> winrate -> name
+      if (b.wins !== a.wins) return b.wins - a.wins;
+      if (b.winrate !== a.winrate) return b.winrate - a.winrate;
+      return (a.username || '').localeCompare(b.username || '');
     });
 
     return rows;

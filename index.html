@@ -30,7 +30,7 @@
               <span class="header-account-name" id="headerAccountName">Athlete & Coach</span>
               <span class="header-account-role" id="headerAccountRole">Portal Access</span>
             </div>
-            <span class="header-account-chevron">▾</span>
+            <span class="header-account-arrow"></span>
           </button>
 
           <!-- Glass Dropdown with distinct Athlete and Coach/Admin spaces -->
@@ -47,25 +47,17 @@
                   <div class="dropdown-player-id" id="dropdownPlayerId">ID-00000</div>
                 </div>
                 <button class="dropdown-item" onclick="App.switchTab('profile'); App.closeAccountDropdown();">
-                  <span class="dropdown-item-icon">🎴</span>
                   <span>My Athlete Profile & Card</span>
                 </button>
-                <button class="dropdown-item" onclick="Profile.downloadCurrentCard(); App.closeAccountDropdown();">
-                  <span class="dropdown-item-icon">📥</span>
-                  <span>Download Digital Card (PNG)</span>
-                </button>
                 <button class="dropdown-item text-danger" onclick="Auth.logout(); App.closeAccountDropdown();">
-                  <span class="dropdown-item-icon">🚪</span>
                   <span>Log Out of Athlete Account</span>
                 </button>
               </div>
               <div id="dropdownAthleteGuest">
                 <button class="dropdown-item" onclick="App.switchTab('profile'); App.closeAccountDropdown();">
-                  <span class="dropdown-item-icon">🔑</span>
                   <span>Athlete Sign In</span>
                 </button>
                 <button class="dropdown-item" onclick="App.switchTab('profile'); Auth.showSignupTab(); App.closeAccountDropdown();">
-                  <span class="dropdown-item-icon">✨</span>
                   <span>Create Athlete Account</span>
                 </button>
               </div>
@@ -80,12 +72,10 @@
                 <span class="dropdown-badge admin" id="dropdownAdminBadge">Protected</span>
               </div>
               <button class="dropdown-item" onclick="App.switchTab('admin'); App.closeAccountDropdown();">
-                <span class="dropdown-item-icon">⚙️</span>
                 <span id="dropdownAdminActionText">Admin Dashboard & Matches</span>
               </button>
               <div id="dropdownAdminUnlockedRow" style="display:none;">
                 <button class="dropdown-item text-warning" onclick="Admin.lock(); App.closeAccountDropdown();">
-                  <span class="dropdown-item-icon">🔒</span>
                   <span>Lock Admin Session</span>
                 </button>
               </div>
@@ -138,7 +128,6 @@
     <div class="filter-bar-inner">
       <!-- Search Input aligned with filters -->
       <div class="filter-search-box">
-        <span class="filter-search-icon">🔍</span>
         <input type="text" id="filterSearch" placeholder="Search athlete name, ID, or team..." class="filter-search-input">
       </div>
 
@@ -210,12 +199,11 @@
         </div>
         <h1 class="hero-title">Track Excellence.<br><span class="gradient-text">Elevate Varsity Sports.</span></h1>
         <p class="hero-description">
-          The ultimate platform for collegiate and inter-school athletics. Discover real-time leaderboards, digital player cards, multi-sport tournament brackets, and verified match analytics.
+          The official platform for collegiate and inter-school athletics. Discover real-time leaderboards, digital player cards, multi-sport tournament brackets, and verified match analytics.
         </p>
         <div class="hero-cta-group">
           <button class="btn btn-primary btn-lg" onclick="App.switchTab('leaderboard')">
             <span>Explore Leaderboards</span>
-            <span style="font-size:1.1rem;">→</span>
           </button>
           <button class="btn btn-secondary btn-lg" onclick="App.switchTab('cards')">
             <span>View Player Cards</span>
@@ -256,12 +244,10 @@
           <h2 class="section-title">Varsity Athlete Spotlight</h2>
           <p class="section-subtitle">Leading varsity athletes ranked by official tournament victories and match winrates.</p>
         </div>
-        <div class="spotlight-grid" id="homeSpotlightGrid">
-          <!-- Populated dynamically by Home.render() -->
-        </div>
+        <div class="spotlight-grid" id="homeSpotlightGrid"></div>
       </div>
 
-      <!-- Core Feature Pillars (Playbook 2026 UX) -->
+      <!-- Core Feature Pillars (Clean Typographic Edition) -->
       <div class="home-section">
         <div class="section-header-centered">
           <div class="section-tag">BUILT FOR VARSITY ATHLETICS</div>
@@ -271,31 +257,31 @@
 
         <div class="features-grid">
           <div class="feature-card" onclick="App.switchTab('leaderboard')">
-            <div class="feature-icon-box">🏆</div>
+            <span class="feature-tag">RANKINGS</span>
             <h3 class="feature-title">Dynamic Ranking Engine</h3>
             <p class="feature-desc">Automatic real-time calculation of player ranks, winrates, and official standings with gold, silver, and bronze prestige tiers.</p>
-            <div class="feature-link">View Rankings <span>→</span></div>
+            <div class="feature-link">View Rankings</div>
           </div>
 
           <div class="feature-card" onclick="App.switchTab('cards')">
-            <div class="feature-icon-box">🎴</div>
+            <span class="feature-tag">DIGITAL CARDS</span>
             <h3 class="feature-title">Digital Performance Cards</h3>
             <p class="feature-desc">Collectible athlete cards featuring custom avatars, grade levels, win differentials, and high-resolution downloadable PNG cards.</p>
-            <div class="feature-link">Browse Cards <span>→</span></div>
+            <div class="feature-link">Browse Cards</div>
           </div>
 
           <div class="feature-card" onclick="App.switchTab('events')">
-            <div class="feature-icon-box">📅</div>
+            <span class="feature-tag">TOURNAMENTS</span>
             <h3 class="feature-title">Multi-Sport Tournament Hub</h3>
             <p class="feature-desc">Track intramurals, invitationals, and district championships across Badminton, Basketball, Volleyball, Table Tennis, and Football.</p>
-            <div class="feature-link">Explore Events <span>→</span></div>
+            <div class="feature-link">Explore Events</div>
           </div>
 
           <div class="feature-card" onclick="App.switchTab('admin')">
-            <div class="feature-icon-box">⚙️</div>
-            <h3 class="feature-title">Coach & Official Portal</h3>
+            <span class="feature-tag">COACH PORTAL</span>
+            <h3 class="feature-title">Coach & Official Console</h3>
             <p class="feature-desc">Role-isolated management dashboard for coaches to record match outcomes, verify scores, and update athlete rosters safely.</p>
-            <div class="feature-link">Access Console <span>→</span></div>
+            <div class="feature-link">Access Console</div>
           </div>
         </div>
       </div>
@@ -338,27 +324,27 @@
           <div class="faq-item active">
             <div class="faq-header">
               <span class="faq-question">How are player rankings automatically calculated?</span>
-              <span class="faq-toggle-icon">+</span>
+              <span class="faq-toggle-arrow"></span>
             </div>
             <div class="faq-body">
-              <p>Rankings are automatically computed by our real-time engine whenever a coach records a match. Athletes are ranked by total victories, overall match winrate percentage, and least losses within their specific sport and category.</p>
+              <p>Rankings are automatically computed by our real-time engine whenever a coach records a match. Athletes are ranked by total victories, overall match winrate percentage, and least losses within their specific sport and category. Players without recorded matches remain unranked.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-header">
               <span class="faq-question">Can an athlete participate in multiple sports and categories?</span>
-              <span class="faq-toggle-icon">+</span>
+              <span class="faq-toggle-arrow"></span>
             </div>
             <div class="faq-body">
-              <p>Yes! Athletes can be enrolled across multiple sports (e.g. Badminton Men's Singles & Mixed Doubles, or Basketball 3x3 and 5v5). Each sport and category maintains independent statistics and rankings.</p>
+              <p>Yes. Athletes can be enrolled across multiple sports (e.g. Badminton Men's Singles and Mixed Doubles, or Basketball 3x3 and 5v5). Each sport and category maintains independent statistics and rankings.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <div class="faq-header">
               <span class="faq-question">How do I download my official digital athlete card?</span>
-              <span class="faq-toggle-icon">+</span>
+              <span class="faq-toggle-arrow"></span>
             </div>
             <div class="faq-body">
               <p>Log in with your athlete account, navigate to "My Profile", and click "Download Card (PNG)". The application generates a high-resolution collectible varsity card formatted with your photo, rank, and stats.</p>
@@ -368,7 +354,7 @@
           <div class="faq-item">
             <div class="faq-header">
               <span class="faq-question">Who has access to record match outcomes?</span>
-              <span class="faq-toggle-icon">+</span>
+              <span class="faq-toggle-arrow"></span>
             </div>
             <div class="faq-body">
               <p>Only authorized coaches and athletic officials with Admin access can record official match scores and modify roster standings. Athlete accounts have dedicated view-only and profile-editing permissions.</p>
@@ -400,11 +386,11 @@
           <div class="footer-col">
             <h4>Sports Covered</h4>
             <ul class="footer-links">
-              <li>🏸 Badminton</li>
-              <li>🏀 Basketball</li>
-              <li>🏐 Volleyball</li>
-              <li>🏓 Table Tennis</li>
-              <li>⚽ Football</li>
+              <li>Badminton</li>
+              <li>Basketball</li>
+              <li>Volleyball</li>
+              <li>Table Tennis</li>
+              <li>Football</li>
             </ul>
           </div>
           <div class="footer-col">
@@ -428,9 +414,7 @@
       </div>
       <div class="leaderboard-container" id="leaderboardContainer">
         <div class="empty-state" id="leaderboardEmpty">
-          <div class="empty-state-icon-box">
-            <span class="empty-state-icon">🏆</span>
-          </div>
+          <span class="empty-state-tag">LEADERBOARD</span>
           <h3>No Ranked Athletes Found</h3>
           <p>No players match the current filters or no official rankings have been published yet for this category.</p>
           <div class="empty-state-actions">
@@ -465,9 +449,7 @@
       </div>
       <div class="cards-grid" id="cardsGrid">
         <div class="empty-state" id="cardsEmpty">
-          <div class="empty-state-icon-box">
-            <span class="empty-state-icon">🎴</span>
-          </div>
+          <span class="empty-state-tag">PLAYER CARDS</span>
           <h3>No Player Cards Found</h3>
           <p>No athlete cards match your search criteria. Try adjusting your sport/category filter or sign up as a new athlete.</p>
           <div class="empty-state-actions">
@@ -576,9 +558,7 @@
       </div>
       <div class="events-container" id="eventsContainer">
         <div class="empty-state" id="eventsEmpty">
-          <div class="empty-state-icon-box">
-            <span class="empty-state-icon">📅</span>
-          </div>
+          <span class="empty-state-tag">TOURNAMENTS</span>
           <h3>No Tournaments Scheduled Yet</h3>
           <p>Upcoming competitions and intramurals will appear here once scheduled by coaches and organizers.</p>
           <div class="empty-state-actions">
@@ -628,7 +608,7 @@
             <h2>Admin Management Console</h2>
             <p style="color:var(--text-muted); font-size:0.85rem;">Official roster management, match records, and tournament scheduling</p>
           </div>
-          <button class="btn btn-secondary btn-sm" id="adminLockBtn" onclick="Admin.lock()">🔒 Lock Session</button>
+          <button class="btn btn-secondary btn-sm" id="adminLockBtn" onclick="Admin.lock()">Lock Session</button>
         </div>
 
         <div class="admin-tabs">
@@ -745,7 +725,7 @@
               <h3>Manual & Automatic Ranking Review</h3>
               <p style="color:var(--text-muted); font-size:0.85rem;">Review auto-calculated standings or assign custom ranking overrides</p>
             </div>
-            <button class="btn btn-secondary btn-sm" onclick="Storage.recalculateAllRanks(); Admin.renderRanksTable(); Leaderboard.render(); Cards.render(); App.showToast('All rankings synchronized!', 'success');">⚡ Synchronize All Rankings</button>
+            <button class="btn btn-secondary btn-sm" onclick="Storage.recalculateAllRanks(); Admin.renderRanksTable(); Leaderboard.render(); Cards.render(); App.showToast('All rankings synchronized!', 'success');">Synchronize All Rankings</button>
           </div>
 
           <div class="admin-toolbar" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:1rem;">

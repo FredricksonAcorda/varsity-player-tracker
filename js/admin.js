@@ -1068,6 +1068,7 @@ const Admin = (() => {
       App.showToast(`Tournament "${name}" created with ${selectedSports.length} sports!`, 'success');
       renderAdminEvents();
       Events.render();
+      if (typeof Home !== 'undefined' && Home.render) Home.render();
     });
   }
 
@@ -1259,6 +1260,7 @@ const Admin = (() => {
     Storage.updateEvent(eventId, { status });
     App.showToast(`Event status updated to ${status}.`, 'info');
     Events.render();
+    if (typeof Home !== 'undefined' && Home.render) Home.render();
   }
 
   function confirmDeleteEvent(eventId) {
@@ -1285,6 +1287,7 @@ const Admin = (() => {
     App.showToast('Event deleted.', 'info');
     renderAdminEvents();
     Events.render();
+    if (typeof Home !== 'undefined' && Home.render) Home.render();
   }
 
   // ═══════ SPORTS CONFIG ═══════

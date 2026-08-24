@@ -1,5 +1,5 @@
 /**
- * home.js — Homepage & Varsity Landing Module
+ * home.js — Homepage & Varsity Landing Module (Clean Typographic Edition)
  * Manages live stat tickers, athlete spotlight previews, and FAQ accordions.
  */
 
@@ -30,25 +30,24 @@ const Home = (() => {
     const container = document.getElementById('homeSpotlightGrid');
     if (!container) return;
 
-    // Get flat stats sorted by rank/winrate
+    // Get flat stats for all players
     const rows = Storage.getFlatPlayerStats({ sport: 'All', category: 'All', grade: 'All', search: '' });
     
-    // Sort to get top 3 athletes
-    const topAthletes = [...rows].sort((a, b) => {
+    // Sort to get top 3 active athletes with recorded wins
+    const topAthletes = [...rows].filter(r => (r.wins + r.losses) > 0).sort((a, b) => {
       if (a.rank > 0 && b.rank > 0) return a.rank - b.rank;
       if (a.rank > 0) return -1;
       if (b.rank > 0) return 1;
+      if (b.wins !== a.wins) return b.wins - a.wins;
       return b.winrate - a.winrate;
     }).slice(0, 3);
 
     if (topAthletes.length === 0) {
       container.innerHTML = `
         <div class="empty-state" style="grid-column: 1 / -1; margin: 1rem auto; padding: 2.5rem 1.5rem;">
-          <div class="empty-state-icon-box" style="width: 52px; height: 52px;">
-            <span class="empty-state-icon" style="font-size: 1.5rem;">🌟</span>
-          </div>
+          <span class="empty-state-tag">SPOTLIGHT</span>
           <h3>Athlete Roster Warming Up</h3>
-          <p>Register as an athlete or explore sports categories to appear in the spotlight.</p>
+          <p>Register as an athlete or record tournament matches to appear in the spotlight.</p>
           <button class="btn btn-primary btn-sm" onclick="App.switchTab('profile')">Register as Athlete</button>
         </div>
       `;
@@ -56,9 +55,10 @@ const Home = (() => {
     }
 
     container.innerHTML = topAthletes.map((row, idx) => {
+      const isRanked = row.rank > 0;
       const rank = row.rank || (idx + 1);
-      const tierClass = rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : rank === 3 ? 'rank-bronze' : 'default';
-      const medal = rank === 1 ? '🥇 #1 RANK' : rank === 2 ? '🥈 #2 RANK' : rank === 3 ? '🥉 #3 RANK' : `#${rank} RANK`;
+      const tierClass = isRanked ? (rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : rank === 3 ? 'rank-bronze' : 'default') : 'default';
+      const medal = isRanked ? `RANK #${rank}` : 'UNRANKED';
       const initial = row.username ? row.username.charAt(0).toUpperCase() : 'P';
       
       const avatarHTML = row.photo
@@ -102,9 +102,7 @@ const Home = (() => {
       if (header) {
         header.addEventListener('click', () => {
           const isOpen = item.classList.contains('active');
-          // Close all
           document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
-          // Toggle clicked
           if (!isOpen) {
             item.classList.add('active');
           }

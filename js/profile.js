@@ -344,7 +344,7 @@ const Profile = (() => {
     if (!catData || !catData.matchHistory || catData.matchHistory.length === 0) {
       container.innerHTML = `
         <div style="text-align:center; padding:2rem 1rem; color:var(--text-muted);">
-          <div style="font-size:1.75rem; margin-bottom:0.5rem; opacity:0.75;">⚔️</div>
+          <span class="empty-state-tag" style="margin-bottom:0.5rem;">MATCH HISTORY</span>
           <div style="font-size:0.9rem; font-weight:600; color:var(--text-secondary); margin-bottom:0.25rem;">No Matches Recorded Yet</div>
           <div style="font-size:0.8rem; max-width:320px; margin:0 auto;">Tournament matches and official results recorded by coaches will appear here.</div>
         </div>

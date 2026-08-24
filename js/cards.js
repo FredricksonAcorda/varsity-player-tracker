@@ -111,6 +111,23 @@ const Cards = (() => {
     // Apply active sort and direction
     rows = sortRows(rows, currentSortKey, currentSortOrder);
 
+    // Pin "My Player Card" to the very top if logged in
+    const session = Storage.getSession();
+    if (session && session.playerId) {
+      const myRows = [];
+      const otherRows = [];
+
+      rows.forEach(r => {
+        if (r.id === session.playerId) {
+          myRows.push({ ...r, isMyCard: true });
+        } else {
+          otherRows.push(r);
+        }
+      });
+
+      rows = [...myRows, ...otherRows];
+    }
+
     // Apply layout class
     grid.className = currentLayout === 'list' ? 'cards-grid layout-list' : 'cards-grid';
 
@@ -123,24 +140,32 @@ const Cards = (() => {
 
   function renderGridCards(rows) {
     return rows.map((row, idx) => {
-      const rankTier = getRankTier(row.rank);
+      const isRanked = row.rank > 0 && (row.wins + row.losses > 0);
+      const rankTier = isRanked ? getRankTier(row.rank, row.wins, row.losses) : '';
       const wrClass = row.winrate >= 60 ? 'high' : row.winrate >= 40 ? 'mid' : 'low';
       const initial = row.username ? row.username.charAt(0).toUpperCase() : 'P';
-      const rankColorClass = row.rank === 1 ? 'gold' : row.rank === 2 ? 'silver' : row.rank === 3 ? 'bronze' : 'default';
+      const rankColorClass = isRanked ? (row.rank === 1 ? 'gold' : row.rank === 2 ? 'silver' : row.rank === 3 ? 'bronze' : 'default') : 'default';
 
       const cardAvatarHTML = row.photo
         ? `<img src="${row.photo}" class="card-avatar-img" alt="${escapeHtml(row.username)}">`
         : `<span class="card-avatar-initial">${initial}</span>`;
 
+      const myCardBadgeHTML = row.isMyCard
+        ? `<div class="my-card-pinned-badge">My Player Card</div>`
+        : '';
+
+      const rankDisplayHTML = isRanked ? `#${row.rank}` : '—';
+
       return `
-        <div class="player-card ${rankTier}" 
-             style="animation-delay: ${idx * 0.05}s"
+        <div class="player-card ${rankTier} ${row.isMyCard ? 'is-my-card' : ''}" 
+             style="animation-delay: ${idx * 0.04}s"
              onclick="Cards.showDetail('${row.id}', '${escapeAttr(row.sport)}', '${escapeAttr(row.category)}')">
+          ${myCardBadgeHTML}
           <div class="card-header">
             <div class="card-avatar">${cardAvatarHTML}</div>
             <div class="card-rank-display">
               <div class="card-rank-label">Rank</div>
-              <div class="card-rank-number ${rankColorClass}">${row.rank > 0 ? '#' + row.rank : '—'}</div>
+              <div class="card-rank-number ${rankColorClass}">${rankDisplayHTML}</div>
             </div>
           </div>
           <div class="card-name">${escapeHtml(row.username)}</div>
@@ -174,24 +199,28 @@ const Cards = (() => {
 
   function renderListCards(rows) {
     return rows.map((row, idx) => {
-      const rankTier = getRankTier(row.rank);
+      const isRanked = row.rank > 0 && (row.wins + row.losses > 0);
+      const rankTier = isRanked ? getRankTier(row.rank, row.wins, row.losses) : '';
       const initial = row.username ? row.username.charAt(0).toUpperCase() : 'P';
-      const rankDisplay = row.rank > 0 ? '#' + row.rank : '—';
-      const rankClass = getRankClass(row.rank);
+      const rankDisplay = isRanked ? `#${row.rank}` : '—';
+      const rankClass = isRanked ? getRankClass(row.rank) : 'rank-none';
 
       const avatarHTML = row.photo
         ? `<img src="${row.photo}" class="list-avatar-img" alt="${escapeHtml(row.username)}">`
         : `<div class="list-avatar-initial">${initial}</div>`;
 
       return `
-        <div class="player-card-list-item ${rankTier}" 
+        <div class="player-card-list-item ${rankTier} ${row.isMyCard ? 'is-my-card' : ''}" 
              style="animation-delay: ${idx * 0.03}s"
              onclick="Cards.showDetail('${row.id}', '${escapeAttr(row.sport)}', '${escapeAttr(row.category)}')">
           <div class="list-card-left">
             <span class="rank-badge ${rankClass}">${rankDisplay}</span>
             <div class="list-avatar">${avatarHTML}</div>
             <div class="list-player-info">
-              <div class="list-player-name">${escapeHtml(row.username)}</div>
+              <div class="list-player-name">
+                ${escapeHtml(row.username)}
+                ${row.isMyCard ? '<span class="list-my-card-tag">My Card</span>' : ''}
+              </div>
               <div class="list-player-id">${row.id}</div>
             </div>
           </div>
@@ -215,7 +244,8 @@ const Cards = (() => {
     }).join('');
   }
 
-  function getRankTier(rank) {
+  function getRankTier(rank, wins = 0, losses = 0) {
+    if (wins + losses === 0) return '';
     if (rank === 1) return 'rank-gold';
     if (rank === 2) return 'rank-silver';
     if (rank === 3) return 'rank-bronze';

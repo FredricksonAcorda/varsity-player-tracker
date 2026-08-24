@@ -286,14 +286,17 @@ a {
   font-weight: 500;
 }
 
-.header-account-chevron {
-  font-size: 0.65rem;
-  color: var(--text-muted);
+.header-account-arrow {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-muted);
   transition: transform var(--transition-fast);
-  margin-left: 0.15rem;
+  margin-left: 0.25rem;
 }
 
-.header-account-btn.active .header-account-chevron {
+.header-account-btn.active .header-account-arrow {
   transform: rotate(180deg);
 }
 
@@ -671,17 +674,9 @@ a {
   max-width: 320px;
 }
 
-.filter-search-icon {
-  position: absolute;
-  left: 0.75rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  pointer-events: none;
-}
-
 .filter-search-input {
   width: 100%;
-  padding: 0.45rem 0.75rem 0.45rem 2.2rem;
+  padding: 0.45rem 0.75rem;
   background: var(--bg-glass);
   border: 1px solid var(--border-glass);
   border-radius: var(--border-radius-sm);
@@ -1152,18 +1147,19 @@ a {
   background: var(--bg-glass-hover);
 }
 
-.feature-icon-box {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+.feature-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
   background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  color: var(--accent-primary);
   margin-bottom: 1.25rem;
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+  align-self: flex-start;
 }
 
 .feature-title {
@@ -1267,15 +1263,17 @@ a {
   color: var(--text-primary);
 }
 
-.faq-toggle-icon {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--accent-primary);
+.faq-toggle-arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--accent-primary);
   transition: transform var(--transition-fast);
 }
 
-.faq-item.active .faq-toggle-icon {
-  transform: rotate(45deg);
+.faq-item.active .faq-toggle-arrow {
+  transform: rotate(180deg);
 }
 
 .faq-body {
@@ -1291,6 +1289,65 @@ a {
 .faq-item.active .faq-body {
   display: block;
   animation: fadeIn 0.2s ease;
+}
+
+/* Empty State Tag */
+.empty-state-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-muted);
+  margin-bottom: 0.85rem;
+}
+
+/* Pinned My Player Card Styles */
+.player-card.is-my-card {
+  border-color: rgba(99, 102, 241, 0.55);
+  background: linear-gradient(145deg, rgba(30, 32, 60, 0.9) 0%, rgba(18, 20, 38, 0.95) 100%);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.2), inset 0 0 0 1px rgba(99, 102, 241, 0.35);
+  position: relative;
+}
+
+.my-card-pinned-badge {
+  position: absolute;
+  top: -10px;
+  left: 1rem;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  z-index: 2;
+}
+
+.player-card-list-item.is-my-card {
+  border-color: rgba(99, 102, 241, 0.55);
+  background: rgba(30, 32, 60, 0.6);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+}
+
+.list-my-card-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: #818cf8;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* Varsity Footer */

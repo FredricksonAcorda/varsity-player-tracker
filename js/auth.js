@@ -179,15 +179,6 @@ const Auth = (() => {
       });
 
       errorEl.textContent = '';
-      Storage.login(player.id);
-      
-      // Lock admin session
-      Admin.lock();
-      App.updateSessionUI();
-      App.switchTab('profile');
-      Profile.render();
-      Admin.render();
-      App.showToast(`Account created! Your Player ID is ${player.id}`, 'success');
       form.reset();
       document.getElementById('signupCategoriesGroup').style.display = 'none';
 
@@ -195,6 +186,26 @@ const Auth = (() => {
       document.querySelectorAll('#signupCategories .checkbox-item').forEach(el => {
         el.classList.remove('checked');
       });
+
+      // Synchronize views so the new player card immediately appears in Cards and Leaderboard!
+      Leaderboard.render();
+      Cards.render();
+      if (typeof Home !== 'undefined' && Home.render) Home.render();
+      Admin.render();
+
+      // Switch to Login tab and prompt athlete to enter credentials
+      showLoginTab();
+      const loginUsernameInput = document.getElementById('loginUsername');
+      const loginPasswordInput = document.getElementById('loginPassword');
+      if (loginUsernameInput) loginUsernameInput.value = username;
+      if (loginPasswordInput) {
+        loginPasswordInput.value = '';
+        loginPasswordInput.focus();
+      }
+
+      App.switchTab('profile');
+      Profile.render();
+      App.showToast(`Account created! Player ID: ${player.id}. Please sign in to verify credentials.`, 'success');
     });
   }
 
@@ -226,14 +237,26 @@ const Auth = (() => {
     });
   }
 
-  // ─── Logout ───
+  // ─── Logout (Transitions directly back to Login form) ───
   function logout() {
     Storage.logout();
     Admin.lock();
     App.updateSessionUI();
-    App.showToast('Logged out successfully.', 'info');
+
+    // Switch view back to Athlete Login page
+    App.switchTab('profile');
+    showLoginTab();
+
+    const pwInput = document.getElementById('loginPassword');
+    if (pwInput) pwInput.value = '';
+
     Profile.render();
     Admin.render();
+    Cards.render();
+    Leaderboard.render();
+    if (typeof Home !== 'undefined' && Home.render) Home.render();
+
+    App.showToast('Logged out successfully. Please sign in to continue.', 'info');
   }
 
   function showSignupTab() {
