@@ -126,60 +126,52 @@
   <!-- ═══════ UNIFIED FILTER BAR (Leaderboard & Cards) ═══════ -->
   <div class="filter-bar hidden" id="filterBar">
     <div class="filter-bar-inner">
-      <!-- Search Input aligned with filters -->
+      <!-- Search Box & Mobile Filter Toggle (aligned together on single row) -->
       <div class="filter-search-box">
-        <input type="text" id="filterSearch" placeholder="Search athlete name, ID, or team..." class="filter-search-input">
+        <svg class="filter-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="filterSearch" placeholder="Search athlete, sport, ID..." class="filter-search-input">
+        <button class="filter-toggle-btn" id="filterToggleBtn" type="button" aria-expanded="false">
+          <span>Filters</span>
+          <span class="filter-badge" id="filterActiveBadge" style="display:none;">0</span>
+        </button>
       </div>
 
-      <button class="filter-toggle-btn" id="filterToggleBtn" type="button" aria-expanded="false">
-        <span>Filters</span>
-        <span class="filter-badge" id="filterActiveBadge" style="display:none;">0</span>
-      </button>
-
+      <!-- Filter Controls Deck -->
       <div class="filter-controls-group" id="filterDropdowns">
-        <div class="filter-item">
-          <label for="filterSport">Sport</label>
-          <select id="filterSport" class="filter-select">
+        <div class="filter-chip-select">
+          <select id="filterSport" class="filter-select" aria-label="Filter by sport">
             <option value="All">All Sports</option>
           </select>
         </div>
 
-        <div class="filter-item">
-          <label for="filterCategory">Category</label>
-          <select id="filterCategory" class="filter-select">
+        <div class="filter-chip-select">
+          <select id="filterCategory" class="filter-select" aria-label="Filter by category">
             <option value="All">All Categories</option>
           </select>
         </div>
 
-        <div class="filter-item">
-          <label for="filterGrade">Grade</label>
-          <select id="filterGrade" class="filter-select">
+        <div class="filter-chip-select">
+          <select id="filterGrade" class="filter-select" aria-label="Filter by grade">
             <option value="All">All Grades</option>
           </select>
         </div>
 
-        <div class="filter-item cards-sort-item" id="filterSortItem">
-          <label for="cardsSortSelect">Sort</label>
-          <div class="filter-sort-group">
-            <select id="cardsSortSelect" class="filter-select cards-sort-select">
-              <option value="rank">Rank</option>
-              <option value="winrate">Winrate</option>
-              <option value="wins">Wins</option>
-              <option value="name">Name</option>
-            </select>
-            <button type="button" class="btn btn-secondary btn-sm cards-order-btn" id="cardsOrderBtn" title="Toggle Ascending / Descending">Asc</button>
-          </div>
+        <div class="filter-chip-select cards-sort-item" id="filterSortItem">
+          <select id="cardsSortSelect" class="filter-select cards-sort-select" aria-label="Sort by">
+            <option value="rank">Sort: Rank</option>
+            <option value="winrate">Sort: Winrate</option>
+            <option value="wins">Sort: Wins</option>
+            <option value="name">Sort: Name</option>
+          </select>
+          <button type="button" class="cards-order-btn" id="cardsOrderBtn" title="Toggle Ascending / Descending">Asc</button>
         </div>
 
-        <div class="filter-item cards-layout-item" id="filterLayoutItem">
-          <label>Layout</label>
-          <div class="cards-layout-toggle" id="cardsLayoutToggle" role="group" aria-label="Layout view">
-            <button type="button" class="layout-btn active" id="layoutGridBtn" title="Grid View">Grid</button>
-            <button type="button" class="layout-btn" id="layoutListBtn" title="List View">List</button>
-          </div>
+        <div class="cards-layout-toggle" id="filterLayoutItem" role="group" aria-label="Layout view">
+          <button type="button" class="layout-btn active" id="layoutGridBtn" title="Grid View">Grid</button>
+          <button type="button" class="layout-btn" id="layoutListBtn" title="List View">List</button>
         </div>
 
-        <button class="btn btn-ghost btn-sm reset-filter-btn" id="resetFilterBtn" type="button" title="Reset all filters">Reset</button>
+        <button class="reset-filter-btn" id="resetFilterBtn" type="button" title="Reset all filters">Reset</button>
       </div>
     </div>
   </div>

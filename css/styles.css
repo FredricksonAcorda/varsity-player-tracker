@@ -636,20 +636,20 @@ a {
 }
 
 /* ═══════════════════════════════════════════
-   FILTER BAR (Clean Alignment & Responsiveness)
+   FILTER BAR (Streamlined & Compact 2026 UX)
    ═══════════════════════════════════════════ */
 .filter-bar {
   position: sticky;
   top: calc(var(--header-height) + var(--nav-height));
   left: 0;
   right: 0;
-  background: rgba(11, 15, 29, 0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(11, 15, 29, 0.98);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 95;
   transition: all var(--transition-normal);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .filter-bar.hidden {
@@ -659,26 +659,35 @@ a {
 .filter-bar-inner {
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
 }
 
 .filter-search-box {
   position: relative;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
   flex: 1 1 240px;
   max-width: 320px;
+}
+
+.filter-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .filter-search-input {
   width: 100%;
   height: 38px;
-  padding: 0 0.85rem;
+  padding: 0 0.85rem 0 2.25rem;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--border-radius-sm);
@@ -699,34 +708,180 @@ a {
 .filter-controls-group {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  flex-wrap: wrap;
-  flex: 2 1 auto;
-  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+.filter-chip-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.filter-select {
+  height: 38px;
+  padding: 0 1.85rem 0 0.75rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-heading);
+  font-size: 0.775rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.filter-select:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.filter-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-primary-glow);
+}
+
+.filter-select.has-value {
+  border-color: var(--accent-primary);
+  background-color: rgba(99, 102, 241, 0.16);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.filter-select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.filter-select option {
+  background: #0f172a;
+  color: var(--text-primary);
+}
+
+.cards-sort-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.cards-order-btn {
+  height: 38px;
+  padding: 0 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cards-order-btn:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cards-layout-toggle {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-sm);
+  padding: 3px;
+  gap: 3px;
+}
+
+.layout-btn {
+  height: 30px;
+  padding: 0 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-heading);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.layout-btn:hover {
+  color: var(--text-primary);
+}
+
+.layout-btn.active {
+  background: var(--gradient-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px var(--accent-primary-glow);
+}
+
+.reset-filter-btn {
+  height: 38px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-heading);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 0 0.75rem;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reset-filter-btn:hover,
+.reset-filter-btn.active {
+  color: var(--color-loss);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .filter-toggle-btn {
   display: none;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.45rem 0.75rem;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
+  height: 38px;
+  padding: 0 0.85rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--border-radius-sm);
   color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 0.775rem;
+  font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
   transition: all var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .filter-toggle-btn:hover,
 .filter-toggle-btn.active {
   background: rgba(99, 102, 241, 0.18);
   border-color: var(--accent-primary);
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .filter-badge {
@@ -741,97 +896,6 @@ a {
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
-}
-
-.filter-dropdowns {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.filter-item label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-
-.filter-input,
-.filter-select {
-  height: 38px;
-  padding: 0 1.85rem 0 0.75rem;
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--border-radius-sm);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  font-weight: 500;
-  outline: none;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.6rem center;
-  transition: all var(--transition-fast);
-  min-width: 0;
-}
-
-.filter-select:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  background-color: rgba(255, 255, 255, 0.07);
-}
-
-.filter-select:focus {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px var(--accent-primary-glow);
-}
-
-.filter-select.has-value {
-  border-color: var(--accent-primary);
-  background-color: rgba(99, 102, 241, 0.15);
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.filter-select:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.filter-select option {
-  background: #0f172a;
-  color: var(--text-primary);
-}
-
-.reset-filter-btn {
-  height: 38px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  padding: 0 0.75rem;
-  border-radius: var(--border-radius-sm);
-  transition: all var(--transition-fast);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.reset-filter-btn:hover,
-.reset-filter-btn.active {
-  color: var(--color-loss);
-  background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.3);
 }
 
 /* ═══════════════════════════════════════════
@@ -1445,14 +1509,14 @@ a {
 .main-content {
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: calc(var(--header-height) + var(--nav-height) + 1.5rem) 1.5rem 3rem;
+  padding: 1.5rem 1.5rem 3rem;
   position: relative;
   z-index: 1;
   min-height: 100vh;
 }
 
 .main-content.no-filter {
-  padding-top: calc(var(--header-height) + var(--nav-height) + 1.5rem);
+  padding-top: 1.5rem;
 }
 
 .view {
@@ -1946,71 +2010,109 @@ a {
   opacity: 1;
 }
 
-/* User's Own Card Outline */
-.player-card.is-my-card {
+/* ═══════════════════════════════════════════
+   PLAYER CARD HIGHLIGHT HIERARCHY
+   Rule: Rank 1 is ALWAYS Gold, Rank 2 Silver, Rank 3 Bronze.
+   Own card is highlighted with Electric Indigo ONLY when NOT Top 3.
+   The rest have clean neutral dark border (no highlight).
+   ═══════════════════════════════════════════ */
+
+/* Rank 1: Gold Prestige (Top Priority) */
+.player-card.rank-gold {
+  border: 2px solid rgba(251, 191, 36, 0.85) !important;
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.35), 0 8px 32px rgba(251, 191, 36, 0.28), inset 0 0 24px rgba(251, 191, 36, 0.08) !important;
+}
+
+.player-card.rank-gold::before {
+  background: var(--gradient-gold) !important;
+  height: 4px;
+  opacity: 1 !important;
+}
+
+.player-card.rank-gold:hover {
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.6), 0 12px 38px rgba(251, 191, 36, 0.4), inset 0 0 28px rgba(251, 191, 36, 0.12) !important;
+}
+
+/* Rank 2: Silver Prestige */
+.player-card.rank-silver {
+  border: 2px solid rgba(203, 213, 225, 0.8) !important;
+  box-shadow: 0 0 0 1px rgba(203, 213, 225, 0.3), 0 8px 30px rgba(203, 213, 225, 0.22), inset 0 0 24px rgba(203, 213, 225, 0.06) !important;
+}
+
+.player-card.rank-silver::before {
+  background: var(--gradient-silver) !important;
+  height: 4px;
+  opacity: 1 !important;
+}
+
+.player-card.rank-silver:hover {
+  box-shadow: 0 0 0 1px rgba(203, 213, 225, 0.55), 0 12px 36px rgba(203, 213, 225, 0.32), inset 0 0 28px rgba(203, 213, 225, 0.1) !important;
+}
+
+/* Rank 3: Bronze Prestige */
+.player-card.rank-bronze {
+  border: 2px solid rgba(217, 119, 6, 0.85) !important;
+  box-shadow: 0 0 0 1px rgba(217, 119, 6, 0.35), 0 8px 30px rgba(217, 119, 6, 0.25), inset 0 0 24px rgba(217, 119, 6, 0.08) !important;
+}
+
+.player-card.rank-bronze::before {
+  background: var(--gradient-bronze) !important;
+  height: 4px;
+  opacity: 1 !important;
+}
+
+.player-card.rank-bronze:hover {
+  box-shadow: 0 0 0 1px rgba(217, 119, 6, 0.6), 0 12px 36px rgba(217, 119, 6, 0.38), inset 0 0 28px rgba(217, 119, 6, 0.12) !important;
+}
+
+/* User's Own Card Outline (Applied ONLY when NOT Rank 1, 2, or 3) */
+.player-card.is-my-card:not(.rank-gold):not(.rank-silver):not(.rank-bronze) {
   border: 2px solid #6366f1 !important;
   box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35), 0 8px 30px rgba(99, 102, 241, 0.22), inset 0 0 24px rgba(99, 102, 241, 0.06) !important;
 }
 
-.player-card.is-my-card::before {
+.player-card.is-my-card:not(.rank-gold):not(.rank-silver):not(.rank-bronze)::before {
   background: linear-gradient(90deg, #6366f1, #a855f7, #6366f1) !important;
   height: 4px;
   opacity: 1 !important;
 }
 
-.player-card.is-my-card:hover {
+.player-card.is-my-card:not(.rank-gold):not(.rank-silver):not(.rank-bronze):hover {
   box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.6), 0 12px 36px rgba(99, 102, 241, 0.35), inset 0 0 28px rgba(99, 102, 241, 0.1) !important;
 }
 
-.player-card-list-item.is-my-card {
+/* All other unranked / normal cards (Neutral dark glass, NO highlight) */
+.player-card:not(.rank-gold):not(.rank-silver):not(.rank-bronze):not(.is-my-card) {
+  border: 1px solid var(--border-glass);
+  box-shadow: none;
+}
+
+.player-card:not(.rank-gold):not(.rank-silver):not(.rank-bronze):not(.is-my-card)::before {
+  display: none;
+}
+
+/* List view equivalents */
+.player-card-list-item.rank-gold {
+  border: 2px solid rgba(251, 191, 36, 0.75) !important;
+  border-left: 5px solid #fbbf24 !important;
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.18) !important;
+}
+
+.player-card-list-item.rank-silver {
+  border: 2px solid rgba(203, 213, 225, 0.7) !important;
+  border-left: 5px solid #cbd5e1 !important;
+  box-shadow: 0 4px 20px rgba(203, 213, 225, 0.14) !important;
+}
+
+.player-card-list-item.rank-bronze {
+  border: 2px solid rgba(217, 119, 6, 0.75) !important;
+  border-left: 5px solid #d97706 !important;
+  box-shadow: 0 4px 20px rgba(217, 119, 6, 0.18) !important;
+}
+
+.player-card-list-item.is-my-card:not(.rank-gold):not(.rank-silver):not(.rank-bronze) {
   border: 2px solid #6366f1 !important;
   box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35), 0 6px 20px rgba(99, 102, 241, 0.2) !important;
-}
-
-/* Rank Prestige Styling */
-.player-card.rank-gold {
-  border-color: rgba(251, 191, 36, 0.5);
-  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.12);
-}
-
-.player-card.rank-gold::before {
-  background: var(--gradient-gold);
-  opacity: 1;
-}
-
-.player-card.rank-gold:hover {
-  border-color: rgba(251, 191, 36, 0.85);
-  box-shadow: 0 8px 32px rgba(251, 191, 36, 0.28), var(--shadow-lg);
-}
-
-.player-card.rank-silver {
-  border-color: rgba(203, 213, 225, 0.45);
-  box-shadow: 0 4px 20px rgba(203, 213, 225, 0.1);
-}
-
-.player-card.rank-silver::before {
-  background: var(--gradient-silver);
-  opacity: 0.9;
-}
-
-.player-card.rank-silver:hover {
-  border-color: rgba(203, 213, 225, 0.8);
-  box-shadow: 0 8px 30px rgba(203, 213, 225, 0.2), var(--shadow-lg);
-}
-
-.player-card.rank-bronze {
-  border-color: rgba(217, 119, 6, 0.45);
-  box-shadow: 0 4px 20px rgba(217, 119, 6, 0.12);
-}
-
-.player-card.rank-bronze::before {
-  background: var(--gradient-bronze);
-  opacity: 0.9;
-}
-
-.player-card.rank-bronze:hover {
-  border-color: rgba(217, 119, 6, 0.8);
-  box-shadow: 0 8px 30px rgba(217, 119, 6, 0.25), var(--shadow-lg);
 }
 
 /* Card Header: Avatar + Identity + Rank Badge */
@@ -3522,37 +3624,8 @@ a {
     font-size: 1.2rem;
   }
 
-  .tab-nav-inner {
-    gap: 0.25rem;
-    justify-content: space-between;
-    padding: 0 0.5rem;
-  }
-
-  .tab-btn {
-    padding: 0.35rem 0.25rem;
-    font-size: 0.75rem;
-    flex-direction: column;
-    gap: 0.15rem;
-    flex: 1;
-    text-align: center;
-    min-width: 0;
-  }
-
-  .tab-label {
-    display: block;
-    font-size: 0.65rem;
-    font-weight: 600;
-    line-height: 1;
-  }
-
-  .tab-icon {
-    font-size: 1.15rem;
-    line-height: 1;
-  }
-
-  .tab-btn.active::after {
-    bottom: -0.25rem;
-    width: 16px;
+  .filter-bar {
+    top: var(--header-height);
   }
 
   .filter-bar-inner {
@@ -3565,6 +3638,13 @@ a {
   .filter-search-box {
     max-width: none;
     width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .filter-search-input {
+    flex: 1;
   }
 
   .filter-toggle-btn {
@@ -3576,7 +3656,7 @@ a {
     grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
     padding-top: 0.5rem;
-    border-top: 1px dashed var(--border-glass);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     animation: fadeIn 0.2s ease;
     width: 100%;
   }
@@ -3585,25 +3665,19 @@ a {
     display: grid;
   }
 
-  .filter-item {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.2rem;
-  }
-
-  .filter-item label {
-    font-size: 0.7rem;
+  .filter-chip-select {
+    width: 100%;
   }
 
   .filter-select {
     width: 100%;
   }
 
-  .filter-sort-group {
+  .cards-sort-item {
     width: 100%;
   }
 
-  .filter-sort-group .cards-sort-select {
+  .cards-sort-select {
     flex: 1;
   }
 
@@ -3613,15 +3687,19 @@ a {
 
   .cards-layout-toggle .layout-btn {
     flex: 1;
-    text-align: center;
   }
 
   .reset-filter-btn {
     grid-column: span 2;
     text-align: center;
-    border: 1px dashed var(--border-glass);
-    padding: 0.4rem;
+    border: 1px dashed rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.08);
   }
+
+  .main-content {
+    padding: 1rem 1rem 3rem;
+  }
+}
 
   .hero-ticker {
     flex-direction: column;

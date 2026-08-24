@@ -217,10 +217,11 @@ const App = (() => {
 
     // Populate grade dropdown
     if (gradeSelect) {
+      if (gradeSelect.options.length > 0) gradeSelect.options[0].textContent = 'Grade: All';
       Storage.getGradeLevels().forEach(grade => {
         const opt = document.createElement('option');
         opt.value = grade;
-        opt.textContent = grade;
+        opt.textContent = `Grade: ${grade}`;
         gradeSelect.appendChild(opt);
       });
     }
@@ -253,6 +254,10 @@ const App = (() => {
     if (!sportSelect) return;
     const currentVal = sportSelect.value;
 
+    if (sportSelect.options.length > 0) {
+      sportSelect.options[0].textContent = 'Sport: All';
+    }
+
     while (sportSelect.options.length > 1) {
       sportSelect.remove(1);
     }
@@ -261,7 +266,7 @@ const App = (() => {
     sports.forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.sport;
-      opt.textContent = s.sport;
+      opt.textContent = `Sport: ${s.sport}`;
       sportSelect.appendChild(opt);
     });
 
@@ -274,6 +279,10 @@ const App = (() => {
     if (!sportSelect || !categorySelect) return;
 
     const selectedSport = sportSelect.value;
+    if (categorySelect.options.length > 0) {
+      categorySelect.options[0].textContent = 'Category: All';
+    }
+
     while (categorySelect.options.length > 1) {
       categorySelect.remove(1);
     }
@@ -288,7 +297,7 @@ const App = (() => {
         const opt = document.createElement('option');
         const catName = typeof cat === 'string' ? cat : cat.category;
         opt.value = catName;
-        opt.textContent = catName;
+        opt.textContent = `Category: ${catName}`;
         categorySelect.appendChild(opt);
       });
       categorySelect.value = 'All';

@@ -557,6 +557,21 @@ const Cards = (() => {
     ctx.fillText(label, x + w / 2, y + 105);
   }
 
+  function getRankTier(rank, wins, losses) {
+    if (!rank || rank <= 0 || (Number(wins || 0) + Number(losses || 0) === 0)) return '';
+    if (rank === 1) return 'rank-gold';
+    if (rank === 2) return 'rank-silver';
+    if (rank === 3) return 'rank-bronze';
+    return '';
+  }
+
+  function getRankClass(rank) {
+    if (rank === 1) return 'gold';
+    if (rank === 2) return 'silver';
+    if (rank === 3) return 'bronze';
+    return 'default';
+  }
+
   function escapeHtml(str) {
     if (str === undefined || str === null) return '';
     const div = document.createElement('div');
