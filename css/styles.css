@@ -723,32 +723,63 @@ a {
 }
 
 /* ═══════════════════════════════════════════
-   EMPTY STATE
+   EMPTY STATE (Actionable & Visual UX)
    ═══════════════════════════════════════════ */
 .empty-state {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 3.5rem 2rem;
   background: var(--bg-glass);
   border: 1px dashed var(--border-glass);
   border-radius: var(--border-radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 580px;
+  margin: 2rem auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-.empty-icon {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: 1rem;
-  opacity: 0.5;
+.empty-state-icon-box {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 0 24px rgba(99, 102, 241, 0.15);
+}
+
+.empty-state-icon {
+  font-size: 2rem;
+  line-height: 1;
 }
 
 .empty-state h3 {
   font-size: 1.25rem;
+  font-weight: 700;
   margin-bottom: 0.5rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .empty-state p {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  max-width: 440px;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* ═══════════════════════════════════════════
@@ -1383,24 +1414,25 @@ a {
   margin-bottom: 1.5rem;
 }
 
-/* ─── Form Elements ─── */
+/* ─── Form Elements (Law of Proximity) ─── */
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   flex: 1;
 }
 
 .form-group label {
   display: block;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 0.35rem;
+  letter-spacing: 0.2px;
 }
 
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 0.625rem 0.875rem;
+  padding: 0.65rem 0.875rem;
   background: var(--bg-glass);
   border: 1px solid var(--border-glass);
   border-radius: var(--border-radius-sm);
@@ -1471,7 +1503,7 @@ a {
   border-radius: var(--border-radius-sm);
 }
 
-/* Checkboxes */
+/* Checkboxes & Selectable Option Cards (Playbook 2026) */
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;
@@ -1481,28 +1513,34 @@ a {
 .checkbox-item {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.75rem;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
   background: var(--bg-glass);
   border: 1px solid var(--border-glass);
-  border-radius: var(--border-radius-sm);
+  border-radius: 100vw;
   cursor: pointer;
   transition: all var(--transition-fast);
   font-size: 0.8rem;
+  font-weight: 500;
+  user-select: none;
 }
 
 .checkbox-item:hover {
   border-color: var(--accent-primary);
+  background: var(--bg-glass-hover);
+  transform: translateY(-1px);
 }
 
 .checkbox-item input {
   accent-color: var(--accent-primary);
+  cursor: pointer;
 }
 
 .checkbox-item.checked {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(99, 102, 241, 0.18);
   border-color: var(--accent-primary);
-  color: var(--text-primary);
+  color: #fff;
+  box-shadow: 0 0 12px var(--accent-primary-glow);
 }
 
 /* ═══════════════════════════════════════════
@@ -2186,12 +2224,9 @@ a {
 }
 
 .btn-sm {
-  padding: 0.35rem 0.875rem;
-  font-size: 0.775rem;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
   border-radius: 100vw;
-}
-
-font-size: 0.8rem;
 }
 
 .btn-full {

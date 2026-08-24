@@ -345,7 +345,13 @@ const Profile = (() => {
 
     const catData = sportData.categories ? sportData.categories.find(c => (c.category || c) === selectedCategory) : null;
     if (!catData || !catData.matchHistory || catData.matchHistory.length === 0) {
-      container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:1rem 0;">No match history yet.</p>';
+      container.innerHTML = `
+        <div style="text-align:center; padding:2rem 1rem; color:var(--text-muted);">
+          <div style="font-size:1.75rem; margin-bottom:0.5rem; opacity:0.75;">⚔️</div>
+          <div style="font-size:0.9rem; font-weight:600; color:var(--text-secondary); margin-bottom:0.25rem;">No Matches Recorded Yet</div>
+          <div style="font-size:0.8rem; max-width:320px; margin:0 auto;">Tournament matches and official results recorded by coaches will appear here.</div>
+        </div>
+      `;
       return;
     }
 

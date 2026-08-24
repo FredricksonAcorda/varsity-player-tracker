@@ -138,8 +138,15 @@
       </div>
       <div class="leaderboard-container" id="leaderboardContainer">
         <div class="empty-state" id="leaderboardEmpty">
-          <h3>No Players Yet</h3>
-          <p>Players will appear here once they register and receive official rankings.</p>
+          <div class="empty-state-icon-box">
+            <span class="empty-state-icon">🏆</span>
+          </div>
+          <h3>No Ranked Athletes Found</h3>
+          <p>No players match the current filters or no official rankings have been published yet for this category.</p>
+          <div class="empty-state-actions">
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('resetFilterBtn').click()">Reset Filters</button>
+            <button class="btn btn-primary btn-sm" onclick="App.switchTab('profile')">Register as Athlete</button>
+          </div>
         </div>
         <table class="leaderboard-table" id="leaderboardTable" style="display:none;">
           <thead>
@@ -164,8 +171,15 @@
       </div>
       <div class="cards-grid" id="cardsGrid">
         <div class="empty-state" id="cardsEmpty">
-          <h3>No Player Cards Yet</h3>
-          <p>Player cards will appear here once players are enrolled in sports.</p>
+          <div class="empty-state-icon-box">
+            <span class="empty-state-icon">🎴</span>
+          </div>
+          <h3>No Player Cards Found</h3>
+          <p>No athlete cards match your search criteria. Try adjusting your sport/category filter or sign up as a new athlete.</p>
+          <div class="empty-state-actions">
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('resetFilterBtn').click()">Reset Active Filters</button>
+            <button class="btn btn-primary btn-sm" onclick="App.switchTab('profile')">Create Player Card</button>
+          </div>
         </div>
       </div>
     </section>
@@ -264,8 +278,14 @@
       </div>
       <div class="events-container" id="eventsContainer">
         <div class="empty-state" id="eventsEmpty">
-          <h3>No Events Yet</h3>
-          <p>Events and tournaments will appear here once scheduled by coaches/admins.</p>
+          <div class="empty-state-icon-box">
+            <span class="empty-state-icon">📅</span>
+          </div>
+          <h3>No Tournaments Scheduled Yet</h3>
+          <p>Upcoming competitions and intramurals will appear here once scheduled by coaches and organizers.</p>
+          <div class="empty-state-actions">
+            <button class="btn btn-primary btn-sm" onclick="App.switchTab('leaderboard')">Explore Leaderboard</button>
+          </div>
         </div>
         <div class="events-list" id="eventsList"></div>
       </div>
