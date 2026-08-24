@@ -151,22 +151,16 @@ const App = (() => {
     });
 
     // Show/hide filter bar (only for leaderboard and player cards)
-    const filterWrapper = document.getElementById('filterWrapper') || document.getElementById('filterBar');
-    const mainContent = document.querySelector('.main-content');
+    const filterBar = document.getElementById('filterBar');
     const sortItem = document.getElementById('filterSortItem');
     const layoutItem = document.getElementById('filterLayoutItem');
 
     if (tab === 'leaderboard' || tab === 'cards') {
-      if (filterWrapper) filterWrapper.classList.remove('hidden');
-      if (mainContent) mainContent.classList.remove('no-filter');
+      if (filterBar) filterBar.classList.remove('hidden');
       if (sortItem) sortItem.style.display = tab === 'cards' ? '' : 'none';
       if (layoutItem) layoutItem.style.display = tab === 'cards' ? '' : 'none';
     } else {
-      if (filterWrapper) {
-        filterWrapper.classList.add('hidden');
-        filterWrapper.classList.remove('is-open');
-      }
-      if (mainContent) mainContent.classList.add('no-filter');
+      if (filterBar) filterBar.classList.add('hidden');
     }
 
     // Scroll to top
@@ -190,31 +184,8 @@ const App = (() => {
     const toggleBtn = document.getElementById('filterToggleBtn');
     const dropdowns = document.getElementById('filterDropdowns');
     const resetBtn = document.getElementById('resetFilterBtn');
-    const hoverTrigger = document.getElementById('filterHoverTrigger');
-    const filterWrapper = document.getElementById('filterWrapper');
 
     if (!sportSelect) return;
-
-    // Hover / Click Trigger Handle
-    if (hoverTrigger && filterWrapper) {
-      hoverTrigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        filterWrapper.classList.toggle('is-open');
-      });
-
-      hoverTrigger.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          filterWrapper.classList.toggle('is-open');
-        }
-      });
-
-      document.addEventListener('click', (e) => {
-        if (filterWrapper && !filterWrapper.contains(e.target)) {
-          filterWrapper.classList.remove('is-open');
-        }
-      });
-    }
 
     // Mobile filter toggle
     if (toggleBtn && dropdowns) {
@@ -366,21 +337,12 @@ const App = (() => {
     if (resetBtn) resetBtn.classList.toggle('active', count > 0);
 
     const badge = document.getElementById('filterActiveBadge');
-    const triggerBadge = document.getElementById('filterTriggerBadge');
     if (badge) {
       if (count > 0) {
         badge.textContent = count;
         badge.style.display = 'inline-flex';
       } else {
         badge.style.display = 'none';
-      }
-    }
-    if (triggerBadge) {
-      if (count > 0) {
-        triggerBadge.textContent = count;
-        triggerBadge.style.display = 'inline-flex';
-      } else {
-        triggerBadge.style.display = 'none';
       }
     }
   }
