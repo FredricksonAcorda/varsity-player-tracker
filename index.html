@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Varsity Sports Player Tracker — Track player stats, rankings, and performance across multiple sports and categories.">
+  <meta name="description" content="Varsity Sports Player Tracker — Official platform for player performance cards, multi-sport tournament rankings, and match analytics.">
   <title>Varsity Player Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,42 +11,102 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <!-- ═══════ HEADER ═══════ -->
+  <!-- ═══════ APP HEADER ═══════ -->
   <header class="app-header">
     <div class="header-content">
-      <div class="logo">
+      <div class="logo" onclick="App.switchTab('home')" style="cursor: pointer;" title="Go to Homepage">
         <span class="logo-badge">V</span>
         <h1>Varsity<span class="logo-accent">Tracker</span></h1>
       </div>
+
+      <!-- Combined Account & Portal Dropdown (Athlete + Coach/Admin) -->
       <div class="header-right">
-        <div class="header-action-group">
-          <button class="header-nav-btn" id="headerProfileBtn" onclick="App.switchTab('profile')" aria-label="My Profile" title="My Profile">
-            <span class="header-profile-avatar" id="headerProfileAvatar">
+        <div class="header-account-wrapper" id="headerAccountWrapper">
+          <button class="header-account-btn" id="headerAccountBtn" aria-expanded="false" aria-haspopup="true" title="Account & Management Portal">
+            <span class="header-account-avatar" id="headerAccountAvatar">
               <span class="header-avatar-initial" id="headerAvatarInitial">P</span>
             </span>
-            <span class="header-profile-name" id="headerProfileName">My Profile</span>
+            <div class="header-account-meta">
+              <span class="header-account-name" id="headerAccountName">Athlete & Coach</span>
+              <span class="header-account-role" id="headerAccountRole">Portal Access</span>
+            </div>
+            <span class="header-account-chevron">▾</span>
           </button>
-          <button class="header-nav-btn header-admin-btn" id="headerAdminBtn" onclick="App.switchTab('admin')" aria-label="Admin Dashboard" title="Admin Dashboard">
-            <span class="header-admin-icon">⚙</span>
-            <span id="headerAdminText">Admin</span>
-          </button>
-        </div>
-        <div class="user-info" id="userInfo" style="display:none;">
-          <span class="admin-mode-pill" id="adminModeHeaderBadge" style="display:none;">Unlocked</span>
-          <button class="btn btn-ghost btn-sm header-logout-btn" id="logoutBtn" title="Logout or Lock">Logout</button>
+
+          <!-- Glass Dropdown with distinct Athlete and Coach/Admin spaces -->
+          <div class="account-dropdown-menu" id="accountDropdown">
+            <!-- ATHLETE SECTION -->
+            <div class="dropdown-section">
+              <div class="dropdown-section-title">
+                <span>ATHLETE PORTAL</span>
+                <span class="dropdown-badge athlete" id="dropdownAthleteBadge">Guest</span>
+              </div>
+              <div id="dropdownAthleteLoggedIn" style="display:none;">
+                <div class="dropdown-player-card">
+                  <div class="dropdown-player-name" id="dropdownPlayerName">Athlete</div>
+                  <div class="dropdown-player-id" id="dropdownPlayerId">ID-00000</div>
+                </div>
+                <button class="dropdown-item" onclick="App.switchTab('profile'); App.closeAccountDropdown();">
+                  <span class="dropdown-item-icon">🎴</span>
+                  <span>My Athlete Profile & Card</span>
+                </button>
+                <button class="dropdown-item" onclick="Profile.downloadCurrentCard(); App.closeAccountDropdown();">
+                  <span class="dropdown-item-icon">📥</span>
+                  <span>Download Digital Card (PNG)</span>
+                </button>
+                <button class="dropdown-item text-danger" onclick="Auth.logout(); App.closeAccountDropdown();">
+                  <span class="dropdown-item-icon">🚪</span>
+                  <span>Log Out of Athlete Account</span>
+                </button>
+              </div>
+              <div id="dropdownAthleteGuest">
+                <button class="dropdown-item" onclick="App.switchTab('profile'); App.closeAccountDropdown();">
+                  <span class="dropdown-item-icon">🔑</span>
+                  <span>Athlete Sign In</span>
+                </button>
+                <button class="dropdown-item" onclick="App.switchTab('profile'); Auth.showSignupTab(); App.closeAccountDropdown();">
+                  <span class="dropdown-item-icon">✨</span>
+                  <span>Create Athlete Account</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <!-- COACH / ADMIN SECTION -->
+            <div class="dropdown-section">
+              <div class="dropdown-section-title">
+                <span>COACH & OFFICIALS</span>
+                <span class="dropdown-badge admin" id="dropdownAdminBadge">Protected</span>
+              </div>
+              <button class="dropdown-item" onclick="App.switchTab('admin'); App.closeAccountDropdown();">
+                <span class="dropdown-item-icon">⚙️</span>
+                <span id="dropdownAdminActionText">Admin Dashboard & Matches</span>
+              </button>
+              <div id="dropdownAdminUnlockedRow" style="display:none;">
+                <button class="dropdown-item text-warning" onclick="Admin.lock(); App.closeAccountDropdown();">
+                  <span class="dropdown-item-icon">🔒</span>
+                  <span>Lock Admin Session</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- ═══════ PILL NAVIGATION (Leaderboard, Player Cards, Events) ═══════ -->
+  <!-- ═══════ FLOATING PILL NAVIGATION (Home, Leaderboard, Player Cards, Events) ═══════ -->
   <nav class="pill-nav-container" id="pillNavContainer" aria-label="Main Navigation">
     <div class="pill-nav-inner">
       <div class="pill-nav" id="pillNav">
         <div class="pill-indicator" id="pillIndicator"></div>
         <ul class="pill-nav-list" id="pillNavList" role="menubar">
           <li class="pill-nav-item" role="none">
-            <button class="pill-nav-btn active" data-tab="leaderboard" role="menuitem">Leaderboard</button>
+            <button class="pill-nav-btn active" data-tab="home" role="menuitem">Home</button>
+          </li>
+          <li class="pill-nav-item" role="none">
+            <button class="pill-nav-btn" data-tab="leaderboard" role="menuitem">Leaderboard</button>
           </li>
           <li class="pill-nav-item" role="none">
             <button class="pill-nav-btn" data-tab="cards" role="menuitem">Player Cards</button>
@@ -63,46 +123,52 @@
       </div>
       <!-- Mobile Floating Pill Dropdown Menu -->
       <div class="pill-mobile-menu" id="pillMobileMenu">
-        <button class="pill-mobile-btn active" data-tab="leaderboard">Leaderboard</button>
+        <button class="pill-mobile-btn active" data-tab="home">Home</button>
+        <button class="pill-mobile-btn" data-tab="leaderboard">Leaderboard</button>
         <button class="pill-mobile-btn" data-tab="cards">Player Cards</button>
         <button class="pill-mobile-btn" data-tab="events">Events</button>
         <button class="pill-mobile-btn" data-tab="profile">My Profile</button>
-        <button class="pill-mobile-btn" data-tab="admin">Admin</button>
+        <button class="pill-mobile-btn" data-tab="admin">Admin Portal</button>
       </div>
     </div>
   </nav>
 
-  <!-- ═══════ FILTER BAR ═══════ -->
-  <div class="filter-bar" id="filterBar">
+  <!-- ═══════ UNIFIED FILTER BAR (Leaderboard & Cards) ═══════ -->
+  <div class="filter-bar hidden" id="filterBar">
     <div class="filter-bar-inner">
-      <div class="filter-search-wrapper">
-        <div class="search-input-box">
-          <input type="text" id="filterSearch" placeholder="Search athlete name or ID..." class="filter-input">
-        </div>
-        <button class="filter-toggle-btn" id="filterToggleBtn" type="button" aria-expanded="false">
-          <span>Filters</span>
-          <span class="filter-badge" id="filterActiveBadge" style="display:none;">0</span>
-        </button>
+      <!-- Search Input aligned with filters -->
+      <div class="filter-search-box">
+        <span class="filter-search-icon">🔍</span>
+        <input type="text" id="filterSearch" placeholder="Search athlete name, ID, or team..." class="filter-search-input">
       </div>
-      <div class="filter-dropdowns" id="filterDropdowns">
+
+      <button class="filter-toggle-btn" id="filterToggleBtn" type="button" aria-expanded="false">
+        <span>Filters</span>
+        <span class="filter-badge" id="filterActiveBadge" style="display:none;">0</span>
+      </button>
+
+      <div class="filter-controls-group" id="filterDropdowns">
         <div class="filter-item">
           <label for="filterSport">Sport</label>
           <select id="filterSport" class="filter-select">
             <option value="All">All Sports</option>
           </select>
         </div>
+
         <div class="filter-item">
           <label for="filterCategory">Category</label>
           <select id="filterCategory" class="filter-select">
             <option value="All">All Categories</option>
           </select>
         </div>
+
         <div class="filter-item">
           <label for="filterGrade">Grade</label>
           <select id="filterGrade" class="filter-select">
             <option value="All">All Grades</option>
           </select>
         </div>
+
         <div class="filter-item cards-sort-item" id="filterSortItem">
           <label for="cardsSortSelect">Sort</label>
           <div class="filter-sort-group">
@@ -112,9 +178,10 @@
               <option value="wins">Wins</option>
               <option value="name">Name</option>
             </select>
-            <button type="button" class="btn btn-secondary btn-sm cards-order-btn" id="cardsOrderBtn" title="Toggle Sort Order">Asc</button>
+            <button type="button" class="btn btn-secondary btn-sm cards-order-btn" id="cardsOrderBtn" title="Toggle Ascending / Descending">Asc</button>
           </div>
         </div>
+
         <div class="filter-item cards-layout-item" id="filterLayoutItem">
           <label>Layout</label>
           <div class="cards-layout-toggle" id="cardsLayoutToggle" role="group" aria-label="Layout view">
@@ -122,19 +189,242 @@
             <button type="button" class="layout-btn" id="layoutListBtn" title="List View">List</button>
           </div>
         </div>
+
         <button class="btn btn-ghost btn-sm reset-filter-btn" id="resetFilterBtn" type="button" title="Reset all filters">Reset</button>
       </div>
     </div>
   </div>
 
-  <!-- ═══════ MAIN CONTENT ═══════ -->
-  <main class="main-content">
+  <!-- ═══════ MAIN APPLICATION VIEWS ═══════ -->
+  <main class="main-content no-filter">
 
-    <!-- ── LEADERBOARD VIEW ── -->
-    <section class="view active" id="view-leaderboard">
+    <!-- ═══════════════════════════════════════════
+         HOMEPAGE & VARSITY LANDING PAGE
+         ═══════════════════════════════════════════ -->
+    <section class="view active" id="view-home">
+      <!-- Hero Section -->
+      <div class="home-hero">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          <span>OFFICIAL INTER-SCHOOL VARSITY HUB</span>
+        </div>
+        <h1 class="hero-title">Track Excellence.<br><span class="gradient-text">Elevate Varsity Sports.</span></h1>
+        <p class="hero-description">
+          The ultimate platform for collegiate and inter-school athletics. Discover real-time leaderboards, digital player cards, multi-sport tournament brackets, and verified match analytics.
+        </p>
+        <div class="hero-cta-group">
+          <button class="btn btn-primary btn-lg" onclick="App.switchTab('leaderboard')">
+            <span>Explore Leaderboards</span>
+            <span style="font-size:1.1rem;">→</span>
+          </button>
+          <button class="btn btn-secondary btn-lg" onclick="App.switchTab('cards')">
+            <span>View Player Cards</span>
+          </button>
+          <button class="btn btn-ghost btn-lg" onclick="App.switchTab('profile')">
+            <span>Athlete Sign In</span>
+          </button>
+        </div>
+
+        <!-- Live Stats Ticker -->
+        <div class="hero-ticker">
+          <div class="ticker-item">
+            <div class="ticker-value count-up" id="homeStatAthletes">0</div>
+            <div class="ticker-label">Active Athletes</div>
+          </div>
+          <div class="ticker-divider"></div>
+          <div class="ticker-item">
+            <div class="ticker-value count-up" id="homeStatSports">5</div>
+            <div class="ticker-label">Sports Covered</div>
+          </div>
+          <div class="ticker-divider"></div>
+          <div class="ticker-item">
+            <div class="ticker-value count-up" id="homeStatEvents">0</div>
+            <div class="ticker-label">Tournaments Tracked</div>
+          </div>
+          <div class="ticker-divider"></div>
+          <div class="ticker-item">
+            <div class="ticker-value count-up highlight" id="homeStatWinrate">0%</div>
+            <div class="ticker-label">Top Varsity Winrate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Athlete Spotlight -->
+      <div class="home-section">
+        <div class="section-header-centered">
+          <div class="section-tag">TOP PERFORMERS</div>
+          <h2 class="section-title">Varsity Athlete Spotlight</h2>
+          <p class="section-subtitle">Leading varsity athletes ranked by official tournament victories and match winrates.</p>
+        </div>
+        <div class="spotlight-grid" id="homeSpotlightGrid">
+          <!-- Populated dynamically by Home.render() -->
+        </div>
+      </div>
+
+      <!-- Core Feature Pillars (Playbook 2026 UX) -->
+      <div class="home-section">
+        <div class="section-header-centered">
+          <div class="section-tag">BUILT FOR VARSITY ATHLETICS</div>
+          <h2 class="section-title">Engineered for Coaches & Athletes</h2>
+          <p class="section-subtitle">Everything you need to run, track, and celebrate varsity athletic competitions.</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card" onclick="App.switchTab('leaderboard')">
+            <div class="feature-icon-box">🏆</div>
+            <h3 class="feature-title">Dynamic Ranking Engine</h3>
+            <p class="feature-desc">Automatic real-time calculation of player ranks, winrates, and official standings with gold, silver, and bronze prestige tiers.</p>
+            <div class="feature-link">View Rankings <span>→</span></div>
+          </div>
+
+          <div class="feature-card" onclick="App.switchTab('cards')">
+            <div class="feature-icon-box">🎴</div>
+            <h3 class="feature-title">Digital Performance Cards</h3>
+            <p class="feature-desc">Collectible athlete cards featuring custom avatars, grade levels, win differentials, and high-resolution downloadable PNG cards.</p>
+            <div class="feature-link">Browse Cards <span>→</span></div>
+          </div>
+
+          <div class="feature-card" onclick="App.switchTab('events')">
+            <div class="feature-icon-box">📅</div>
+            <h3 class="feature-title">Multi-Sport Tournament Hub</h3>
+            <p class="feature-desc">Track intramurals, invitationals, and district championships across Badminton, Basketball, Volleyball, Table Tennis, and Football.</p>
+            <div class="feature-link">Explore Events <span>→</span></div>
+          </div>
+
+          <div class="feature-card" onclick="App.switchTab('admin')">
+            <div class="feature-icon-box">⚙️</div>
+            <h3 class="feature-title">Coach & Official Portal</h3>
+            <p class="feature-desc">Role-isolated management dashboard for coaches to record match outcomes, verify scores, and update athlete rosters safely.</p>
+            <div class="feature-link">Access Console <span>→</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works Section -->
+      <div class="home-section home-how-it-works">
+        <div class="section-header-centered">
+          <div class="section-tag">SIMPLE WORKFLOW</div>
+          <h2 class="section-title">How Varsity Tracker Works</h2>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">01</div>
+            <h4 class="step-title">Athlete Registration</h4>
+            <p class="step-desc">Athletes create their verified profile, upload photos, and enroll in their varsity sports categories.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">02</div>
+            <h4 class="step-title">Record Tournament Matches</h4>
+            <p class="step-desc">Coaches schedule multi-sport tournaments and record official match results with one-click verification.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">03</div>
+            <h4 class="step-title">Automatic Rank Progression</h4>
+            <p class="step-desc">Rankings, winrates, and digital cards update instantly across all school leaderboards and digital exports.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Frequently Asked Questions (Accordion) -->
+      <div class="home-section">
+        <div class="section-header-centered">
+          <div class="section-tag">FAQS</div>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+          <p class="section-subtitle">Common questions about athlete registration, match recording, and rankings.</p>
+        </div>
+
+        <div class="faq-accordion" id="homeFaqAccordion">
+          <div class="faq-item active">
+            <div class="faq-header">
+              <span class="faq-question">How are player rankings automatically calculated?</span>
+              <span class="faq-toggle-icon">+</span>
+            </div>
+            <div class="faq-body">
+              <p>Rankings are automatically computed by our real-time engine whenever a coach records a match. Athletes are ranked by total victories, overall match winrate percentage, and least losses within their specific sport and category.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-header">
+              <span class="faq-question">Can an athlete participate in multiple sports and categories?</span>
+              <span class="faq-toggle-icon">+</span>
+            </div>
+            <div class="faq-body">
+              <p>Yes! Athletes can be enrolled across multiple sports (e.g. Badminton Men's Singles & Mixed Doubles, or Basketball 3x3 and 5v5). Each sport and category maintains independent statistics and rankings.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-header">
+              <span class="faq-question">How do I download my official digital athlete card?</span>
+              <span class="faq-toggle-icon">+</span>
+            </div>
+            <div class="faq-body">
+              <p>Log in with your athlete account, navigate to "My Profile", and click "Download Card (PNG)". The application generates a high-resolution collectible varsity card formatted with your photo, rank, and stats.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-header">
+              <span class="faq-question">Who has access to record match outcomes?</span>
+              <span class="faq-toggle-icon">+</span>
+            </div>
+            <div class="faq-body">
+              <p>Only authorized coaches and athletic officials with Admin access can record official match scores and modify roster standings. Athlete accounts have dedicated view-only and profile-editing permissions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Varsity Footer -->
+      <footer class="app-footer">
+        <div class="footer-inner">
+          <div class="footer-col brand">
+            <div class="logo">
+              <span class="logo-badge">V</span>
+              <h2>Varsity<span class="logo-accent">Tracker</span></h2>
+            </div>
+            <p class="footer-desc">The official digital platform for varsity player tracking, multi-sport tournament rankings, and athletic performance analytics.</p>
+            <p class="footer-copy">© 2026 Varsity Sports Tracker. All rights reserved.</p>
+          </div>
+          <div class="footer-col">
+            <h4>Navigation</h4>
+            <ul class="footer-links">
+              <li><a href="javascript:void(0)" onclick="App.switchTab('home')">Home</a></li>
+              <li><a href="javascript:void(0)" onclick="App.switchTab('leaderboard')">Leaderboard</a></li>
+              <li><a href="javascript:void(0)" onclick="App.switchTab('cards')">Player Cards</a></li>
+              <li><a href="javascript:void(0)" onclick="App.switchTab('events')">Events & Tournaments</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Sports Covered</h4>
+            <ul class="footer-links">
+              <li>🏸 Badminton</li>
+              <li>🏀 Basketball</li>
+              <li>🏐 Volleyball</li>
+              <li>🏓 Table Tennis</li>
+              <li>⚽ Football</li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Access & Roles</h4>
+            <ul class="footer-links">
+              <li><a href="javascript:void(0)" onclick="App.switchTab('profile')">Athlete Profile Login</a></li>
+              <li><a href="javascript:void(0)" onclick="App.switchTab('admin')">Coach / Admin Portal</a></li>
+            </ul>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         LEADERBOARD VIEW
+         ═══════════════════════════════════════════ -->
+    <section class="view" id="view-leaderboard">
       <div class="view-header">
-        <h2>Leaderboard</h2>
-        <p class="view-subtitle">Official player rankings across sports and categories</p>
+        <h2>Official Leaderboard</h2>
+        <p class="view-subtitle">Live player rankings and standings across varsity sports and categories</p>
       </div>
       <div class="leaderboard-container" id="leaderboardContainer">
         <div class="empty-state" id="leaderboardEmpty">
@@ -152,10 +442,12 @@
           <thead>
             <tr>
               <th>Rank</th>
-              <th>Player</th>
+              <th>Athlete</th>
               <th>Sport</th>
               <th>Category</th>
               <th>Grade</th>
+              <th>Winrate</th>
+              <th>Record</th>
             </tr>
           </thead>
           <tbody id="leaderboardBody"></tbody>
@@ -163,7 +455,9 @@
       </div>
     </section>
 
-    <!-- ── PLAYER CARDS VIEW ── -->
+    <!-- ═══════════════════════════════════════════
+         PLAYER CARDS VIEW
+         ═══════════════════════════════════════════ -->
     <section class="view" id="view-cards">
       <div class="view-header">
         <h2>Player Cards</h2>
@@ -184,20 +478,22 @@
       </div>
     </section>
 
-    <!-- ── MY PROFILE VIEW ── -->
+    <!-- ═══════════════════════════════════════════
+         MY PROFILE VIEW (ATHLETE CARD & STATS)
+         ═══════════════════════════════════════════ -->
     <section class="view" id="view-profile">
       <!-- If not logged in, show login/signup -->
       <div id="authSection">
         <div class="auth-container">
           <div class="auth-tabs">
-            <button class="auth-tab-btn active" data-auth-tab="login">Login</button>
-            <button class="auth-tab-btn" data-auth-tab="signup">Sign Up</button>
+            <button class="auth-tab-btn active" data-auth-tab="login">Athlete Login</button>
+            <button class="auth-tab-btn" data-auth-tab="signup">Create Account</button>
           </div>
 
           <!-- Login Form -->
           <form class="auth-form active" id="loginForm">
             <h2>Athlete Login</h2>
-            <p class="auth-subtitle">Sign in to view your profile, statistics, and set card</p>
+            <p class="auth-subtitle">Sign in to view your profile, statistics, and digital card</p>
             <div class="form-group">
               <label for="loginUsername">Username</label>
               <input type="text" id="loginUsername" placeholder="Enter your username" required>
@@ -207,14 +503,14 @@
               <input type="password" id="loginPassword" placeholder="Enter your password" required>
             </div>
             <div class="form-error" id="loginError"></div>
-            <button type="submit" class="btn btn-primary btn-full">Login</button>
+            <button type="submit" class="btn btn-primary btn-full">Login to Athlete Profile</button>
             <p style="color:var(--text-muted); font-size:0.75rem; text-align:center; margin-top:0.75rem;">Demo athlete: <strong style="color:var(--accent-primary);">Alex Rivera</strong> / <strong style="color:var(--accent-primary);">Password123!</strong></p>
           </form>
 
           <!-- Sign Up Form -->
           <form class="auth-form" id="signupForm">
-            <h2>Create Account</h2>
-            <p class="auth-subtitle">Register as a varsity athlete and receive your Player ID</p>
+            <h2>Create Athlete Account</h2>
+            <p class="auth-subtitle">Register as a varsity athlete and receive your official Player ID</p>
             <div class="form-row">
               <div class="form-group">
                 <label for="signupUsername">Username *</label>
@@ -249,12 +545,12 @@
               <div class="checkbox-group" id="signupCategories"></div>
             </div>
             <div class="form-error" id="signupError"></div>
-            <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+            <button type="submit" class="btn btn-primary btn-full">Complete Athlete Registration</button>
           </form>
         </div>
       </div>
 
-      <!-- If logged in, show profile -->
+      <!-- If logged in, show profile card (without logout on card) -->
       <div id="profileSection" style="display:none;">
         <div class="profile-header">
           <div class="profile-card-large" id="profileCard"></div>
@@ -270,11 +566,13 @@
       </div>
     </section>
 
-    <!-- ── EVENTS VIEW ── -->
+    <!-- ═══════════════════════════════════════════
+         EVENTS VIEW (PUBLIC)
+         ═══════════════════════════════════════════ -->
     <section class="view" id="view-events">
       <div class="view-header">
         <h2>Events & Tournaments</h2>
-        <p class="view-subtitle">Upcoming, ongoing, and completed competitions</p>
+        <p class="view-subtitle">Upcoming, ongoing, and completed athletic competitions</p>
       </div>
       <div class="events-container" id="eventsContainer">
         <div class="empty-state" id="eventsEmpty">
@@ -291,7 +589,9 @@
       </div>
     </section>
 
-    <!-- ── ADMIN VIEW ── -->
+    <!-- ═══════════════════════════════════════════
+         ADMIN VIEW (COACH & OFFICIAL MANAGEMENT)
+         ═══════════════════════════════════════════ -->
     <section class="view" id="view-admin">
       <!-- Athlete Access Restricted Notice (when logged in as a player) -->
       <div id="adminRestricted" style="display:none;">
@@ -309,14 +609,14 @@
       <!-- Admin Login Gate -->
       <div id="adminGate">
         <div class="admin-login-box">
-          <h2>Admin Panel</h2>
-          <p>Enter the admin access password to manage rosters, records, and events.</p>
+          <h2>Coach & Admin Portal</h2>
+          <p>Enter the admin access password to manage rosters, records, and tournament matches.</p>
           <form id="adminLoginForm" onsubmit="Admin.unlock(event); return false;">
             <div class="form-group">
-              <input type="password" id="adminPasswordInput" placeholder="Enter admin password" autocomplete="current-password" required>
+              <input type="password" id="adminPasswordInput" placeholder="Enter admin password (default: admin123)" autocomplete="current-password" required>
             </div>
             <div class="form-error" id="adminLoginError"></div>
-            <button type="button" class="btn btn-primary btn-full" id="adminUnlockBtn" onclick="Admin.unlock(event)">Unlock Panel</button>
+            <button type="button" class="btn btn-primary btn-full" id="adminUnlockBtn" onclick="Admin.unlock(event)">Unlock Management Console</button>
           </form>
         </div>
       </div>
@@ -324,23 +624,33 @@
       <!-- Admin Panel (after auth) -->
       <div id="adminPanel" style="display:none;">
         <div class="admin-header">
-          <h2>Admin Panel</h2>
-          <button class="btn btn-ghost btn-sm" id="adminLockBtn" onclick="Admin.lock()">Lock</button>
+          <div>
+            <h2>Admin Management Console</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem;">Official roster management, match records, and tournament scheduling</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="adminLockBtn" onclick="Admin.lock()">🔒 Lock Session</button>
         </div>
 
         <div class="admin-tabs">
-          <button class="admin-tab-btn active" data-admin-tab="players">Players</button>
+          <button class="admin-tab-btn active" data-admin-tab="players">Athlete Roster</button>
           <button class="admin-tab-btn" data-admin-tab="matches">Record Match</button>
           <button class="admin-tab-btn" data-admin-tab="ranks">Ranks</button>
-          <button class="admin-tab-btn" data-admin-tab="manage-events">Events</button>
-          <button class="admin-tab-btn" data-admin-tab="sports">Sports</button>
+          <button class="admin-tab-btn" data-admin-tab="manage-events">Tournaments</button>
+          <button class="admin-tab-btn" data-admin-tab="sports">Sports Config</button>
           <button class="admin-tab-btn" data-admin-tab="settings">Settings</button>
         </div>
 
         <!-- Admin: Players Management -->
         <div class="admin-section active" id="admin-players">
-          <h3>Player Management</h3>
-          <div class="admin-toolbar" style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+          <div class="admin-section-header">
+            <div>
+              <h3>Athlete Roster Management</h3>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Manage athlete accounts, enroll sports categories, and edit records</p>
+            </div>
+            <button class="btn btn-primary btn-sm" id="adminAddPlayerBtn" onclick="Admin.showAddPlayerModal()">+ Add Athlete</button>
+          </div>
+
+          <div class="admin-toolbar" style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-top:1rem;">
             <div style="flex:1; min-width:200px;">
               <input type="text" id="adminPlayerSearch" placeholder="Search athlete name or ID..." class="filter-input" style="width:100%;">
             </div>
@@ -350,17 +660,17 @@
             <select id="adminPlayerGradeFilter" class="filter-select" onchange="Admin.renderPlayersTable()" style="max-width:140px;">
               <option value="All">All Grades</option>
             </select>
-            <button class="btn btn-primary btn-sm" id="adminAddPlayerBtn" onclick="Admin.showAddPlayerModal()">+ Add Player</button>
           </div>
-          <div class="admin-table-wrapper">
+
+          <div class="admin-table-wrapper" style="margin-top:1rem;">
             <table class="admin-table" id="adminPlayersTable">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Username</th>
+                  <th>Player ID</th>
+                  <th>Athlete</th>
                   <th>Grade</th>
                   <th>Section</th>
-                  <th>Sports</th>
+                  <th>Sports Enrolled</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -371,67 +681,90 @@
 
         <!-- Admin: Record Match -->
         <div class="admin-section" id="admin-matches">
-          <h3>Record Match Result</h3>
-          <form id="recordMatchForm" class="admin-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="matchSport">Sport</label>
-                <select id="matchSport" required><option value="">Select sport...</option></select>
-              </div>
-              <div class="form-group">
-                <label for="matchCategory">Category</label>
-                <select id="matchCategory" required><option value="">Select category...</option></select>
-              </div>
+          <div class="admin-section-header">
+            <div>
+              <h3>Record Match Outcome</h3>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Record official scores. Rankings automatically recalculate across all leaderboards.</p>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="matchPlayer">Player</label>
-                <select id="matchPlayer" required><option value="">Select player...</option></select>
+          </div>
+
+          <div class="admin-card" style="max-width:620px; margin-top:1rem;">
+            <form id="recordMatchForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="matchSport">Sport *</label>
+                  <select id="matchSport" required>
+                    <option value="">Select sport...</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="matchCategory">Category *</label>
+                  <select id="matchCategory" required>
+                    <option value="">Select sport first...</option>
+                  </select>
+                </div>
               </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="matchPlayer1">Player 1 *</label>
+                  <select id="matchPlayer1" required>
+                    <option value="">Select category first...</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="matchPlayer2">Player 2 (Optional)</label>
+                  <select id="matchPlayer2">
+                    <option value="">Select category first...</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="form-group">
-                <label for="matchResult">Result</label>
-                <select id="matchResult" required>
-                  <option value="">Select result...</option>
-                  <option value="W">Win</option>
-                  <option value="L">Loss</option>
+                <label for="matchWinner">Winner *</label>
+                <select id="matchWinner" required>
+                  <option value="">Select players first...</option>
                 </select>
               </div>
-            </div>
-            <div class="form-row">
+
               <div class="form-group">
-                <label for="matchOpponent">Opponent (optional)</label>
-                <input type="text" id="matchOpponent" placeholder="Opponent name">
+                <label for="matchEvent">Event / Tournament Name (Optional)</label>
+                <input type="text" id="matchEvent" placeholder="e.g. Intramurals 2026, District Finals">
               </div>
-              <div class="form-group">
-                <label for="matchEvent">Event (optional)</label>
-                <input type="text" id="matchEvent" placeholder="Event name">
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Record Match</button>
-          </form>
+
+              <div class="form-error" id="matchError"></div>
+              <button type="submit" class="btn btn-primary btn-full">Record Official Match Result</button>
+            </form>
+          </div>
         </div>
 
         <!-- Admin: Set Ranks -->
         <div class="admin-section" id="admin-ranks">
-          <h3>Set Player Ranks</h3>
-          <div class="form-row" style="margin-bottom:1rem;">
-            <div class="form-group">
-              <label for="rankSport">Sport</label>
-              <select id="rankSport"><option value="">Select sport...</option></select>
+          <div class="admin-section-header">
+            <div>
+              <h3>Manual & Automatic Ranking Review</h3>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Review auto-calculated standings or assign custom ranking overrides</p>
             </div>
-            <div class="form-group">
-              <label for="rankCategory">Category</label>
-              <select id="rankCategory"><option value="">Select category...</option></select>
-            </div>
+            <button class="btn btn-secondary btn-sm" onclick="Storage.recalculateAllRanks(); Admin.renderRanksTable(); Leaderboard.render(); Cards.render(); App.showToast('All rankings synchronized!', 'success');">⚡ Synchronize All Rankings</button>
           </div>
-          <div class="admin-table-wrapper">
+
+          <div class="admin-toolbar" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:1rem;">
+            <select id="rankSport" class="filter-select" style="max-width:200px;">
+              <option value="">Select sport...</option>
+            </select>
+            <select id="rankCategory" class="filter-select" style="max-width:200px;">
+              <option value="">Select category...</option>
+            </select>
+          </div>
+
+          <div class="admin-table-wrapper" style="margin-top:1rem;">
             <table class="admin-table" id="ranksTable">
               <thead>
                 <tr>
-                  <th>Player</th>
-                  <th>W</th>
-                  <th>L</th>
-                  <th>WR%</th>
+                  <th>Athlete</th>
+                  <th>Wins</th>
+                  <th>Losses</th>
+                  <th>Winrate</th>
                   <th>Current Rank</th>
                   <th>Set Rank</th>
                 </tr>
@@ -441,56 +774,76 @@
           </div>
         </div>
 
-        <!-- Admin: Events Management -->
+        <!-- Admin: Tournaments & Events -->
         <div class="admin-section" id="admin-manage-events">
-          <h3>Events Management</h3>
-          <button class="btn btn-primary btn-sm" id="adminAddEventBtn" style="margin-bottom:1rem;">+ Create Event</button>
-          <div id="adminEventsList"></div>
+          <div class="admin-section-header">
+            <div>
+              <h3>Tournaments & Competitions</h3>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Create and manage multi-sport tournament schedules and recorded matches</p>
+            </div>
+            <button class="btn btn-primary btn-sm" id="adminAddEventBtn" onclick="Admin.showAddEventModal()">+ Create Tournament</button>
+          </div>
+
+          <div class="admin-events-list" id="adminEventsList" style="margin-top:1.5rem;"></div>
         </div>
 
-        <!-- Admin: Sports Configuration -->
+        <!-- Admin: Sports Config -->
         <div class="admin-section" id="admin-sports">
-          <h3>Sports & Categories Configuration</h3>
-          <button class="btn btn-primary btn-sm" id="addSportBtn" style="margin-bottom:1rem;">+ Add Sport</button>
-          <div class="sports-config-list" id="sportsConfigList"></div>
+          <div class="admin-section-header">
+            <div>
+              <h3>Sports & Categories Configuration</h3>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Add, edit, or customize available sports and their competition categories</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="Admin.showAddSportModal()">+ Add Sport</button>
+          </div>
+
+          <div class="sports-config-list" id="sportsConfigList" style="margin-top:1.5rem;"></div>
         </div>
 
-        <!-- Admin: Settings & Backup -->
+        <!-- Admin: Settings & Export -->
         <div class="admin-section" id="admin-settings">
-          <h3>System Settings & Data Management</h3>
-          
-          <div class="settings-group">
+          <div class="admin-section-header">
+            <div>
+              <h3>Admin & System Settings</h3>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Security, data backup, and database management</p>
+            </div>
+          </div>
+
+          <div class="settings-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; margin-top:1.5rem;">
             <div class="setting-card">
               <h4>Change Admin Password</h4>
-              <p>Update the password used to access this admin panel.</p>
+              <p>Update the management console access password.</p>
               <form id="changePasswordForm">
                 <div class="form-group">
-                  <input type="password" id="newAdminPassword" placeholder="New password" required>
+                  <label for="newAdminPassword">New Password</label>
+                  <input type="password" id="newAdminPassword" placeholder="Enter new password" required>
                 </div>
                 <div class="form-group">
+                  <label for="confirmAdminPassword">Confirm Password</label>
                   <input type="password" id="confirmAdminPassword" placeholder="Confirm new password" required>
                 </div>
+                <div class="form-error" id="cpError"></div>
                 <button type="submit" class="btn btn-secondary btn-sm">Update Password</button>
               </form>
             </div>
 
             <div class="setting-card">
-              <h4>Export Data Backup</h4>
-              <p>Download all players, match records, and configurations as JSON.</p>
-              <button class="btn btn-secondary btn-sm" id="exportDataBtn">Export JSON</button>
-            </div>
-
-            <div class="setting-card">
-              <h4>Import Data</h4>
-              <p>Restore players and event data from a previously exported JSON backup.</p>
-              <input type="file" id="importDataInput" accept=".json" style="display:none;">
-              <button class="btn btn-secondary btn-sm" id="importDataBtn">Import JSON</button>
+              <h4>Backup & Export Data</h4>
+              <p>Export all athlete records, tournaments, and match histories as a JSON file.</p>
+              <button class="btn btn-secondary btn-sm" onclick="Admin.exportData()">Download Backup (JSON)</button>
+              
+              <div style="margin-top:1.5rem;">
+                <h4>Restore Data</h4>
+                <p>Import a previously saved backup file.</p>
+                <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="Admin.handleImportFile(this)">
+                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFileInput').click()">Import Backup</button>
+              </div>
             </div>
 
             <div class="setting-card danger">
-              <h4>Reset Application</h4>
-              <p>Clear all local player records and reset to initial state.</p>
-              <button class="btn btn-danger btn-sm" id="clearDataBtn">Clear All Data</button>
+              <h4>Reset System Database</h4>
+              <p>Reset all players, match histories, and tournament events to default seed data.</p>
+              <button class="btn btn-danger btn-sm" onclick="Admin.confirmResetData()">Reset Database</button>
             </div>
           </div>
         </div>
@@ -499,28 +852,29 @@
 
   </main>
 
-  <!-- ═══════ MODAL OVERLAY ═══════ -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
+  <!-- ═══════ REUSABLE MODAL ═══════ -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-container">
       <div class="modal-header">
-        <h3 id="modalTitle">Modal</h3>
-        <button class="modal-close" id="modalClose" aria-label="Close modal">&times;</button>
+        <h3 id="modalTitle">Modal Title</h3>
+        <button class="modal-close" id="modalClose" aria-label="Close modal">×</button>
       </div>
       <div class="modal-body" id="modalBody"></div>
     </div>
   </div>
 
-  <!-- ═══════ TOAST CONTAINER ═══════ -->
-  <div class="toast-container" id="toastContainer"></div>
+  <!-- ═══════ TOAST NOTIFICATIONS ═══════ -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
   <!-- ═══════ SCRIPTS ═══════ -->
   <script src="js/storage.js"></script>
-  <script src="js/auth.js"></script>
+  <script src="js/home.js"></script>
   <script src="js/leaderboard.js"></script>
   <script src="js/cards.js"></script>
   <script src="js/profile.js"></script>
   <script src="js/events.js"></script>
   <script src="js/admin.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

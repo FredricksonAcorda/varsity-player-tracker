@@ -586,43 +586,112 @@ const Admin = (() => {
   function setupRecordMatch() {
     const sportSelect = document.getElementById('matchSport');
     const catSelect = document.getElementById('matchCategory');
-    const playerSelect = document.getElementById('matchPlayer');
+    const p1Select = document.getElementById('matchPlayer1');
+    const p2Select = document.getElementById('matchPlayer2');
+    const winnerSelect = document.getElementById('matchWinner');
+    const matchForm = document.getElementById('recordMatchForm');
+
+    if (!sportSelect || !catSelect || !matchForm) return;
 
     sportSelect.addEventListener('change', () => {
       populateSelectCategories(sportSelect.value, catSelect);
       catSelect.dispatchEvent(new Event('change'));
     });
 
+    function updateWinnerDropdown() {
+      if (!winnerSelect) return;
+      winnerSelect.innerHTML = '<option value="">Select Winner...</option>';
+      const p1Val = p1Select?.value;
+      const p2Val = p2Select?.value;
+
+      if (p1Val) {
+        const p1 = Storage.getPlayerById(p1Val);
+        const opt = document.createElement('option');
+        opt.value = p1Val;
+        opt.textContent = `Player 1: ${p1 ? p1.username : p1Val}`;
+        winnerSelect.appendChild(opt);
+      }
+      if (p2Val) {
+        const p2 = Storage.getPlayerById(p2Val);
+        const opt = document.createElement('option');
+        opt.value = p2Val;
+        opt.textContent = `Player 2: ${p2 ? p2.username : p2Val}`;
+        winnerSelect.appendChild(opt);
+      }
+    }
+
     catSelect.addEventListener('change', () => {
-      populatePlayersForSportCategory(sportSelect.value, catSelect.value, playerSelect);
+      const sport = sportSelect.value;
+      const category = catSelect.value;
+      if (p1Select) p1Select.innerHTML = '<option value="">Select Player 1...</option>';
+      if (p2Select) p2Select.innerHTML = '<option value="">Select Player 2 (Optional)...</option>';
+      if (winnerSelect) winnerSelect.innerHTML = '<option value="">Select players first...</option>';
+
+      if (!sport || !category) return;
+
+      const players = Storage.getPlayers().filter(p =>
+        (p.sports || []).some(s => s.sport === sport && (s.categories || []).some(c => (c.category || c) === category))
+      );
+
+      players.forEach(p => {
+        if (p1Select) {
+          const opt1 = document.createElement('option');
+          opt1.value = p.id;
+          opt1.textContent = `${p.username} (${p.id})`;
+          p1Select.appendChild(opt1);
+        }
+        if (p2Select) {
+          const opt2 = document.createElement('option');
+          opt2.value = p.id;
+          opt2.textContent = `${p.username} (${p.id})`;
+          p2Select.appendChild(opt2);
+        }
+      });
     });
 
-    document.getElementById('recordMatchForm').addEventListener('submit', (e) => {
+    if (p1Select) p1Select.addEventListener('change', updateWinnerDropdown);
+    if (p2Select) p2Select.addEventListener('change', updateWinnerDropdown);
+
+    matchForm.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!checkAdminAuth()) return;
 
       const sport = sportSelect.value;
       const category = catSelect.value;
-      const playerId = playerSelect.value;
-      const result = document.getElementById('matchResult').value;
-      const opponent = document.getElementById('matchOpponent').value.trim();
-      const eventName = document.getElementById('matchEvent').value.trim();
+      const player1 = p1Select ? p1Select.value : '';
+      const player2 = p2Select ? p2Select.value : '';
+      const winner = winnerSelect ? winnerSelect.value : '';
+      const eventName = document.getElementById('matchEvent')?.value.trim() || '';
 
-      if (!sport || !category || !playerId || !result) {
-        App.showToast('Please fill in all required fields.', 'error');
+      if (!sport || !category || !player1 || !winner) {
+        App.showToast('Please select Sport, Category, Player 1, and Winner.', 'error');
         return;
       }
 
-      const success = Storage.recordMatch(playerId, sport, category, result, opponent, eventName);
-      if (success) {
-        const player = Storage.getPlayerById(playerId);
-        App.showToast(`Recorded ${result === 'W' ? 'WIN' : 'LOSS'} for ${player.username}!`, 'success');
-        e.target.reset();
-        Leaderboard.render();
-        Cards.render();
-      } else {
-        App.showToast('Failed to record match. Check player sport/category.', 'error');
+      const loser = winner === player1 ? player2 : player1;
+      const winnerName = Storage.getPlayerById(winner)?.username || winner;
+      const loserName = loser ? (Storage.getPlayerById(loser)?.username || loser) : 'Opponent';
+
+      Storage.recordMatch(winner, sport, category, 'W', loserName, eventName);
+      if (loser) {
+        Storage.recordMatch(loser, sport, category, 'L', winnerName, eventName);
       }
+
+      App.showToast(`Match outcome recorded! Winner: ${winnerName}`, 'success');
+      matchForm.reset();
+      catSelect.innerHTML = '<option value="">Select sport first...</option>';
+      if (p1Select) p1Select.innerHTML = '<option value="">Select category first...</option>';
+      if (p2Select) p2Select.innerHTML = '<option value="">Select category first...</option>';
+      if (winnerSelect) winnerSelect.innerHTML = '<option value="">Select players first...</option>';
+
+      // Unified synchronization across all views!
+      Leaderboard.render();
+      Cards.render();
+      Profile.render();
+      Events.render();
+      renderRanksTable();
+      renderPlayersTable();
+      if (typeof Home !== 'undefined' && Home.render) Home.render();
     });
   }
 
@@ -1177,6 +1246,10 @@ const Admin = (() => {
       Events.render();
       Leaderboard.render();
       Cards.render();
+      Profile.render();
+      renderRanksTable();
+      renderPlayersTable();
+      if (typeof Home !== 'undefined' && Home.render) Home.render();
     });
   }
 

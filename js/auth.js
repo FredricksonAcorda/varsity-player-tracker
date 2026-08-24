@@ -236,10 +236,22 @@ const Auth = (() => {
     Admin.render();
   }
 
+  function showSignupTab() {
+    const signupBtn = document.querySelector('.auth-tab-btn[data-auth-tab="signup"]');
+    if (signupBtn) signupBtn.click();
+  }
+
+  function showLoginTab() {
+    const loginBtn = document.querySelector('.auth-tab-btn[data-auth-tab="login"]');
+    if (loginBtn) loginBtn.click();
+  }
+
   return {
     init,
     logout,
     validatePassword,
     refreshSportDropdown,
+    showSignupTab,
+    showLoginTab,
   };
 })();

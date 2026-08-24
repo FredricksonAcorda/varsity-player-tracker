@@ -26,7 +26,7 @@ const Leaderboard = (() => {
     emptyEl.style.display = 'none';
 
     bodyEl.innerHTML = rows.map((row, idx) => {
-      const rankDisplay = row.rank > 0 ? row.rank : '—';
+      const rankDisplay = row.rank > 0 ? '#' + row.rank : '—';
       const rankClass = getRankClass(row.rank);
 
       const avatarHTML = row.photo
@@ -34,7 +34,7 @@ const Leaderboard = (() => {
         : `<div class="table-avatar-initial">${row.username ? row.username.charAt(0).toUpperCase() : 'P'}</div>`;
 
       return `
-        <tr class="count-up" style="animation-delay: ${idx * 0.05}s">
+        <tr class="count-up" style="animation-delay: ${idx * 0.04}s; cursor: pointer;" onclick="Cards.showDetail('${row.id}', '${escapeAttr(row.sport)}', '${escapeAttr(row.category)}')">
           <td>
             <span class="rank-badge ${rankClass}">${rankDisplay}</span>
           </td>
@@ -50,6 +50,8 @@ const Leaderboard = (() => {
           <td><span class="sport-tag">${escapeHtml(row.sport)}</span></td>
           <td><span class="sport-tag">${escapeHtml(row.category)}</span></td>
           <td><span style="color: var(--text-secondary); font-size: 0.8rem;">${escapeHtml(row.gradeLevel)}</span></td>
+          <td><strong style="color: var(--text-primary); font-size:0.9rem;">${row.winrate}%</strong></td>
+          <td><span class="win-text" style="font-weight:700;">${row.wins}W</span> - <span class="loss-text" style="font-weight:700;">${row.losses}L</span></td>
         </tr>
       `;
     }).join('');

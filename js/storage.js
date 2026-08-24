@@ -134,6 +134,57 @@ const Storage = (() => {
         }
       ],
       createdAt: new Date().toISOString()
+    },
+    {
+      id: 'BSKT-00001',
+      username: 'Jordan Hayes',
+      passwordHash: simpleHash('Password123!'),
+      gradeLevel: 'College Year 2',
+      section: 'Team Blue',
+      photo: '',
+      sports: [
+        {
+          sport: 'Basketball',
+          categories: [
+            {
+              category: "Men's 5v5",
+              wins: 11,
+              losses: 1,
+              rank: 1,
+              matchHistory: [
+                { date: '2026-08-10', result: 'W', opponent: 'Titans', event: 'Inter-College Cup' },
+                { date: '2026-08-14', result: 'W', opponent: 'Hawks', event: 'Semi-Finals' }
+              ]
+            }
+          ]
+        }
+      ],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'VLBL-00001',
+      username: 'Elena Vance',
+      passwordHash: simpleHash('Password123!'),
+      gradeLevel: 'Grade 12',
+      section: 'Spikers A',
+      photo: '',
+      sports: [
+        {
+          sport: 'Volleyball',
+          categories: [
+            {
+              category: "Women's",
+              wins: 9,
+              losses: 2,
+              rank: 1,
+              matchHistory: [
+                { date: '2026-08-12', result: 'W', opponent: 'St. Jude', event: 'Invitational 2026' }
+              ]
+            }
+          ]
+        }
+      ],
+      createdAt: new Date().toISOString()
     }
   ];
 
@@ -149,16 +200,39 @@ const Storage = (() => {
     if (!existingPlayers || existingPlayers.length === 0) {
       set(KEYS.PLAYERS, DEFAULT_PLAYERS);
       set('varsity_id_counter_BDMN', 2);
+      set('varsity_id_counter_BSKT', 1);
+      set('varsity_id_counter_VLBL', 1);
     }
-    if (!get(KEYS.EVENTS)) {
-      set(KEYS.EVENTS, []);
+    const existingEvents = get(KEYS.EVENTS);
+    if (!existingEvents || existingEvents.length === 0) {
+      const defaultEvents = [
+        {
+          id: 'EVT-001',
+          name: 'Inter-School Varsity Championship 2026',
+          date: '2026-09-15',
+          status: 'ongoing',
+          sports: [
+            { sport: 'Badminton', categories: ["Men's Singles", "Women's Singles", "Mixed Doubles"] },
+            { sport: 'Basketball', categories: ["Men's 5v5", "Women's 5v5"] },
+            { sport: 'Volleyball', categories: ["Men's", "Women's"] }
+          ],
+          matches: [
+            { sport: 'Badminton', category: "Men's Singles", player1: 'BDMN-00001', player2: 'BDMN-00002', winner: 'BDMN-00001', date: '2026-08-15' }
+          ],
+          createdAt: new Date().toISOString(),
+        }
+      ];
+      set(KEYS.EVENTS, defaultEvents);
+      set(KEYS.EVENT_COUNTER, 1);
     }
     if (!get(KEYS.ID_COUNTER)) {
       set(KEYS.ID_COUNTER, 0);
     }
     if (!get(KEYS.EVENT_COUNTER)) {
-      set(KEYS.EVENT_COUNTER, 0);
+      set(KEYS.EVENT_COUNTER, 1);
     }
+    // Auto-calculate ranks for initial seed roster
+    recalculateAllRanks();
   }
 
   // ─── Sport Prefix Mapping ───
@@ -261,6 +335,92 @@ const Storage = (() => {
     return filtered.length < players.length;
   }
 
+  // ─── Automatic Ranking Recalculation Engine ───
+  function recalculateRanksForCategory(sport, category) {
+    const players = getPlayers();
+    const eligible = [];
+
+    players.forEach(p => {
+      const sportData = (p.sports || []).find(s => s.sport === sport);
+      if (!sportData) return;
+      const catData = (sportData.categories || []).find(c => (c.category || c) === category);
+      if (!catData) return;
+
+      const wins = catData.wins || 0;
+      const losses = catData.losses || 0;
+      const winrate = getWinrate(wins, losses);
+      eligible.push({ player: p, catData, wins, losses, winrate });
+    });
+
+    if (eligible.length === 0) return;
+
+    // Rank algorithm:
+    // 1. Highest wins
+    // 2. Highest winrate
+    // 3. Lowest losses
+    // 4. Alphabetical tie-breaker
+    eligible.sort((a, b) => {
+      if (b.wins !== a.wins) return b.wins - a.wins;
+      if (b.winrate !== a.winrate) return b.winrate - a.winrate;
+      if (a.losses !== b.losses) return a.losses - b.losses;
+      return (a.player.username || '').localeCompare(b.player.username || '');
+    });
+
+    eligible.forEach((item, index) => {
+      item.catData.rank = index + 1;
+    });
+
+    set(KEYS.PLAYERS, players);
+  }
+
+  function recalculateAllRanks() {
+    const sportsConfig = getSportsConfig();
+    sportsConfig.forEach(s => {
+      (s.categories || []).forEach(cat => {
+        const catName = typeof cat === 'string' ? cat : cat.category;
+        recalculateRanksForCategory(s.sport, catName);
+      });
+    });
+  }
+
+  // ─── Summary Stats (for Homepage Ticker) ───
+  function getSummaryStats() {
+    const players = getPlayers();
+    const sports = getSportsConfig();
+    const events = getEvents();
+
+    let totalMatches = 0;
+    let topWinrate = 0;
+    let totalWins = 0;
+
+    players.forEach(p => {
+      (p.sports || []).forEach(s => {
+        (s.categories || []).forEach(c => {
+          const w = c.wins || 0;
+          const l = c.losses || 0;
+          totalMatches += (c.matchHistory ? c.matchHistory.length : 0);
+          totalWins += w;
+          const wr = getWinrate(w, l);
+          if (wr > topWinrate && (w + l) >= 2) {
+            topWinrate = wr;
+          }
+        });
+      });
+    });
+
+    events.forEach(e => {
+      totalMatches += (e.matches ? e.matches.length : 0);
+    });
+
+    return {
+      athleteCount: players.length,
+      sportCount: sports.length,
+      eventCount: events.length,
+      matchCount: Math.max(totalMatches, totalWins),
+      topWinrate: topWinrate || 80,
+    };
+  }
+
   // ─── Player Stats ───
   function recordMatch(playerId, sport, category, result, opponent = '', eventName = '') {
     const players = getPlayers();
@@ -270,15 +430,16 @@ const Storage = (() => {
     const sportData = player.sports.find(s => s.sport === sport);
     if (!sportData) return false;
 
-    const catData = sportData.categories.find(c => c.category === category);
+    const catData = sportData.categories.find(c => (c.category || c) === category);
     if (!catData) return false;
 
     if (result === 'W') {
-      catData.wins++;
+      catData.wins = (catData.wins || 0) + 1;
     } else if (result === 'L') {
-      catData.losses++;
+      catData.losses = (catData.losses || 0) + 1;
     }
 
+    catData.matchHistory = catData.matchHistory || [];
     catData.matchHistory.push({
       date: new Date().toISOString().split('T')[0],
       result,
@@ -287,6 +448,8 @@ const Storage = (() => {
     });
 
     set(KEYS.PLAYERS, players);
+    // Automatically recalculate ranks for this sport/category!
+    recalculateRanksForCategory(sport, category);
     return true;
   }
 
@@ -298,7 +461,7 @@ const Storage = (() => {
     const sportData = player.sports.find(s => s.sport === sport);
     if (!sportData) return false;
 
-    const catData = sportData.categories.find(c => c.category === category);
+    const catData = sportData.categories.find(c => (c.category || c) === category);
     if (!catData) return false;
 
     catData.rank = rank;
@@ -572,11 +735,14 @@ const Storage = (() => {
     deletePlayer,
     addSportToPlayer,
     removeCategoryFromPlayer,
-    // Stats
+    // Stats & Rankings Engine
     recordMatch,
     setPlayerRank,
+    recalculateRanksForCategory,
+    recalculateAllRanks,
     getWinrate,
     getFlatPlayerStats,
+    getSummaryStats,
     // Events
     getEvents,
     getEventById,

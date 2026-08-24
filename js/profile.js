@@ -100,9 +100,6 @@ const Profile = (() => {
         <button class="btn btn-primary btn-sm" onclick="Profile.downloadCurrentCard()">
           Download Card (PNG)
         </button>
-        <button class="btn btn-danger btn-sm" onclick="Auth.logout()" title="Log out of athlete account">
-          Logout
-        </button>
       </div>
     `;
   }
@@ -370,14 +367,26 @@ const Profile = (() => {
   function downloadCurrentCard() {
     const player = Storage.getCurrentPlayer();
     if (!player) {
-      App.showToast('Please log in first.', 'error');
+      App.showToast('Please sign in to an athlete account first.', 'error');
+      App.switchTab('profile');
       return;
     }
-    if (!selectedSport || !selectedCategory) {
-      App.showToast('No sport category assigned to generate a card.', 'error');
+    let sport = selectedSport;
+    let category = selectedCategory;
+
+    if ((!sport || !category) && player.sports && player.sports.length > 0) {
+      sport = player.sports[0].sport;
+      if (player.sports[0].categories && player.sports[0].categories.length > 0) {
+        const c = player.sports[0].categories[0];
+        category = c.category || c;
+      }
+    }
+
+    if (!sport || !category) {
+      App.showToast('No sport category enrolled to generate a card.', 'error');
       return;
     }
-    Cards.downloadCard(player.id, selectedSport, selectedCategory);
+    Cards.downloadCard(player.id, sport, category);
   }
 
   function escapeHtml(str) {
