@@ -225,10 +225,19 @@ const Admin = (() => {
     }
 
     const tbody = document.getElementById('adminPlayersBody');
-    if (!tbody) return;
-
     if (players.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2.5rem 1rem;">No players found matching your criteria.</td></tr>`;
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center; padding:3rem 1rem;">
+            <div class="empty-state-icon-box" style="margin:0 auto 1rem; width:52px; height:52px;">
+              <span class="empty-state-icon" style="font-size:1.5rem;">👤</span>
+            </div>
+            <div style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.35rem;">No Athletes Found</div>
+            <p style="color:var(--text-muted); font-size:0.85rem; max-width:360px; margin:0 auto 1.25rem;">No athletes match your active search or filters. Add a new player or clear your filters.</p>
+            <button class="btn btn-primary btn-sm" onclick="Admin.showAddPlayerModal()">+ Add Athlete to Roster</button>
+          </td>
+        </tr>
+      `;
       return;
     }
 
@@ -723,7 +732,18 @@ const Admin = (() => {
     });
 
     if (eligible.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">No players in this category.</td></tr>`;
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center; padding:2.5rem 1rem;">
+            <div class="empty-state-icon-box" style="margin:0 auto 0.75rem; width:48px; height:48px;">
+              <span class="empty-state-icon" style="font-size:1.35rem;">🏅</span>
+            </div>
+            <div style="font-size:0.95rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">No Athletes in ${escapeHtml(sport)} — ${escapeHtml(category)}</div>
+            <p style="color:var(--text-muted); font-size:0.8rem; max-width:320px; margin:0 auto 1rem;">Enroll athletes into this category from the Players tab to configure their official rankings.</p>
+            <button class="btn btn-secondary btn-sm" onclick="Admin.showAddPlayerModal()">+ Enroll New Athlete</button>
+          </td>
+        </tr>
+      `;
       return;
     }
 
@@ -774,7 +794,16 @@ const Admin = (() => {
     const container = document.getElementById('adminEventsList');
 
     if (events.length === 0) {
-      container.innerHTML = '<p style="color:var(--text-muted);">No events created yet.</p>';
+      container.innerHTML = `
+        <div class="empty-state" style="margin:1.5rem 0; padding:2.5rem 1.5rem;">
+          <div class="empty-state-icon-box" style="width:52px; height:52px; margin-bottom:0.75rem;">
+            <span class="empty-state-icon" style="font-size:1.5rem;">📅</span>
+          </div>
+          <h3 style="font-size:1.1rem;">No Tournaments Created Yet</h3>
+          <p style="font-size:0.85rem; margin-bottom:1.25rem;">Create multi-sport events, configure categories, and start recording match outcomes.</p>
+          <button class="btn btn-primary btn-sm" onclick="Admin.showAddEventModal()">+ Create First Tournament</button>
+        </div>
+      `;
       return;
     }
 
