@@ -228,7 +228,7 @@ const Auth = (() => {
       if (typeof Home !== 'undefined' && Home.render) Home.render();
       Admin.render();
 
-      // Directly activate Login tab
+      // INSTANTLY switch to Login tab interface
       showLoginTab();
 
       // Pre-fill username and focus password
@@ -239,7 +239,7 @@ const Auth = (() => {
         loginPasswordInput.value = '';
         setTimeout(() => {
           loginPasswordInput.focus();
-        }, 100);
+        }, 50);
       }
 
       App.showToast(`Account created for ${player.username}! Player ID: ${player.id}. Please sign in to verify credentials.`, 'success');
@@ -305,8 +305,14 @@ const Auth = (() => {
     });
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
-    if (loginForm) loginForm.classList.remove('active');
-    if (signupForm) signupForm.classList.add('active');
+    if (loginForm) {
+      loginForm.classList.remove('active');
+      loginForm.style.display = 'none';
+    }
+    if (signupForm) {
+      signupForm.classList.add('active');
+      signupForm.style.display = 'block';
+    }
     const authSection = document.getElementById('authSection');
     const profileSection = document.getElementById('profileSection');
     if (authSection) authSection.style.display = 'block';
@@ -319,8 +325,14 @@ const Auth = (() => {
     });
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
-    if (loginForm) loginForm.classList.add('active');
-    if (signupForm) signupForm.classList.remove('active');
+    if (loginForm) {
+      loginForm.classList.add('active');
+      loginForm.style.display = 'block';
+    }
+    if (signupForm) {
+      signupForm.classList.remove('active');
+      signupForm.style.display = 'none';
+    }
     const authSection = document.getElementById('authSection');
     const profileSection = document.getElementById('profileSection');
     if (authSection) authSection.style.display = 'block';

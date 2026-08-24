@@ -148,23 +148,28 @@ const Cards = (() => {
         <div class="player-card ${rankTier} ${row.isMyCard ? 'is-my-card' : ''}" 
              style="animation-delay: ${idx * 0.04}s"
              onclick="Cards.showDetail('${row.id}', '${escapeAttr(row.sport)}', '${escapeAttr(row.category)}')">
+          
+          <!-- Card Header / Identity -->
           <div class="card-header">
             <div class="card-avatar">${cardAvatarHTML}</div>
-            <div class="card-header-meta">
-              ${row.isMyCard ? '<span class="card-my-tag">My Card</span>' : ''}
-              <div class="card-rank-display">
-                <div class="card-rank-label">Rank</div>
-                <div class="card-rank-number ${rankColorClass}">${rankDisplayHTML}</div>
-              </div>
+            <div class="card-identity">
+              <div class="card-name" title="${escapeHtml(row.username)}">${escapeHtml(row.username)}</div>
+              <div class="card-id">${row.id}</div>
+            </div>
+            <div class="card-rank-badge ${rankColorClass}">
+              <span class="rank-badge-label">RANK</span>
+              <span class="rank-badge-num">${rankDisplayHTML}</span>
             </div>
           </div>
-          <div class="card-name">${escapeHtml(row.username)}</div>
-          <div class="card-id">${row.id}</div>
-          <div class="card-meta">
-            <span class="card-meta-tag">${escapeHtml(row.sport)}</span>
-            <span class="card-meta-tag">${escapeHtml(row.category)}</span>
-            <span class="card-meta-tag">${escapeHtml(row.gradeLevel)}</span>
+
+          <!-- Card Tags -->
+          <div class="card-tags-row">
+            <span class="card-meta-tag sport">${escapeHtml(row.sport)}</span>
+            <span class="card-meta-tag category">${escapeHtml(row.category)}</span>
+            <span class="card-meta-tag grade">${escapeHtml(row.gradeLevel)}</span>
           </div>
+
+          <!-- Card Stats Grid -->
           <div class="card-stats">
             <div class="card-stat">
               <div class="card-stat-value win-text">${row.wins}</div>
@@ -175,10 +180,12 @@ const Cards = (() => {
               <div class="card-stat-label">Losses</div>
             </div>
             <div class="card-stat">
-              <div class="card-stat-value" style="color: var(--text-primary)">${row.winrate}%</div>
+              <div class="card-stat-value winrate-val">${row.winrate}%</div>
               <div class="card-stat-label">Winrate</div>
             </div>
           </div>
+
+          <!-- Winrate Bar -->
           <div class="card-winrate-bar">
             <div class="card-winrate-fill ${wrClass}" style="width: ${row.winrate}%"></div>
           </div>
@@ -207,18 +214,15 @@ const Cards = (() => {
             <span class="rank-badge ${rankClass}">${rankDisplay}</span>
             <div class="list-avatar">${avatarHTML}</div>
             <div class="list-player-info">
-              <div class="list-player-name-row">
-                <span class="list-player-name">${escapeHtml(row.username)}</span>
-                ${row.isMyCard ? '<span class="card-my-tag">My Card</span>' : ''}
-              </div>
-              <div class="list-player-id">${row.id}</div>
+              <span class="list-player-name">${escapeHtml(row.username)}</span>
+              <span class="list-player-id">${row.id}</span>
             </div>
           </div>
 
           <div class="list-card-meta">
-            <span class="card-meta-tag">${escapeHtml(row.sport)}</span>
-            <span class="card-meta-tag">${escapeHtml(row.category)}</span>
-            <span class="card-meta-tag">${escapeHtml(row.gradeLevel)}</span>
+            <span class="card-meta-tag sport">${escapeHtml(row.sport)}</span>
+            <span class="card-meta-tag category">${escapeHtml(row.category)}</span>
+            <span class="card-meta-tag grade">${escapeHtml(row.gradeLevel)}</span>
           </div>
 
           <div class="list-card-stats">

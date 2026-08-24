@@ -1868,15 +1868,21 @@ a {
   pointer-events: none;
 }
 
+/* ═══════════════════════════════════════════
+   PLAYER CARD (2026 UI/UX Redesign)
+   ═══════════════════════════════════════════ */
 .player-card {
   position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border-glass);
   border-radius: var(--border-radius-lg);
-  padding: 1.5rem;
+  padding: 1.25rem;
   overflow: hidden;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .player-card::before {
@@ -1887,7 +1893,7 @@ a {
   right: 0;
   height: 3px;
   background: var(--gradient-primary);
-  opacity: 0.6;
+  opacity: 0.7;
   transition: opacity var(--transition-normal);
 }
 
@@ -1901,8 +1907,30 @@ a {
   opacity: 1;
 }
 
+/* User's Own Card Outline */
+.player-card.is-my-card {
+  border: 2px solid #6366f1 !important;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35), 0 8px 30px rgba(99, 102, 241, 0.22), inset 0 0 24px rgba(99, 102, 241, 0.06) !important;
+}
+
+.player-card.is-my-card::before {
+  background: linear-gradient(90deg, #6366f1, #a855f7, #6366f1) !important;
+  height: 4px;
+  opacity: 1 !important;
+}
+
+.player-card.is-my-card:hover {
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.6), 0 12px 36px rgba(99, 102, 241, 0.35), inset 0 0 28px rgba(99, 102, 241, 0.1) !important;
+}
+
+.player-card-list-item.is-my-card {
+  border: 2px solid #6366f1 !important;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35), 0 6px 20px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Rank Prestige Styling */
 .player-card.rank-gold {
-  border-color: rgba(251, 191, 36, 0.45);
+  border-color: rgba(251, 191, 36, 0.5);
   box-shadow: 0 4px 20px rgba(251, 191, 36, 0.12);
 }
 
@@ -1912,8 +1940,8 @@ a {
 }
 
 .player-card.rank-gold:hover {
-  border-color: rgba(251, 191, 36, 0.8);
-  box-shadow: 0 8px 30px rgba(251, 191, 36, 0.25), var(--shadow-lg);
+  border-color: rgba(251, 191, 36, 0.85);
+  box-shadow: 0 8px 32px rgba(251, 191, 36, 0.28), var(--shadow-lg);
 }
 
 .player-card.rank-silver {
@@ -1946,171 +1974,213 @@ a {
   box-shadow: 0 8px 30px rgba(217, 119, 6, 0.25), var(--shadow-lg);
 }
 
+/* Card Header: Avatar + Identity + Rank Badge */
 .card-header {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 1rem;
+  align-items: center;
+  gap: 0.85rem;
 }
 
 .card-avatar {
-  width: 56px;
-  height: 56px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: var(--gradient-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: #fff;
   font-family: var(--font-heading);
   flex-shrink: 0;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-.card-header-meta {
+.card-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-identity {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.35rem;
-}
-
-.card-my-tag {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.625rem;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  padding: 0.18rem 0.55rem;
-  border-radius: 999px;
-  background: rgba(99, 102, 241, 0.2);
-  border: 1px solid rgba(99, 102, 241, 0.45);
-  color: #a5b4fc;
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
-  white-space: nowrap;
-}
-
-.list-player-name-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.card-rank-display {
-  text-align: right;
-}
-
-.card-rank-label {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-}
-
-.card-rank-number {
-  font-family: var(--font-heading);
-  font-size: 1.75rem;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.card-rank-number.gold {
-  color: var(--accent-gold);
-}
-
-.card-rank-number.silver {
-  color: var(--accent-silver);
-}
-
-.card-rank-number.bronze {
-  color: var(--accent-bronze);
-}
-
-.card-rank-number.default {
-  color: var(--text-muted);
 }
 
 .card-name {
-  font-size: 1.1rem;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
   font-weight: 700;
-  margin-bottom: 0.15rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
 }
 
 .card-id {
-  font-family: var(--font-heading);
-  font-size: 0.75rem;
+  font-family: monospace;
+  font-size: 0.72rem;
   color: var(--accent-primary);
   letter-spacing: 0.5px;
-  margin-bottom: 0.5rem;
+  margin-top: 0.15rem;
 }
 
-.card-meta {
+/* Rank Badge Box */
+.card-rank-badge {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 46px;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-glass);
+  flex-shrink: 0;
+}
+
+.card-rank-badge .rank-badge-label {
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.card-rank-badge .rank-badge-num {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+.card-rank-badge.gold {
+  border-color: rgba(251, 191, 36, 0.5);
+  background: rgba(251, 191, 36, 0.08);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.15);
+}
+.card-rank-badge.gold .rank-badge-num {
+  color: var(--accent-gold);
+}
+
+.card-rank-badge.silver {
+  border-color: rgba(203, 213, 225, 0.4);
+  background: rgba(203, 213, 225, 0.06);
+}
+.card-rank-badge.silver .rank-badge-num {
+  color: var(--accent-silver);
+}
+
+.card-rank-badge.bronze {
+  border-color: rgba(217, 119, 6, 0.4);
+  background: rgba(217, 119, 6, 0.06);
+}
+.card-rank-badge.bronze .rank-badge-num {
+  color: var(--accent-bronze);
+}
+
+.card-rank-badge.default .rank-badge-num {
+  color: var(--text-muted);
+}
+
+/* Card Tags Row */
+.card-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
 }
 
 .card-meta-tag {
-  padding: 0.15rem 0.5rem;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   font-size: 0.7rem;
+  font-weight: 600;
   color: var(--text-secondary);
+  white-space: nowrap;
 }
 
+.card-meta-tag.sport {
+  color: #a5b4fc;
+  border-color: rgba(99, 102, 241, 0.25);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+/* Card Stats Grid */
 .card-stats {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 0.5rem;
+  padding: 0.65rem 0.5rem;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-sm);
 }
 
 .card-stat {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-stat-value {
   font-family: var(--font-heading);
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   font-weight: 800;
+  line-height: 1;
+}
+
+.card-stat-value.winrate-val {
+  color: var(--text-primary);
 }
 
 .card-stat-label {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   color: var(--text-muted);
+  margin-top: 0.25rem;
 }
 
+/* Winrate Progress Bar */
 .card-winrate-bar {
   width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
   overflow: hidden;
 }
 
 .card-winrate-fill {
   height: 100%;
-  border-radius: 4px;
-  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 999px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-winrate-fill.high {
-  background: var(--color-win);
+  background: linear-gradient(90deg, #10b981, #34d399);
 }
 
 .card-winrate-fill.mid {
-  background: var(--accent-gold);
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
 }
 
 .card-winrate-fill.low {
-  background: var(--color-loss);
+  background: linear-gradient(90deg, #ef4444, #f87171);
 }
 
 /* ═══════════════════════════════════════════
