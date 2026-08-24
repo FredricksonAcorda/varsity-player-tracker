@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Varsity Sports Player Tracker — Official platform for player performance cards, multi-sport tournament rankings, and match analytics.">
+  <meta name="description"
+    content="Varsity Sports Player Tracker — Official platform for player performance cards, multi-sport tournament rankings, and match analytics.">
   <title>Varsity Player Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
   <!-- ═══════ APP HEADER ═══════ -->
   <header class="app-header">
@@ -22,7 +27,8 @@
       <!-- Combined Account & Portal Dropdown (Athlete + Coach/Admin) -->
       <div class="header-right">
         <div class="header-account-wrapper" id="headerAccountWrapper">
-          <button class="header-account-btn" id="headerAccountBtn" aria-expanded="false" aria-haspopup="true" title="Account & Management Portal">
+          <button class="header-account-btn" id="headerAccountBtn" aria-expanded="false" aria-haspopup="true"
+            title="Account & Management Portal">
             <span class="header-account-avatar" id="headerAccountAvatar">
               <span class="header-avatar-initial" id="headerAvatarInitial">P</span>
             </span>
@@ -57,7 +63,8 @@
                 <button class="dropdown-item" onclick="App.switchTab('profile'); App.closeAccountDropdown();">
                   <span>Athlete Sign In</span>
                 </button>
-                <button class="dropdown-item" onclick="App.switchTab('profile'); Auth.showSignupTab(); App.closeAccountDropdown();">
+                <button class="dropdown-item"
+                  onclick="App.switchTab('profile'); Auth.showSignupTab(); App.closeAccountDropdown();">
                   <span>Create Athlete Account</span>
                 </button>
               </div>
@@ -123,38 +130,40 @@
     </div>
   </nav>
 
-  <!-- ═══════ UNIFIED FILTER BAR (Leaderboard & Cards) ═══════ -->
+  <!-- ═══════ UNIFIED FILTER TOOLBAR (Leaderboard & Cards) ═══════ -->
   <div class="filter-bar hidden" id="filterBar">
     <div class="filter-bar-inner">
-      <!-- Search Box & Mobile Filter Toggle (aligned together on single row) -->
+      <!-- Search Box & Mobile Filter Toggle -->
       <div class="filter-search-box">
         <svg class="filter-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="filterSearch" placeholder="Search athlete, sport, ID..." class="filter-search-input">
-        <button class="filter-toggle-btn" id="filterToggleBtn" type="button" aria-expanded="false">
+        <input type="text" id="filterSearch" placeholder="Search athlete, sport, ID..." class="filter-search-input" aria-label="Search athletes">
+        <button class="filter-toggle-btn" id="filterToggleBtn" type="button" aria-expanded="false" aria-label="Toggle filters">
           <span>Filters</span>
           <span class="filter-badge" id="filterActiveBadge" style="display:none;">0</span>
         </button>
       </div>
 
-      <!-- Filter Controls Deck -->
+      <!-- Filter Controls Deck (Single cohesive row on desktop, drawer on mobile) -->
       <div class="filter-controls-group" id="filterDropdowns">
         <div class="filter-chip-select">
           <select id="filterSport" class="filter-select" aria-label="Filter by sport">
-            <option value="All">All Sports</option>
+            <option value="All">Sport: All</option>
           </select>
         </div>
 
         <div class="filter-chip-select">
           <select id="filterCategory" class="filter-select" aria-label="Filter by category">
-            <option value="All">All Categories</option>
+            <option value="All">Category: All</option>
           </select>
         </div>
 
         <div class="filter-chip-select">
           <select id="filterGrade" class="filter-select" aria-label="Filter by grade">
-            <option value="All">All Grades</option>
+            <option value="All">Grade: All</option>
           </select>
         </div>
+
+        <div class="filter-divider"></div>
 
         <div class="filter-chip-select cards-sort-item" id="filterSortItem">
           <select id="cardsSortSelect" class="filter-select cards-sort-select" aria-label="Sort by">
@@ -191,7 +200,8 @@
         </div>
         <h1 class="hero-title">Track Excellence.<br><span class="gradient-text">Elevate Varsity Sports.</span></h1>
         <p class="hero-description">
-          The official platform for collegiate and inter-school athletics. Discover real-time leaderboards, digital player cards, multi-sport tournament brackets, and verified match analytics.
+          The official platform for collegiate and inter-school athletics. Discover real-time leaderboards, digital
+          player cards, multi-sport tournament brackets, and verified match analytics.
         </p>
         <div class="hero-cta-group">
           <button class="btn btn-primary btn-lg" onclick="App.switchTab('leaderboard')">
@@ -234,7 +244,8 @@
         <div class="section-header-centered">
           <div class="section-tag">TOP PERFORMERS</div>
           <h2 class="section-title">Varsity Athlete Spotlight</h2>
-          <p class="section-subtitle">Leading varsity athletes ranked by official tournament victories and match winrates.</p>
+          <p class="section-subtitle">Leading varsity athletes ranked by official tournament victories and match
+            winrates.</p>
         </div>
         <div class="spotlight-grid" id="homeSpotlightGrid"></div>
       </div>
@@ -244,35 +255,40 @@
         <div class="section-header-centered">
           <div class="section-tag">BUILT FOR VARSITY ATHLETICS</div>
           <h2 class="section-title">Engineered for Coaches & Athletes</h2>
-          <p class="section-subtitle">Everything you need to run, track, and celebrate varsity athletic competitions.</p>
+          <p class="section-subtitle">Everything you need to run, track, and celebrate varsity athletic competitions.
+          </p>
         </div>
 
         <div class="features-grid">
           <div class="feature-card" onclick="App.switchTab('leaderboard')">
             <span class="feature-tag">RANKINGS</span>
             <h3 class="feature-title">Dynamic Ranking Engine</h3>
-            <p class="feature-desc">Automatic real-time calculation of player ranks, winrates, and official standings with gold, silver, and bronze prestige tiers.</p>
+            <p class="feature-desc">Automatic real-time calculation of player ranks, winrates, and official standings
+              with gold, silver, and bronze prestige tiers.</p>
             <div class="feature-link">View Rankings</div>
           </div>
 
           <div class="feature-card" onclick="App.switchTab('cards')">
             <span class="feature-tag">DIGITAL CARDS</span>
             <h3 class="feature-title">Digital Performance Cards</h3>
-            <p class="feature-desc">Collectible athlete cards featuring custom avatars, grade levels, win differentials, and high-resolution downloadable PNG cards.</p>
+            <p class="feature-desc">Collectible athlete cards featuring custom avatars, grade levels, win differentials,
+              and high-resolution downloadable PNG cards.</p>
             <div class="feature-link">Browse Cards</div>
           </div>
 
           <div class="feature-card" onclick="App.switchTab('events')">
             <span class="feature-tag">TOURNAMENTS</span>
             <h3 class="feature-title">Multi-Sport Tournament Hub</h3>
-            <p class="feature-desc">Track intramurals, invitationals, and district championships across Badminton, Basketball, Volleyball, Table Tennis, and Football.</p>
+            <p class="feature-desc">Track intramurals, invitationals, and district championships across Badminton,
+              Basketball, Volleyball, Table Tennis, and Football.</p>
             <div class="feature-link">Explore Events</div>
           </div>
 
           <div class="feature-card" onclick="App.switchTab('admin')">
             <span class="feature-tag">COACH PORTAL</span>
             <h3 class="feature-title">Coach & Official Console</h3>
-            <p class="feature-desc">Role-isolated management dashboard for coaches to record match outcomes, verify scores, and update athlete rosters safely.</p>
+            <p class="feature-desc">Role-isolated management dashboard for coaches to record match outcomes, verify
+              scores, and update athlete rosters safely.</p>
             <div class="feature-link">Access Console</div>
           </div>
         </div>
@@ -289,17 +305,20 @@
           <div class="step-card">
             <div class="step-number">01</div>
             <h4 class="step-title">Athlete Registration</h4>
-            <p class="step-desc">Athletes create their verified profile, upload photos, and enroll in their varsity sports categories.</p>
+            <p class="step-desc">Athletes create their verified profile, upload photos, and enroll in their varsity
+              sports categories.</p>
           </div>
           <div class="step-card">
             <div class="step-number">02</div>
             <h4 class="step-title">Record Tournament Matches</h4>
-            <p class="step-desc">Coaches schedule multi-sport tournaments and record official match results with one-click verification.</p>
+            <p class="step-desc">Coaches schedule multi-sport tournaments and record official match results with
+              one-click verification.</p>
           </div>
           <div class="step-card">
             <div class="step-number">03</div>
             <h4 class="step-title">Automatic Rank Progression</h4>
-            <p class="step-desc">Rankings, winrates, and digital cards update instantly across all school leaderboards and digital exports.</p>
+            <p class="step-desc">Rankings, winrates, and digital cards update instantly across all school leaderboards
+              and digital exports.</p>
           </div>
         </div>
       </div>
@@ -319,7 +338,9 @@
               <span class="faq-toggle-arrow"></span>
             </div>
             <div class="faq-body">
-              <p>Rankings are automatically computed by our real-time engine whenever a coach records a match. Athletes are ranked by total victories, overall match winrate percentage, and least losses within their specific sport and category. Players without recorded matches remain unranked.</p>
+              <p>Rankings are automatically computed by our real-time engine whenever a coach records a match. Athletes
+                are ranked by total victories, overall match winrate percentage, and least losses within their specific
+                sport and category. Players without recorded matches remain unranked.</p>
             </div>
           </div>
 
@@ -329,7 +350,8 @@
               <span class="faq-toggle-arrow"></span>
             </div>
             <div class="faq-body">
-              <p>Yes. Athletes can be enrolled across multiple sports (e.g. Badminton Men's Singles and Mixed Doubles, or Basketball 3x3 and 5v5). Each sport and category maintains independent statistics and rankings.</p>
+              <p>Yes. Athletes can be enrolled across multiple sports (e.g. Badminton Men's Singles and Mixed Doubles,
+                or Basketball 3x3 and 5v5). Each sport and category maintains independent statistics and rankings.</p>
             </div>
           </div>
 
@@ -339,7 +361,9 @@
               <span class="faq-toggle-arrow"></span>
             </div>
             <div class="faq-body">
-              <p>Log in with your athlete account, navigate to "My Profile", and click "Download Card (PNG)". The application generates a high-resolution collectible varsity card formatted with your photo, rank, and stats.</p>
+              <p>Log in with your athlete account, navigate to "My Profile", and click "Download Card (PNG)". The
+                application generates a high-resolution collectible varsity card formatted with your photo, rank, and
+                stats.</p>
             </div>
           </div>
 
@@ -349,7 +373,8 @@
               <span class="faq-toggle-arrow"></span>
             </div>
             <div class="faq-body">
-              <p>Only authorized coaches and athletic officials with Admin access can record official match scores and modify roster standings. Athlete accounts have dedicated view-only and profile-editing permissions.</p>
+              <p>Only authorized coaches and athletic officials with Admin access can record official match scores and
+                modify roster standings. Athlete accounts have dedicated view-only and profile-editing permissions.</p>
             </div>
           </div>
         </div>
@@ -363,7 +388,8 @@
               <span class="logo-badge">V</span>
               <h2>Varsity<span class="logo-accent">Tracker</span></h2>
             </div>
-            <p class="footer-desc">The official digital platform for varsity player tracking, multi-sport tournament rankings, and athletic performance analytics.</p>
+            <p class="footer-desc">The official digital platform for varsity player tracking, multi-sport tournament
+              rankings, and athletic performance analytics.</p>
             <p class="footer-copy">© 2026 Varsity Sports Tracker. All rights reserved.</p>
           </div>
           <div class="footer-col">
@@ -410,7 +436,8 @@
           <h3>No Ranked Athletes Found</h3>
           <p>No players match the current filters or no official rankings have been published yet for this category.</p>
           <div class="empty-state-actions">
-            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('resetFilterBtn').click()">Reset Filters</button>
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('resetFilterBtn').click()">Reset
+              Filters</button>
             <button class="btn btn-primary btn-sm" onclick="App.switchTab('profile')">Register as Athlete</button>
           </div>
         </div>
@@ -443,9 +470,11 @@
         <div class="empty-state" id="cardsEmpty">
           <span class="empty-state-tag">PLAYER CARDS</span>
           <h3>No Player Cards Found</h3>
-          <p>No athlete cards match your search criteria. Try adjusting your sport/category filter or sign up as a new athlete.</p>
+          <p>No athlete cards match your search criteria. Try adjusting your sport/category filter or sign up as a new
+            athlete.</p>
           <div class="empty-state-actions">
-            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('resetFilterBtn').click()">Reset Active Filters</button>
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('resetFilterBtn').click()">Reset
+              Active Filters</button>
             <button class="btn btn-primary btn-sm" onclick="App.switchTab('profile')">Create Player Card</button>
           </div>
         </div>
@@ -476,9 +505,19 @@
               <label for="loginPassword">Password</label>
               <div class="password-input-wrapper">
                 <input type="password" id="loginPassword" placeholder="Enter your password" required>
-                <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility" onclick="Auth.togglePasswordVisibility('loginPassword', this)">
-                  <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  <svg class="eye-icon eye-closed" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility"
+                  onclick="Auth.togglePasswordVisibility('loginPassword', this)">
+                  <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <svg class="eye-icon eye-closed" style="display:none;" width="18" height="18" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -486,7 +525,9 @@
             <div class="auth-submit-row">
               <button type="submit" class="btn btn-primary btn-auth-submit">Sign In</button>
             </div>
-            <p style="color:var(--text-muted); font-size:0.75rem; text-align:center; margin-top:1rem;">Demo athlete: <strong style="color:var(--accent-primary);">Alex Rivera</strong> / <strong style="color:var(--accent-primary);">Password123!</strong></p>
+            <p style="color:var(--text-muted); font-size:0.75rem; text-align:center; margin-top:1rem;">Demo athlete:
+              <strong style="color:var(--accent-primary);">Alex Rivera</strong> / <strong
+                style="color:var(--accent-primary);">Password123!</strong></p>
           </form>
 
           <!-- Sign Up Form -->
@@ -502,12 +543,23 @@
                 <label for="signupPassword">Password *</label>
                 <div class="password-input-wrapper">
                   <input type="password" id="signupPassword" placeholder="Enter password" required>
-                  <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility" onclick="Auth.togglePasswordVisibility('signupPassword', this)">
-                    <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    <svg class="eye-icon eye-closed" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                  <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility"
+                    onclick="Auth.togglePasswordVisibility('signupPassword', this)">
+                    <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <svg class="eye-icon eye-closed" style="display:none;" width="18" height="18" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path
+                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
                   </button>
                 </div>
-                <span class="field-hint" id="signupPasswordHint">Requires min. 6 chars (upper, lower, number/symbol)</span>
+                <span class="field-hint" id="signupPasswordHint">Requires min. 6 chars (upper, lower,
+                  number/symbol)</span>
               </div>
             </div>
             <div class="form-row">
@@ -586,10 +638,12 @@
         <div class="admin-restricted-box">
           <div class="admin-restricted-badge">ATHLETE ACCESS RESTRICTED</div>
           <h2>Admin Controls Unavailable</h2>
-          <p id="adminRestrictedText">You are logged in with an Athlete account. Administrative actions, roster editing, and match recording are restricted to authorized coaches and organizers.</p>
+          <p id="adminRestrictedText">You are logged in with an Athlete account. Administrative actions, roster editing,
+            and match recording are restricted to authorized coaches and organizers.</p>
           <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
             <button class="btn btn-primary btn-sm" onclick="App.switchTab('profile')">Go to My Profile</button>
-            <button class="btn btn-secondary btn-sm" onclick="Auth.logout(); App.switchTab('admin');">Log Out to Access Admin</button>
+            <button class="btn btn-secondary btn-sm" onclick="Auth.logout(); App.switchTab('admin');">Log Out to Access
+              Admin</button>
           </div>
         </div>
       </div>
@@ -602,16 +656,28 @@
           <form id="adminLoginForm" onsubmit="Admin.unlock(event); return false;">
             <div class="form-group">
               <div class="password-input-wrapper">
-                <input type="password" id="adminPasswordInput" placeholder="Enter admin password (default: admin123)" autocomplete="current-password" required>
-                <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility" onclick="Auth.togglePasswordVisibility('adminPasswordInput', this)">
-                  <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  <svg class="eye-icon eye-closed" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                <input type="password" id="adminPasswordInput" placeholder="Enter admin password (default: admin123)"
+                  autocomplete="current-password" required>
+                <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility"
+                  onclick="Auth.togglePasswordVisibility('adminPasswordInput', this)">
+                  <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <svg class="eye-icon eye-closed" style="display:none;" width="18" height="18" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
                 </button>
               </div>
             </div>
             <div class="form-error" id="adminLoginError"></div>
             <div class="auth-submit-row">
-              <button type="button" class="btn btn-primary btn-auth-submit" id="adminUnlockBtn" onclick="Admin.unlock(event)">Unlock Console</button>
+              <button type="button" class="btn btn-primary btn-auth-submit" id="adminUnlockBtn"
+                onclick="Admin.unlock(event)">Unlock Console</button>
             </div>
           </form>
         </div>
@@ -622,7 +688,8 @@
         <div class="admin-header">
           <div>
             <h2>Admin Management Console</h2>
-            <p style="color:var(--text-muted); font-size:0.85rem;">Official roster management, match records, and tournament scheduling</p>
+            <p style="color:var(--text-muted); font-size:0.85rem;">Official roster management, match records, and
+              tournament scheduling</p>
           </div>
           <button class="btn btn-secondary btn-sm" id="adminLockBtn" onclick="Admin.lock()">Lock Session</button>
         </div>
@@ -641,19 +708,25 @@
           <div class="admin-section-header">
             <div>
               <h3>Athlete Roster Management</h3>
-              <p style="color:var(--text-muted); font-size:0.85rem;">Manage athlete accounts, enroll sports categories, and edit records</p>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Manage athlete accounts, enroll sports categories,
+                and edit records</p>
             </div>
-            <button class="btn btn-primary btn-sm" id="adminAddPlayerBtn" onclick="Admin.showAddPlayerModal()">+ Add Athlete</button>
+            <button class="btn btn-primary btn-sm" id="adminAddPlayerBtn" onclick="Admin.showAddPlayerModal()">+ Add
+              Athlete</button>
           </div>
 
-          <div class="admin-toolbar" style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-top:1rem;">
+          <div class="admin-toolbar"
+            style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-top:1rem;">
             <div style="flex:1; min-width:200px;">
-              <input type="text" id="adminPlayerSearch" placeholder="Search athlete name or ID..." class="filter-input" style="width:100%;">
+              <input type="text" id="adminPlayerSearch" placeholder="Search athlete name or ID..." class="filter-input"
+                style="width:100%;">
             </div>
-            <select id="adminPlayerSportFilter" class="filter-select" onchange="Admin.renderPlayersTable()" style="max-width:180px;">
+            <select id="adminPlayerSportFilter" class="filter-select" onchange="Admin.renderPlayersTable()"
+              style="max-width:180px;">
               <option value="All">All Sports</option>
             </select>
-            <select id="adminPlayerGradeFilter" class="filter-select" onchange="Admin.renderPlayersTable()" style="max-width:140px;">
+            <select id="adminPlayerGradeFilter" class="filter-select" onchange="Admin.renderPlayersTable()"
+              style="max-width:140px;">
               <option value="All">All Grades</option>
             </select>
           </div>
@@ -680,7 +753,8 @@
           <div class="admin-section-header">
             <div>
               <h3>Record Match Outcome</h3>
-              <p style="color:var(--text-muted); font-size:0.85rem;">Record official scores. Rankings automatically recalculate across all leaderboards.</p>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Record official scores. Rankings automatically
+                recalculate across all leaderboards.</p>
             </div>
           </div>
 
@@ -739,9 +813,12 @@
           <div class="admin-section-header">
             <div>
               <h3>Manual & Automatic Ranking Review</h3>
-              <p style="color:var(--text-muted); font-size:0.85rem;">Review auto-calculated standings or assign custom ranking overrides</p>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Review auto-calculated standings or assign custom
+                ranking overrides</p>
             </div>
-            <button class="btn btn-secondary btn-sm" onclick="Storage.recalculateAllRanks(); Admin.renderRanksTable(); Leaderboard.render(); Cards.render(); App.showToast('All rankings synchronized!', 'success');">Synchronize All Rankings</button>
+            <button class="btn btn-secondary btn-sm"
+              onclick="Storage.recalculateAllRanks(); Admin.renderRanksTable(); Leaderboard.render(); Cards.render(); App.showToast('All rankings synchronized!', 'success');">Synchronize
+              All Rankings</button>
           </div>
 
           <div class="admin-toolbar" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:1rem;">
@@ -775,9 +852,11 @@
           <div class="admin-section-header">
             <div>
               <h3>Tournaments & Competitions</h3>
-              <p style="color:var(--text-muted); font-size:0.85rem;">Create and manage multi-sport tournament schedules and recorded matches</p>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Create and manage multi-sport tournament schedules
+                and recorded matches</p>
             </div>
-            <button class="btn btn-primary btn-sm" id="adminAddEventBtn" onclick="Admin.showAddEventModal()">+ Create Tournament</button>
+            <button class="btn btn-primary btn-sm" id="adminAddEventBtn" onclick="Admin.showAddEventModal()">+ Create
+              Tournament</button>
           </div>
 
           <div class="admin-events-list" id="adminEventsList" style="margin-top:1.5rem;"></div>
@@ -788,7 +867,8 @@
           <div class="admin-section-header">
             <div>
               <h3>Sports & Categories Configuration</h3>
-              <p style="color:var(--text-muted); font-size:0.85rem;">Add, edit, or customize available sports and their competition categories</p>
+              <p style="color:var(--text-muted); font-size:0.85rem;">Add, edit, or customize available sports and their
+                competition categories</p>
             </div>
             <button class="btn btn-primary btn-sm" onclick="Admin.showAddSportModal()">+ Add Sport</button>
           </div>
@@ -805,7 +885,8 @@
             </div>
           </div>
 
-          <div class="settings-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; margin-top:1.5rem;">
+          <div class="settings-grid"
+            style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; margin-top:1.5rem;">
             <div class="setting-card">
               <h4>Change Admin Password</h4>
               <p>Update the management console access password.</p>
@@ -814,9 +895,20 @@
                   <label for="newAdminPassword">New Password</label>
                   <div class="password-input-wrapper">
                     <input type="password" id="newAdminPassword" placeholder="Enter new password" required>
-                    <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility" onclick="Auth.togglePasswordVisibility('newAdminPassword', this)">
-                      <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      <svg class="eye-icon eye-closed" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility"
+                      onclick="Auth.togglePasswordVisibility('newAdminPassword', this)">
+                      <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                      <svg class="eye-icon eye-closed" style="display:none;" width="18" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                          d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                      </svg>
                     </button>
                   </div>
                 </div>
@@ -824,9 +916,20 @@
                   <label for="confirmAdminPassword">Confirm Password</label>
                   <div class="password-input-wrapper">
                     <input type="password" id="confirmAdminPassword" placeholder="Confirm new password" required>
-                    <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility" onclick="Auth.togglePasswordVisibility('confirmAdminPassword', this)">
-                      <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      <svg class="eye-icon eye-closed" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility"
+                      onclick="Auth.togglePasswordVisibility('confirmAdminPassword', this)">
+                      <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                      <svg class="eye-icon eye-closed" style="display:none;" width="18" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                          d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                      </svg>
                     </button>
                   </div>
                 </div>
@@ -839,12 +942,14 @@
               <h4>Backup & Export Data</h4>
               <p>Export all athlete records, tournaments, and match histories as a JSON file.</p>
               <button class="btn btn-secondary btn-sm" onclick="Admin.exportData()">Download Backup (JSON)</button>
-              
+
               <div style="margin-top:1.5rem;">
                 <h4>Restore Data</h4>
                 <p>Import a previously saved backup file.</p>
-                <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="Admin.handleImportFile(this)">
-                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFileInput').click()">Import Backup</button>
+                <input type="file" id="importFileInput" accept=".json" style="display:none;"
+                  onchange="Admin.handleImportFile(this)">
+                <button class="btn btn-secondary btn-sm"
+                  onclick="document.getElementById('importFileInput').click()">Import Backup</button>
               </div>
             </div>
 
@@ -885,4 +990,5 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>
