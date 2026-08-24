@@ -312,10 +312,22 @@ const App = (() => {
   function updateFilterBadge() {
     const filters = getFilters();
     let count = 0;
+    const sportSelect = document.getElementById('filterSport');
+    const categorySelect = document.getElementById('filterCategory');
+    const gradeSelect = document.getElementById('filterGrade');
+    const searchInput = document.getElementById('filterSearch');
+    const resetBtn = document.getElementById('resetFilterBtn');
+
     if (filters.search) count++;
     if (filters.sport !== 'All') count++;
     if (filters.category !== 'All') count++;
     if (filters.grade !== 'All') count++;
+
+    if (sportSelect) sportSelect.classList.toggle('has-value', filters.sport !== 'All');
+    if (categorySelect) categorySelect.classList.toggle('has-value', filters.category !== 'All');
+    if (gradeSelect) gradeSelect.classList.toggle('has-value', filters.grade !== 'All');
+    if (searchInput) searchInput.classList.toggle('has-value', Boolean(filters.search));
+    if (resetBtn) resetBtn.classList.toggle('active', count > 0);
 
     const badge = document.getElementById('filterActiveBadge');
     if (badge) {

@@ -264,76 +264,95 @@ const Cards = (() => {
     const catData = sportData.categories ? sportData.categories.find(c => (c.category || c) === category) : null;
     if (!catData) return;
 
-    const wr = Storage.getWinrate(catData.wins || 0, catData.losses || 0);
+    const wins = catData.wins || 0;
+    const losses = catData.losses || 0;
+    const isRanked = catData.rank > 0 && (wins + losses > 0);
+    const wr = Storage.getWinrate(wins, losses);
     const wrClass = wr >= 60 ? 'high' : wr >= 40 ? 'mid' : 'low';
+    const rankColorClass = isRanked ? (catData.rank === 1 ? 'gold' : catData.rank === 2 ? 'silver' : catData.rank === 3 ? 'bronze' : 'default') : 'default';
+    const rankDisplayHTML = isRanked ? `#${catData.rank}` : '—';
+    const initial = player.username ? player.username.charAt(0).toUpperCase() : 'P';
 
     let historyHTML = '';
     if (catData.matchHistory && catData.matchHistory.length > 0) {
       historyHTML = `
-        <h4 style="margin-top:1.5rem; margin-bottom:0.75rem; font-size:0.9rem; color:var(--text-secondary)">Match History</h4>
-        <div class="match-history-list">
-          ${catData.matchHistory.slice().reverse().map(m => `
-            <div class="match-history-item">
-              <span class="match-result-badge ${m.result === 'W' ? 'win' : 'loss'}">
-                ${m.result === 'W' ? 'WIN' : 'LOSS'}
-              </span>
-              <span class="match-opponent">${m.opponent ? 'vs ' + escapeHtml(m.opponent) : ''}</span>
-              ${m.event ? `<span class="match-event-name">${escapeHtml(m.event)}</span>` : ''}
-              <span class="match-date">${m.date || ''}</span>
-            </div>
-          `).join('')}
+        <div class="modal-history-section">
+          <h4 class="modal-subheading">Match History</h4>
+          <div class="match-history-list">
+            ${catData.matchHistory.slice().reverse().map(m => `
+              <div class="match-history-item">
+                <span class="match-result-badge ${m.result === 'W' ? 'win' : 'loss'}">
+                  ${m.result === 'W' ? 'WIN' : 'LOSS'}
+                </span>
+                <span class="match-opponent">${m.opponent ? 'vs ' + escapeHtml(m.opponent) : 'Official Match'}</span>
+                ${m.event ? `<span class="match-event-name">${escapeHtml(m.event)}</span>` : ''}
+                <span class="match-date">${m.date || ''}</span>
+              </div>
+            `).join('')}
+          </div>
         </div>
       `;
     } else {
-      historyHTML = '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:1rem;">No match history yet.</p>';
+      historyHTML = '<p class="modal-empty-history">No recorded match history for this category yet.</p>';
     }
 
     const modalAvatarHTML = player.photo
-      ? `<img src="${player.photo}" class="profile-avatar-img" alt="${escapeHtml(player.username)}">`
-      : `<span style="font-size:1.75rem; font-weight:800; color:#fff;">${player.username ? player.username.charAt(0).toUpperCase() : 'P'}</span>`;
+      ? `<img src="${player.photo}" class="card-avatar-img" alt="${escapeHtml(player.username)}">`
+      : `<span class="card-avatar-initial" style="font-size: 1.85rem;">${initial}</span>`;
 
     const content = `
-      <div style="text-align:center; margin-bottom:1.5rem;">
-        <div class="card-avatar" style="width:72px; height:72px; margin:0 auto 0.75rem; overflow:hidden;">
-          ${modalAvatarHTML}
+      <div class="modal-player-detail">
+        <!-- Hero Profile Info -->
+        <div class="modal-player-hero">
+          <div class="card-avatar modal-hero-avatar">
+            ${modalAvatarHTML}
+          </div>
+          <div class="modal-hero-info">
+            <h3 class="modal-hero-name">${escapeHtml(player.username)}</h3>
+            <div class="modal-hero-id">${player.id}</div>
+            <div class="card-tags-row" style="margin-top: 0.35rem;">
+              <span class="card-meta-tag sport">${escapeHtml(sport)}</span>
+              <span class="card-meta-tag category">${escapeHtml(category)}</span>
+              <span class="card-meta-tag grade">${escapeHtml(player.gradeLevel || 'Varsity')}</span>
+            </div>
+          </div>
+          <div class="card-rank-badge ${rankColorClass}" style="min-width: 52px; padding: 0.4rem 0.65rem;">
+            <span class="rank-badge-label">RANK</span>
+            <span class="rank-badge-num" style="font-size: 1.3rem;">${rankDisplayHTML}</span>
+          </div>
         </div>
-        <div style="font-size:1.25rem; font-weight:700; font-family:var(--font-heading);">${escapeHtml(player.username)}</div>
-        <div style="color:var(--accent-primary); font-size:0.8rem; letter-spacing:0.5px;">${player.id}</div>
-        <div style="margin-top:0.5rem; display:flex; justify-content:center; gap:0.4rem; flex-wrap:wrap;">
-          <span class="card-meta-tag">${escapeHtml(sport)}</span>
-          <span class="card-meta-tag">${escapeHtml(category)}</span>
-          <span class="card-meta-tag">${escapeHtml(player.gradeLevel)}</span>
+
+        <!-- 3-Metric Stats Grid -->
+        <div class="card-stats" style="margin: 1.25rem 0 0.75rem;">
+          <div class="card-stat">
+            <div class="card-stat-value win-text">${wins}</div>
+            <div class="card-stat-label">Wins</div>
+          </div>
+          <div class="card-stat">
+            <div class="card-stat-value loss-text">${losses}</div>
+            <div class="card-stat-label">Losses</div>
+          </div>
+          <div class="card-stat">
+            <div class="card-stat-value winrate-val">${wr}%</div>
+            <div class="card-stat-label">Winrate</div>
+          </div>
         </div>
-      </div>
-      <div class="card-stats" style="max-width:300px; margin:0 auto 1rem;">
-        <div class="card-stat">
-          <div class="card-stat-value win-text">${catData.wins || 0}</div>
-          <div class="card-stat-label">Wins</div>
+
+        <!-- Winrate Bar -->
+        <div class="card-winrate-bar" style="margin-bottom: 1.25rem;">
+          <div class="card-winrate-fill ${wrClass}" style="width: ${wr}%"></div>
         </div>
-        <div class="card-stat">
-          <div class="card-stat-value loss-text">${catData.losses || 0}</div>
-          <div class="card-stat-label">Losses</div>
+
+        <!-- Action Button -->
+        <div style="display: flex; justify-content: center; margin-bottom: 1.25rem;">
+          <button class="btn btn-primary btn-sm" onclick="Cards.downloadCard('${player.id}', '${escapeAttr(sport)}', '${escapeAttr(category)}')">
+            Download Digital Card (PNG)
+          </button>
         </div>
-        <div class="card-stat">
-          <div class="card-stat-value">${wr}%</div>
-          <div class="card-stat-label">Winrate</div>
-        </div>
+
+        <!-- History -->
+        ${historyHTML}
       </div>
-      <div class="card-winrate-bar" style="max-width:300px; margin:0 auto;">
-        <div class="card-winrate-fill ${wrClass}" style="width:${wr}%"></div>
-      </div>
-      <div style="text-align:center; margin-top:0.75rem;">
-        <span style="font-size:0.8rem; color:var(--text-muted);">Rank: </span>
-        <span style="font-weight:800; font-family:var(--font-heading); font-size:1.1rem;">
-          ${catData.rank > 0 ? '#' + catData.rank : 'Unranked'}
-        </span>
-      </div>
-      <div style="text-align:center; margin-top:1.25rem;">
-        <button class="btn btn-primary btn-sm" onclick="Cards.downloadCard('${player.id}', '${escapeAttr(sport)}', '${escapeAttr(category)}')">
-          Download Card (PNG)
-        </button>
-      </div>
-      ${historyHTML}
     `;
 
     App.openModal(`${player.username} — ${category}`, content);
